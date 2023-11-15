@@ -1,22 +1,39 @@
-const BOARD_SIZE: usize = 64;
-
-struct Chessboard {
-    black_pawns: u64,
-    black_rooks: u64,
-    black_knights: u64,
-    black_bishops: u64,
-    black_queen: u64,
-    black_king: u64,
-    white_pawns: u64,
-    white_rooks: u64,
-    white_knights: u64,
-    white_bishops: u64,
-    white_queen: u64,
-    white_king: u64,
-    white_turn: bool,
+pub struct Chessboard {
+    pub(crate) black_pawns: u64,
+    pub(crate) black_rooks: u64,
+    pub(crate) black_knights: u64,
+    pub(crate) black_bishops: u64,
+    pub(crate) black_queen: u64,
+    pub(crate) black_king: u64,
+    pub(crate) white_pawns: u64,
+    pub(crate) white_rooks: u64,
+    pub(crate) white_knights: u64,
+    pub(crate) white_bishops: u64,
+    pub(crate) white_queen: u64,
+    pub(crate) white_king: u64,
+    pub(crate) white_turn: bool,
+    pub(crate) white_castle: u8, //11, 01 (representing sides of the board)
+    pub(crate) black_castle: u8, //11, 01 (representing sides of the board)  
+    pub(crate) en_passant: u8, //a square that has en passant ability (1-64)
 }
 
 impl Chessboard {
+    pub fn initialize_board(&mut self) {
+        // white pieces
+        self.white_pawns = 0b0000000000000000000000000000000000000000000000001111111100000000;
+        self.white_knights = 0b0000000000000000000000000000000000000000000000000000000001000010;
+        self.white_bishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
+        self.white_king = 0b0000000000000000000000000000000000000000000000000000000000001000;
+        self.white_queen = 0b0000000000000000000000000000000000000000000000000000000000010000;
+        self.white_rooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
+        // black pieces
+        self.black_pawns = 0b0000000011111111000000000000000000000000000000000000000000000000;
+        self.black_knights = 0b0100001000000000000000000000000000000000000000000000000000000000;
+        self.black_bishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
+        self.black_king = 0b0000100000000000000000000000000000000000000000000000000000000000;
+        self.black_queen = 0b0001000000000000000000000000000000000000000000000000000000000000;
+        self.black_rooks = 0b1000000100000000000000000000000000000000000000000000000000000000;
+    }
 
     fn whose_turn(&self) -> &str {
         if self.white_turn {
@@ -25,6 +42,8 @@ impl Chessboard {
             "black"
         }
     }
+}
+    //Below here is just ideas for functions:
 
     //fn what_occupy square() {
     //     check each piece type with the square and see which returns true
@@ -80,4 +99,4 @@ impl Chessboard {
     //     // Verify that the move adheres to the rules of chesce-s, including piespecific rules and board state
     //     // Check for legality includes considerations like not moving into check, en passant captures, castling rules, etc.
     // }
-}
+

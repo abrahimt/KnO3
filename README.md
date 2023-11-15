@@ -12,3 +12,6 @@ a Python GUI to make things more user-friendly.
 
 ## Resources
 - https://www.chessprogramming.org/Main_Page
+
+## Related Projects
+If you like this project, check out our impostor chess bot at https://github.com/chanson02/Impawnstor

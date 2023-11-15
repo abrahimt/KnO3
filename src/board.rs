@@ -40,12 +40,21 @@ impl Chessboard {
     }
 
     pub fn print(&self) {
-        let ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+        let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-        for file in files.iter() { print!("{file}"); }
+        print!(" ");
+        for file in files.iter() { print!("{file} "); }
         println!();
-        for rank in ranks.iter() { println!("{rank} "); }
+        for rank in ranks.iter() { println!("{rank}"); }
+
+        for rank in ranks.iter() {
+            let byte = (self.white_pawns >> (rank - 1) * 8) as u8;
+            for file in 0..files.len() {
+                if (byte & (1 << file)) != 0 { print!("p "); } else { print!("x "); }
+            }
+            println!();
+        }
     }
 
     fn whose_turn(&self) -> &str {

@@ -39,6 +39,23 @@ impl Chessboard {
         }
     }
 
+    fn get_pieces(&self) -> Vec<(char, u64)> {
+        vec![
+            ('P', self.white_pawns),
+            ('N', self.white_knights),
+            ('B', self.white_bishops),
+            ('K', self.white_king),
+            ('Q', self.white_queen),
+            ('R', self.white_rooks),
+            ('p', self.black_pawns),
+            ('n', self.black_knights),
+            ('b', self.black_bishops),
+            ('k', self.black_king),
+            ('q', self.black_queen),
+            ('r', self.black_rooks)
+        ]
+    }
+
     pub fn print(&self) {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];

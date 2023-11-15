@@ -38,6 +38,14 @@ impl Chessboard {
             white_turn: true
         }
     }
+
+    pub fn print(&self) {
+        let ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+        for file in files.iter() { print!("{file}"); }
+        println!();
+        for rank in ranks.iter() { println!("{rank} "); }
     }
 
     fn whose_turn(&self) -> &str {

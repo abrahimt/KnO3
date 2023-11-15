@@ -1,3 +1,7 @@
+mod board;
+use board::Chessboard;
+
 fn main() {
-    println!("Hello, world!");
+    let cb = Chessboard::new();
+    cb.print();
 }

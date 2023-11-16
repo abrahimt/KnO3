@@ -1,5 +1,6 @@
 use termion::{color, style};
 
+/// Can represent any color
 enum DynamicColor { White, Black }
 impl DynamicColor {
     fn to_termion(&self) -> &dyn color::Color {
@@ -11,6 +12,9 @@ impl DynamicColor {
 }
 
 
+/// Struct representing a chessboard with piece positions and game state
+/// Each `piece` is a uint64 bitmap. Each byte represents a rank and a 1 indicates a presence in
+/// that position.
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,
@@ -31,6 +35,7 @@ pub struct Chessboard {
 }
 
 impl Chessboard {
+    /// Create a new instance of a chessboard, setup to start a new game.
     pub fn new() -> Chessboard {
         Chessboard {
             white_pawns: 0b0000000000000000000000000000000000000000000000001111111100000000,
@@ -52,6 +57,9 @@ impl Chessboard {
         }
     }
 
+
+    /// Prints the chessboard to the console
+    /// * `pretty` - Print with extra formatting
     pub fn print(&self, pretty: bool) {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -79,6 +87,10 @@ impl Chessboard {
     /* *************** */
     /* PRIVATE METHIDS */
 
+    /// Maps the pieces on the board to the character that represents them in the console.
+    /// # Return:
+    /// A vector of tuples, where each tuple contains a chess piece character and it's
+    /// correcsponding bitboard positions.
     fn get_pieces(&self) -> Vec<(char, u64)> {
         vec![
             ('P', self.white_pawns),
@@ -97,6 +109,9 @@ impl Chessboard {
     }
 
 
+    /// Formats the chesspiece to be pretty printed.
+    /// * `piece` - The piece to format, uppercase is white.
+    /// # Return: A formatted string representing the piece.
     fn format_piece(&self, piece: char) -> String {
         let dc: DynamicColor = if piece.is_uppercase() { DynamicColor::White } else { DynamicColor::Black };
         let color_code = dc.to_termion();
@@ -106,6 +121,10 @@ impl Chessboard {
     }
 
 
+    /// Formats the background color for a chess square.
+    /// * `rank` - The rank of the square.
+    /// * `file` - The file (A=0) of the square.
+    /// # Return: A formatted string representing the background color.
     fn format_background(&self, rank: usize, file: usize) -> String {
         let bg_color = match (rank + file) % 2 == 0 {
             true =>  color::Bg(color::Rgb(190, 140, 170)),
@@ -115,6 +134,9 @@ impl Chessboard {
     }
 
 
+    /// Retrieve the chess piece at a specific position on the chessboard.
+    /// * `rank` - The rank of the square.
+    /// * `file` - The file (A=0) of the square.
     fn piece_at_position(&self, rank: usize, file: usize) -> char { 
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);

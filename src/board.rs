@@ -1,7 +1,20 @@
-mod main;
-use main::min;
-use main::max;
+use termion::{color, style};
 
+/// Can represent any color
+enum DynamicColor { White, Black }
+impl DynamicColor {
+    fn to_termion(&self) -> &dyn color::Color {
+        match self {
+            DynamicColor::White => &color::White,
+            DynamicColor::Black => &color::Black
+        }
+    }
+}
+
+
+/// Struct representing a chessboard with piece positions and game state
+/// Each `piece` is a uint64 bitmap. Each byte represents a rank and a 1 indicates a presence in
+/// that position.
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,
@@ -22,29 +35,122 @@ pub struct Chessboard {
 }
 
 impl Chessboard {
-    pub fn initialize_board(&mut self) {
-        // white pieces
-        self.white_pawns = 0b0000000000000000000000000000000000000000000000001111111100000000;
-        self.white_knights = 0b0000000000000000000000000000000000000000000000000000000001000010;
-        self.white_bishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
-        self.white_king = 0b0000000000000000000000000000000000000000000000000000000000001000;
-        self.white_queen = 0b0000000000000000000000000000000000000000000000000000000000010000;
-        self.white_rooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
-        // black pieces
-        self.black_pawns = 0b0000000011111111000000000000000000000000000000000000000000000000;
-        self.black_knights = 0b0100001000000000000000000000000000000000000000000000000000000000;
-        self.black_bishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
-        self.black_king = 0b0000100000000000000000000000000000000000000000000000000000000000;
-        self.black_queen = 0b0001000000000000000000000000000000000000000000000000000000000000;
-        self.black_rooks = 0b1000000100000000000000000000000000000000000000000000000000000000;
+    /// Create a new instance of a chessboard, setup to start a new game.
+    pub fn new() -> Chessboard {
+        Chessboard {
+            white_pawns: 0b0000000000000000000000000000000000000000000000001111111100000000,
+            white_knights: 0b0000000000000000000000000000000000000000000000000000000001000010,
+            white_bishops: 0b0000000000000000000000000000000000000000000000000000000000100100,
+            white_king: 0b0000000000000000000000000000000000000000000000000000000000001000,
+            white_queen: 0b0000000000000000000000000000000000000000000000000000000000010000,
+            white_rooks: 0b0000000000000000000000000000000000000000000000000000000010000001,
+            black_pawns: 0b0000000011111111000000000000000000000000000000000000000000000000,
+            black_knights: 0b0100001000000000000000000000000000000000000000000000000000000000,
+            black_bishops: 0b0010010000000000000000000000000000000000000000000000000000000000,
+            black_king: 0b0000100000000000000000000000000000000000000000000000000000000000,
+            black_queen: 0b0001000000000000000000000000000000000000000000000000000000000000,
+            black_rooks: 0b1000000100000000000000000000000000000000000000000000000000000000,
+            white_castle: 3,
+            black_castle: 3,
+            en_passant: 0,
+            white_turn: true
+        }
     }
 
-    fn whose_turn(&self) -> &str {
-        if self.white_turn {
-            "white"
-        } else {
-            "black"
+
+    /// Prints the chessboard to the console
+    /// * `pretty` - Print with extra formatting
+    pub fn print(&self, pretty: bool) {
+        let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
+        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+        print!("  ");
+        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
+        println!();
+
+        for rank in ranks.iter() {
+            print!("{rank} ");
+            for file in 0..files.len() {
+                let piece = self.piece_at_position(*rank, file);
+                if !pretty { print!("{piece} "); continue; }
+
+                let output = format!("{}{}", self.format_background(*rank, file), self.format_piece(piece));
+                print!("{output}");
+            }
+            println!();
         }
+        return;
+    }
+
+
+
+    /* *************** */
+    /* PRIVATE METHIDS */
+
+    /// Maps the pieces on the board to the character that represents them in the console.
+    /// # Return:
+    /// A vector of tuples, where each tuple contains a chess piece character and it's
+    /// correcsponding bitboard positions.
+    fn get_pieces(&self) -> Vec<(char, u64)> {
+        vec![
+            ('P', self.white_pawns),
+            ('N', self.white_knights),
+            ('B', self.white_bishops),
+            ('K', self.white_king),
+            ('Q', self.white_queen),
+            ('R', self.white_rooks),
+            ('p', self.black_pawns),
+            ('n', self.black_knights),
+            ('b', self.black_bishops),
+            ('k', self.black_king),
+            ('q', self.black_queen),
+            ('r', self.black_rooks)
+        ]
+    }
+
+
+    /// Formats the chesspiece to be pretty printed.
+    /// * `piece` - The piece to format, uppercase is white.
+    /// # Return: A formatted string representing the piece.
+    fn format_piece(&self, piece: char) -> String {
+        let dc: DynamicColor = if piece.is_uppercase() { DynamicColor::White } else { DynamicColor::Black };
+        let color_code = dc.to_termion();
+        let spaced = format!("{:^3}", piece);
+        let colored = format!("{}{}{}", color::Fg(color_code), spaced, style::Reset);
+        return colored;
+    }
+
+
+    /// Formats the background color for a chess square.
+    /// * `rank` - The rank of the square.
+    /// * `file` - The file (A=0) of the square.
+    /// # Return: A formatted string representing the background color.
+    fn format_background(&self, rank: usize, file: usize) -> String {
+        let bg_color = match (rank + file) % 2 == 0 {
+            true =>  color::Bg(color::Rgb(190, 140, 170)),
+            false => color::Bg(color::Rgb(255, 206, 158))
+        };
+        format!("{}", bg_color)
+    }
+
+
+    /// Retrieve the chess piece at a specific position on the chessboard.
+    /// * `rank` - The rank of the square.
+    /// * `file` - The file (A=0) of the square.
+    /// # Return:
+    /// The character representation of the piece at this position.
+    /// If there is no piece here it will return a period.
+    fn piece_at_position(&self, rank: usize, file: usize) -> char { 
+        for (p_type, positions) in self.get_pieces() {
+            let rank_byte = positions >> ((rank - 1) * 8);
+            if (rank_byte & (1 << file)) != 0 { return p_type; }
+        }
+        '.'
+    }
+
+
+    fn whose_turn(&self) -> &str {
+        if self.white_turn { "white" } else { "black" }
     }
 
 

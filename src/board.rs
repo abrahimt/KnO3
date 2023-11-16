@@ -66,9 +66,9 @@ impl Chessboard {
         for rank in ranks.iter() { println!("{rank}"); }
 
         for rank in ranks.iter() {
-            let byte = (self.white_pawns >> (rank - 1) * 8) as u8;
             for file in 0..files.len() {
-                if (byte & (1 << file)) != 0 { print!("p "); } else { print!("x "); }
+                let p = self.piece_at_position(*rank, file);
+                print!("{p} ");
             }
             println!();
         }

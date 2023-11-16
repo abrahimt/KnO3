@@ -84,27 +84,27 @@ impl Chessboard {
                     file += empty_squares;
                 } else {
                     // If the character represents a piece, update the corresponding bitboard
-                    let square_index = 8 * (rank - 1) + file + 1;
+                    let square_index = 8 * (rank - 1) + file;
 
                     if piece.is_ascii_lowercase() {
                         match piece {
                             'p' => {
-                                chessboard.black_pawns |= pow(2, square_index - 1);
+                                chessboard.black_pawns |= pow(2, square_index);
                             }
                             'r' => {
-                                chessboard.black_rooks |= pow(2, square_index - 1);
+                                chessboard.black_rooks |= pow(2, square_index);
                             }
                             'b' => {
-                                chessboard.black_bishops |= pow(2, square_index - 1);
+                                chessboard.black_bishops |= pow(2, square_index);
                             }
                             'k' => {
-                                chessboard.black_king |= pow(2, square_index - 1);
+                                chessboard.black_king |= pow(2, square_index);
                             }
                             'q' => {
-                                chessboard.black_queen |= pow(2, square_index - 1);
+                                chessboard.black_queen |= pow(2, square_index);
                             }
                             'n' => {
-                                chessboard.black_knights |= pow(2, square_index - 1);
+                                chessboard.black_knights |= pow(2, square_index);
                             }
                             _ => {
                                 // Handle other lowercase characters if needed
@@ -113,22 +113,22 @@ impl Chessboard {
                     } else {
                         match piece {
                             'P' => {
-                                chessboard.white_pawns |= pow(2, square_index - 1);
+                                chessboard.white_pawns |= pow(2, square_index);
                             }
                             'R' => {
-                                chessboard.white_rooks |= pow(2, square_index - 1);
+                                chessboard.white_rooks |= pow(2, square_index);
                             }
                             'B' => {
-                                chessboard.white_bishops |= pow(2, square_index - 1);
+                                chessboard.white_bishops |= pow(2, square_index);
                             }
                             'K' => {
-                                chessboard.white_king |= pow(2, square_index - 1);
+                                chessboard.white_king |= pow(2, square_index);
                             }
                             'Q' => {
-                                chessboard.white_queen |= pow(2, square_index - 1);
+                                chessboard.white_queen |= pow(2, square_index);
                             }
                             'N' => {
-                                chessboard.white_knights |= pow(2, square_index - 1);
+                                chessboard.white_knights |= pow(2, square_index);
                             }
                             _ => {
                                 // Handle other uppercase characters if needed
@@ -194,6 +194,8 @@ impl Chessboard {
         let fen_string;
 
         // Piece placement
+        
+        
         // Whose turn
         string_array.push(if chessboard.white_turn { "w ".to_string() } else { "b ".to_string() });
 

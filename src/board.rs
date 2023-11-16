@@ -60,10 +60,10 @@ impl Chessboard {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-        print!(" ");
-        for file in files.iter() { print!("{file} "); }
-        println!();
-        for rank in ranks.iter() { println!("{rank}"); }
+        //print!(" ");
+        //for file in files.iter() { print!("{file} "); }
+        //println!();
+        //for rank in ranks.iter() { println!("{rank}"); }
 
         for rank in ranks.iter() {
             for file in 0..files.len() {

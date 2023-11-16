@@ -12,7 +12,7 @@ pub struct Chessboard {
     pub(crate) white_queen: u64,
     pub(crate) white_king: u64,
     pub(crate) white_turn: bool,
-    pub(crate) castling_rights: u32, //KQkq
+    pub(crate) castling_rights: u8, //KQkq
     pub(crate) en_passant: u32, //a square that has en passant ability (1-64) 0 means no en passant
 }
 
@@ -81,23 +81,41 @@ impl Chessboard {
         println!("Black Queen:   {:064b}", chessboard.black_queen);
         println!("Black Rooks:   {:064b}", chessboard.black_rooks);
 
-        println!("En passant:    {:064b}", chessboard.en_passant);
-        println!("Castling:    {:064b}", chessboard.castling_rights);
-        println!("White turn {}", chessboard.white_turn);
-
         //Split fen with ' ' as delimiter
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
-        println!("FEN parts whitespace split {:?}", fen_parts);
-        // ["rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR", "b", "KQkq", "e3", "0", "1"]
 
-        //Get the piece placement
+        // Piece placement
         let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
         println!("board_rows slash split {:?}", board_rows);
+        // ["rnbqkbnr", "pppppppp", "8", "8", "4P3", "8", "PPPP1PPP", "RNBQKBNR"]
+        for (mut rank, row) in board_rows.iter().rev().enumerate() {
+            rank += 1;
+            // Initialize the file (column) index
+            let mut file = 0;
 
-        //Get whose turn it is
+            // Iterate over each character in the FEN row
+            for piece in row.chars() {
+                if piece.is_digit(10) {
+                    // If the character represents an empty square, skip that number of files
+                    let empty_squares = piece.to_digit(10).unwrap() as usize;
+                    println!("empty squares: {}", empty_squares);
+                    file += empty_squares;
+                } else {
+                    // If the character represents a piece, update the corresponding bitboard
+                    let square_index = 8 * (rank - 1) + file + 1;
+                    println!("square index: {} \n piece: {}", square_index, piece);
+                    // TODO: based on the square index and the piece, update the right bitboard to reflect that.
+                    
+                    // Move to the next file
+                    file += 1;
+                }
+            }
+        }
+
+        // Whose turn it is
         chessboard.white_turn = fen_parts[1] == "w";
 
-        //Get the castling rights
+        // Castling rights
         let fen_castle = fen_parts[2];
         let mut castles = 0;
         for c in fen_castle.chars() {
@@ -109,10 +127,10 @@ impl Chessboard {
                 _ => 0b0,
             };
             castles = castles | v;
-        } 
+        }
         chessboard.castling_rights = castles;
 
-        //Get the en passant square
+        // En passant square
         let fen_passant = fen_parts[3];
         if fen_passant != "-" {
             if let (Some(col), Some(row)) = (
@@ -150,10 +168,6 @@ impl Chessboard {
         println!("Black King:    {:064b}", chessboard.black_king);
         println!("Black Queen:   {:064b}", chessboard.black_queen);
         println!("Black Rooks:   {:064b}", chessboard.black_rooks);
-
-        println!("En passant:    {:064b}", chessboard.en_passant);
-        println!("Castling:    {:064b}", chessboard.castling_rights);
-        println!("White turn {}", chessboard.white_turn);
 
         //Ignore rest of the FEN for now
         return chessboard;

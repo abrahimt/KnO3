@@ -1,3 +1,8 @@
+extern crate num_traits;
+use std::string;
+
+use num_traits::pow;
+
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,
@@ -42,11 +47,6 @@ impl Chessboard {
         }
     }
 
-    // FEN Starting position
-    // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-    // FEN After E4
-    // rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1
-
     // parser
     pub fn from_string(&self, fen: &str) -> Chessboard {
         let mut chessboard = Chessboard {
@@ -67,45 +67,74 @@ impl Chessboard {
             en_passant: 0,
         };
 
-        println!("White Pawns:   {:064b}", chessboard.white_pawns);
-        println!("White Knights: {:064b}", chessboard.white_knights);
-        println!("White Bishops: {:064b}", chessboard.white_bishops);
-        println!("White King:    {:064b}", chessboard.white_king);
-        println!("White Queen:   {:064b}", chessboard.white_queen);
-        println!("White Rooks:   {:064b}", chessboard.white_rooks);
-
-        println!("Black Pawns:   {:064b}", chessboard.black_pawns);
-        println!("Black Knights: {:064b}", chessboard.black_knights);
-        println!("Black Bishops: {:064b}", chessboard.black_bishops);
-        println!("Black King:    {:064b}", chessboard.black_king);
-        println!("Black Queen:   {:064b}", chessboard.black_queen);
-        println!("Black Rooks:   {:064b}", chessboard.black_rooks);
-
         //Split fen with ' ' as delimiter
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 
         // Piece placement
         let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
-        println!("board_rows slash split {:?}", board_rows);
-        // ["rnbqkbnr", "pppppppp", "8", "8", "4P3", "8", "PPPP1PPP", "RNBQKBNR"]
         for (mut rank, row) in board_rows.iter().rev().enumerate() {
             rank += 1;
             // Initialize the file (column) index
             let mut file = 0;
-
             // Iterate over each character in the FEN row
             for piece in row.chars() {
                 if piece.is_digit(10) {
                     // If the character represents an empty square, skip that number of files
                     let empty_squares = piece.to_digit(10).unwrap() as usize;
-                    println!("empty squares: {}", empty_squares);
                     file += empty_squares;
                 } else {
                     // If the character represents a piece, update the corresponding bitboard
                     let square_index = 8 * (rank - 1) + file + 1;
-                    println!("square index: {} \n piece: {}", square_index, piece);
-                    // TODO: based on the square index and the piece, update the right bitboard to reflect that.
-                    
+
+                    if piece.is_ascii_lowercase() {
+                        match piece {
+                            'p' => {
+                                chessboard.black_pawns |= pow(2, square_index - 1);
+                            }
+                            'r' => {
+                                chessboard.black_rooks |= pow(2, square_index - 1);
+                            }
+                            'b' => {
+                                chessboard.black_bishops |= pow(2, square_index - 1);
+                            }
+                            'k' => {
+                                chessboard.black_king |= pow(2, square_index - 1);
+                            }
+                            'q' => {
+                                chessboard.black_queen |= pow(2, square_index - 1);
+                            }
+                            'n' => {
+                                chessboard.black_knights |= pow(2, square_index - 1);
+                            }
+                            _ => {
+                                // Handle other lowercase characters if needed
+                            }
+                        }
+                    } else {
+                        match piece {
+                            'P' => {
+                                chessboard.white_pawns |= pow(2, square_index - 1);
+                            }
+                            'R' => {
+                                chessboard.white_rooks |= pow(2, square_index - 1);
+                            }
+                            'B' => {
+                                chessboard.white_bishops |= pow(2, square_index - 1);
+                            }
+                            'K' => {
+                                chessboard.white_king |= pow(2, square_index - 1);
+                            }
+                            'Q' => {
+                                chessboard.white_queen |= pow(2, square_index - 1);
+                            }
+                            'N' => {
+                                chessboard.white_knights |= pow(2, square_index - 1);
+                            }
+                            _ => {
+                                // Handle other uppercase characters if needed
+                            }
+                        }
+                    }
                     // Move to the next file
                     file += 1;
                 }
@@ -155,28 +184,66 @@ impl Chessboard {
             }
         }
 
-        println!("White Pawns:   {:064b}", chessboard.white_pawns);
-        println!("White Knights: {:064b}", chessboard.white_knights);
-        println!("White Bishops: {:064b}", chessboard.white_bishops);
-        println!("White King:    {:064b}", chessboard.white_king);
-        println!("White Queen:   {:064b}", chessboard.white_queen);
-        println!("White Rooks:   {:064b}", chessboard.white_rooks);
-
-        println!("Black Pawns:   {:064b}", chessboard.black_pawns);
-        println!("Black Knights: {:064b}", chessboard.black_knights);
-        println!("Black Bishops: {:064b}", chessboard.black_bishops);
-        println!("Black King:    {:064b}", chessboard.black_king);
-        println!("Black Queen:   {:064b}", chessboard.black_queen);
-        println!("Black Rooks:   {:064b}", chessboard.black_rooks);
-
         //Ignore rest of the FEN for now
         return chessboard;
     }
 
     // serializer
-    // pub fn to_string(cb: Chessboard) -> &str {
+    pub fn to_string(chessboard: Chessboard) -> String {
+        let mut string_array: Vec<String> = Vec::with_capacity(6);
+        let fen_string;
 
-    // }
+        // Piece placement
+        // Whose turn
+        string_array.push(if chessboard.white_turn { "w ".to_string() } else { "b ".to_string() });
+
+        // Castling rights
+        string_array.push( match chessboard.castling_rights {
+            0 => "- ".to_string(),
+            rights => {
+                let rights_string = "";
+
+                if rights & 0b1000 != 0 {
+                    rights_string.to_string().push('K');
+                }
+                if rights & 0b0100 != 0 {
+                    rights_string.to_string().push('Q');
+                }
+                if rights & 0b0010 != 0 {
+                    rights_string.to_string().push('k');
+                }
+                if rights & 0b0001 != 0 {
+                    rights_string.to_string().push('q');
+                }
+
+                rights_string.to_string()
+            }
+        });
+
+        // En passant
+        if chessboard.en_passant == 0 {
+            string_array.push("- ".to_string());
+        } else {
+            let row = (chessboard.en_passant as u8 - 1) / 8 + 1;
+            let col = (chessboard.en_passant as u8 - 1) % 8;
+        
+            let col_char = ('A' as u8 + col) as char;
+            let row_str = row.to_string();
+        
+            string_array.push(format!("{}{} ", col_char, row_str));
+        }
+
+        // Set the rest to default
+        string_array.push("0 ".to_string());
+        string_array.push("1".to_string());
+
+        // Combine array elements into a single string
+        fen_string = string_array.concat();
+        println!("{:?}", fen_string);
+        fen_string
+    }
+
+
 
     //MINIMAX Function Pseudo-code
     // fn minimax(position, depth, alpha, beta, maximixing_player) {

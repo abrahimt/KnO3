@@ -74,6 +74,31 @@ impl Chessboard {
         }
     }
 
+    pub fn pretty_print(&self) {
+        let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
+        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+        print!("  ");
+        for file in files.iter() { print!("{file} "); }
+        println!();
+
+        for rank in ranks.iter() {
+            print!("{rank} ");
+            for file in 0..files.len() {
+                let p = self.piece_at_position(*rank, file);
+                let np = self.format_piece(p);
+
+                print!("{np} ");
+            }
+            println!();
+        }
+    }
+
+    fn format_piece(&self, piece: char) -> String {
+        let mut result = format!("{:^3}", piece);
+        return result;
+    }
+
     fn piece_at_position(&self, rank: usize, file: usize) -> char{ 
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);

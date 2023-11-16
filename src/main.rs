@@ -5,6 +5,7 @@ use board::Chessboard;
 fn main() {
     let cb = Chessboard::new();
     cb.print();
+    cb.pretty_print();
 }
 
 

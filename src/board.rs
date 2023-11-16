@@ -74,6 +74,14 @@ impl Chessboard {
         }
     }
 
+    fn piece_at_position(&self, rank: usize, file: usize) -> char{ 
+        for (p_type, positions) in self.get_pieces() {
+            let rank_byte = positions >> ((rank - 1) * 8);
+            if (rank_byte & (1 << file)) != 0 { return p_type; }
+        }
+        '.'
+    }
+
     fn whose_turn(&self) -> &str {
         if self.white_turn {
             "white"

@@ -22,21 +22,68 @@ pub struct Chessboard {
 }
 
 impl Chessboard {
-    pub fn initialize_board(&mut self) {
-        // white pieces
-        self.white_pawns = 0b0000000000000000000000000000000000000000000000001111111100000000;
-        self.white_knights = 0b0000000000000000000000000000000000000000000000000000000001000010;
-        self.white_bishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
-        self.white_king = 0b0000000000000000000000000000000000000000000000000000000000001000;
-        self.white_queen = 0b0000000000000000000000000000000000000000000000000000000000010000;
-        self.white_rooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
-        // black pieces
-        self.black_pawns = 0b0000000011111111000000000000000000000000000000000000000000000000;
-        self.black_knights = 0b0100001000000000000000000000000000000000000000000000000000000000;
-        self.black_bishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
-        self.black_king = 0b0000100000000000000000000000000000000000000000000000000000000000;
-        self.black_queen = 0b0001000000000000000000000000000000000000000000000000000000000000;
-        self.black_rooks = 0b1000000100000000000000000000000000000000000000000000000000000000;
+    pub fn new() -> Chessboard {
+        Chessboard {
+            white_pawns: 0b0000000000000000000000000000000000000000000000001111111100000000,
+            white_knights: 0b0000000000000000000000000000000000000000000000000000000001000010,
+            white_bishops: 0b0000000000000000000000000000000000000000000000000000000000100100,
+            white_king: 0b0000000000000000000000000000000000000000000000000000000000001000,
+            white_queen: 0b0000000000000000000000000000000000000000000000000000000000010000,
+            white_rooks: 0b0000000000000000000000000000000000000000000000000000000010000001,
+            black_pawns: 0b0000000011111111000000000000000000000000000000000000000000000000,
+            black_knights: 0b0100001000000000000000000000000000000000000000000000000000000000,
+            black_bishops: 0b0010010000000000000000000000000000000000000000000000000000000000,
+            black_king: 0b0000100000000000000000000000000000000000000000000000000000000000,
+            black_queen: 0b0001000000000000000000000000000000000000000000000000000000000000,
+            black_rooks: 0b1000000100000000000000000000000000000000000000000000000000000000,
+            white_castle: 3,
+            black_castle: 3,
+            en_passant: 0,
+            white_turn: true
+        }
+    }
+
+    fn get_pieces(&self) -> Vec<(char, u64)> {
+        vec![
+            ('P', self.white_pawns),
+            ('N', self.white_knights),
+            ('B', self.white_bishops),
+            ('K', self.white_king),
+            ('Q', self.white_queen),
+            ('R', self.white_rooks),
+            ('p', self.black_pawns),
+            ('n', self.black_knights),
+            ('b', self.black_bishops),
+            ('k', self.black_king),
+            ('q', self.black_queen),
+            ('r', self.black_rooks)
+        ]
+    }
+
+    pub fn print(&self) {
+        let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
+        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+        //print!(" ");
+        //for file in files.iter() { print!("{file} "); }
+        //println!();
+        //for rank in ranks.iter() { println!("{rank}"); }
+
+        for rank in ranks.iter() {
+            for file in 0..files.len() {
+                let p = self.piece_at_position(*rank, file);
+                print!("{p} ");
+            }
+            println!();
+        }
+    }
+
+    fn piece_at_position(&self, rank: usize, file: usize) -> char{ 
+        for (p_type, positions) in self.get_pieces() {
+            let rank_byte = positions >> ((rank - 1) * 8);
+            if (rank_byte & (1 << file)) != 0 { return p_type; }
+        }
+        '.'
     }
 
     fn whose_turn(&self) -> &str {

@@ -5,7 +5,7 @@ impl DynamicColor {
     fn to_termion(&self) -> &dyn color::Color {
         match self {
             DynamicColor::White => &color::White,
-            DynamicColor::Black => &color::Green
+            DynamicColor::Black => &color::Black
         }
     }
 }
@@ -99,8 +99,9 @@ impl Chessboard {
             for file in 0..files.len() {
                 let p = self.piece_at_position(*rank, file);
                 let np = self.format_piece(p);
+                let bk = format!("{}{}", self.format_background(*rank, file), np);
 
-                print!("{np} ");
+                print!("{bk} ");
             }
             println!();
         }
@@ -115,7 +116,15 @@ impl Chessboard {
         return colored;
     }
 
-    fn piece_at_position(&self, rank: usize, file: usize) -> char{ 
+    fn format_background(&self, rank: usize, file: usize) -> String {
+        let bg_color = match (rank + file) % 2 == 0 {
+            true =>  color::Bg(color::Rgb(190, 140, 170)),
+            false => color::Bg(color::Rgb(255, 206, 158))
+        };
+        format!("{}", bg_color)
+    }
+
+    fn piece_at_position(&self, rank: usize, file: usize) -> char { 
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);
             if (rank_byte & (1 << file)) != 0 { return p_type; }

@@ -137,6 +137,9 @@ impl Chessboard {
     /// Retrieve the chess piece at a specific position on the chessboard.
     /// * `rank` - The rank of the square.
     /// * `file` - The file (A=0) of the square.
+    /// # Return:
+    /// The character representation of the piece at this position.
+    /// If there is no piece here it will return a period.
     fn piece_at_position(&self, rank: usize, file: usize) -> char { 
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);

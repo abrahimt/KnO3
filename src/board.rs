@@ -1,3 +1,15 @@
+use termion::{color, style};
+
+enum DynamicColor { White, Black }
+impl DynamicColor {
+    fn to_termion(&self) -> &dyn color::Color {
+        match self {
+            DynamicColor::White => &color::White,
+            DynamicColor::Black => &color::Black
+        }
+    }
+}
+
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,
@@ -94,9 +106,13 @@ impl Chessboard {
         }
     }
 
+
     fn format_piece(&self, piece: char) -> String {
-        let mut result = format!("{:^3}", piece);
-        return result;
+        let dc: DynamicColor = if piece.is_uppercase() { DynamicColor::White } else { DynamicColor::Black };
+        let color_code = dc.to_termion();
+        let spaced = format!("{:^3}", piece);
+        let colored = format!("{}{}{}", color::Fg(color_code), spaced, style::Reset);
+        return colored;
     }
 
     fn piece_at_position(&self, rank: usize, file: usize) -> char{ 

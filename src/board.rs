@@ -17,7 +17,7 @@ pub struct Chessboard {
     pub(crate) white_king: u64,
     pub(crate) white_turn: bool,
     pub(crate) castling_rights: u8, //KQkq
-    pub(crate) en_passant: u8,   //a square that has en passant ability (1-64)
+    pub(crate) en_passant: u8,   //a square that has en passant ability (1-64) 0 means no en passant
 }
 
 impl Chessboard {
@@ -75,7 +75,7 @@ impl Chessboard {
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 
         //Get the piece placement
-
+        
 
         //Get whose turn it is
         chessboard.white_turn = fen_parts[1] == "w";
@@ -95,23 +95,31 @@ impl Chessboard {
         //Get the en passant square
         // en passant square = take column value and then add 8 * row number
         let fen_passant = fen_parts[3];
-        for col in fen_passant.chars() {
-            match col {
+        if fen_passant != "-" {
+            let col = fen_passant.chars().next().unwrap(); // Extract the first character
+            let row = fen_passant.chars().nth(1).unwrap(); // Extract the second character
+            let col_value = match col {
+                'a' | 'A' => 1,
+                'b' | 'B' => 2,
+                'c' | 'C' => 3,
+                'd' | 'D' => 4,
+                'e' | 'E' => 5,
+                'f' | 'F' => 6,
+                'g' | 'G' => 7,
+                'h' | 'H' => 8,
                 '-' => 0,
-                'A' => 1,
-                'B' => 2,
-                'C' => 3,
-                'D' => 4,
-                'E' => 5,
-                'F' => 6,
-                'G' => 7,
-                'H' => 8,
-            }
+            };
+            let row_value = match row.to_digit(10) {
+                Some(r) if r >= 1 && r <= 8 => r as u64
+            };
+    
+            chessboard.en_passant = col_value + 8 * (row_value - 1);
         }
 
-        //Ignore rest for now
+        //Ignore rest of the FEN for now
 
     }
+
     // serializer
     pub fn to_string(cb: Chessboard) -> &str {
 

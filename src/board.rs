@@ -5,7 +5,7 @@ impl DynamicColor {
     fn to_termion(&self) -> &dyn color::Color {
         match self {
             DynamicColor::White => &color::White,
-            DynamicColor::Black => &color::Black
+            DynamicColor::Black => &color::Green
         }
     }
 }
@@ -91,7 +91,7 @@ impl Chessboard {
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
         print!("  ");
-        for file in files.iter() { print!("{file} "); }
+        for file in files.iter() { print!("{} ", self.format_piece(*file)); }
         println!();
 
         for rank in ranks.iter() {

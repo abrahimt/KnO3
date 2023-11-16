@@ -4,8 +4,8 @@ use board::Chessboard;
 
 fn main() {
     let cb = Chessboard::new();
-    cb.print();
-    cb.pretty_print();
+    //cb.print(true);
+    cb.print(true);
 }
 
 

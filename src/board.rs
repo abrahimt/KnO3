@@ -68,43 +68,26 @@ impl Chessboard {
         ]
     }
 
-    pub fn print(&self) {
+    pub fn print(&self, pretty: bool) {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
         print!("  ");
-        for file in files.iter() { print!("{file} "); }
+        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
         println!();
 
         for rank in ranks.iter() {
             print!("{rank} ");
             for file in 0..files.len() {
-                let p = self.piece_at_position(*rank, file);
-                print!("{p} ");
+                let piece = self.piece_at_position(*rank, file);
+                if !pretty { print!("{piece} "); continue; }
+
+                let output = format!("{}{}", self.format_background(*rank, file), self.format_piece(piece));
+                print!("{output}");
             }
             println!();
         }
-    }
-
-    pub fn pretty_print(&self) {
-        let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
-        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
-        print!("  ");
-        for file in files.iter() { print!("{} ", self.format_piece(*file)); }
-        println!();
-
-        for rank in ranks.iter() {
-            print!("{rank} ");
-            for file in 0..files.len() {
-                let p = self.piece_at_position(*rank, file);
-                let np = self.format_piece(p);
-                let bk = format!("{}{}", self.format_background(*rank, file), np);
-
-                print!("{bk} ");
-            }
-            println!();
-        }
+        return;
     }
 
 

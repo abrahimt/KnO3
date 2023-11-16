@@ -16,8 +16,7 @@ pub struct Chessboard {
     pub(crate) white_queen: u64,
     pub(crate) white_king: u64,
     pub(crate) white_turn: bool,
-    pub(crate) white_castle: u8, //11, 01 (representing sides of the board)
-    pub(crate) black_castle: u8, //11, 01 (representing sides of the board)
+    pub(crate) castling_rights: u8, //KQkq
     pub(crate) en_passant: u8,   //a square that has en passant ability (1-64)
 }
 
@@ -47,6 +46,76 @@ impl Chessboard {
         }
     }
 
+    // FEN Starting position
+    // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+    // FEN After E4
+    // rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1
+
+    // parser
+    pub fn from_string(fen: &str) -> Chessboard {
+        let mut chessboard = Chessboard {
+            black_pawns: 0,
+            black_rooks: 0,
+            black_knights: 0,
+            black_bishops: 0,
+            black_queen: 0,
+            black_king: 0,
+            white_pawns: 0,
+            white_rooks: 0,
+            white_knights: 0,
+            white_bishops: 0,
+            white_queen: 0,
+            white_king: 0,
+            white_castle: 0,
+            black_castle: 0,
+            white_turn: true,
+            en_passant: 0,
+        };
+        //Split fen with ' ' as delimiter
+        let fen_parts: Vec<&str> = fen.split_whitespace().collect();
+
+        //Get the piece placement
+
+
+        //Get whose turn it is
+        chessboard.white_turn = fen_parts[1] == "w";
+
+        //Get the castling rights
+        let fen_castle = fen_parts[2];
+        for c in fen_castle.chars() {
+            match c {
+                '-' => chessboard.castling_rights = 0b0000,
+                'K' => chessboard.castling_rights |= 0b1000,
+                'Q' => chessboard.castling_rights |= 0b0100,
+                'k' => chessboard.castling_rights |= 0b0010,
+                'q' => chessboard.castling_rights |= 0b0001,
+            }
+        }
+
+        //Get the en passant square
+        // en passant square = take column value and then add 8 * row number
+        let fen_passant = fen_parts[3];
+        for col in fen_passant.chars() {
+            match col {
+                '-' => 0,
+                'A' => 1,
+                'B' => 2,
+                'C' => 3,
+                'D' => 4,
+                'E' => 5,
+                'F' => 6,
+                'G' => 7,
+                'H' => 8,
+            }
+        }
+
+        //Ignore rest for now
+
+    }
+    // serializer
+    pub fn to_string(cb: Chessboard) -> &str {
+
+    }
 
     //MINIMAX Function Pseudo-code
     // fn minimax(position, depth, alpha, beta, maximixing_player) {

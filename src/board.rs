@@ -1,7 +1,3 @@
-mod main;
-use main::min;
-use main::max;
-
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,
@@ -16,8 +12,8 @@ pub struct Chessboard {
     pub(crate) white_queen: u64,
     pub(crate) white_king: u64,
     pub(crate) white_turn: bool,
-    pub(crate) castling_rights: u8, //KQkq
-    pub(crate) en_passant: u8,   //a square that has en passant ability (1-64) 0 means no en passant
+    pub(crate) castling_rights: u32, //KQkq
+    pub(crate) en_passant: u32, //a square that has en passant ability (1-64) 0 means no en passant
 }
 
 impl Chessboard {
@@ -52,7 +48,7 @@ impl Chessboard {
     // rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1
 
     // parser
-    pub fn from_string(fen: &str) -> Chessboard {
+    pub fn from_string(&self, fen: &str) -> Chessboard {
         let mut chessboard = Chessboard {
             black_pawns: 0,
             black_rooks: 0,
@@ -66,64 +62,107 @@ impl Chessboard {
             white_bishops: 0,
             white_queen: 0,
             white_king: 0,
-            white_castle: 0,
-            black_castle: 0,
+            castling_rights: 0,
             white_turn: true,
             en_passant: 0,
         };
+
+        println!("White Pawns:   {:064b}", chessboard.white_pawns);
+        println!("White Knights: {:064b}", chessboard.white_knights);
+        println!("White Bishops: {:064b}", chessboard.white_bishops);
+        println!("White King:    {:064b}", chessboard.white_king);
+        println!("White Queen:   {:064b}", chessboard.white_queen);
+        println!("White Rooks:   {:064b}", chessboard.white_rooks);
+
+        println!("Black Pawns:   {:064b}", chessboard.black_pawns);
+        println!("Black Knights: {:064b}", chessboard.black_knights);
+        println!("Black Bishops: {:064b}", chessboard.black_bishops);
+        println!("Black King:    {:064b}", chessboard.black_king);
+        println!("Black Queen:   {:064b}", chessboard.black_queen);
+        println!("Black Rooks:   {:064b}", chessboard.black_rooks);
+
+        println!("En passant:    {:064b}", chessboard.en_passant);
+        println!("Castling:    {:064b}", chessboard.castling_rights);
+        println!("White turn {}", chessboard.white_turn);
+
         //Split fen with ' ' as delimiter
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
+        println!("FEN parts whitespace split {:?}", fen_parts);
+        // ["rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR", "b", "KQkq", "e3", "0", "1"]
 
         //Get the piece placement
-        
+        let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
+        println!("board_rows slash split {:?}", board_rows);
 
         //Get whose turn it is
         chessboard.white_turn = fen_parts[1] == "w";
 
         //Get the castling rights
         let fen_castle = fen_parts[2];
+        let mut castles = 0;
         for c in fen_castle.chars() {
-            match c {
-                '-' => chessboard.castling_rights = 0b0000,
-                'K' => chessboard.castling_rights |= 0b1000,
-                'Q' => chessboard.castling_rights |= 0b0100,
-                'k' => chessboard.castling_rights |= 0b0010,
-                'q' => chessboard.castling_rights |= 0b0001,
+            let v = match c {
+                'K' => 0b1000,
+                'Q' => 0b0100,
+                'k' => 0b0010,
+                'q' => 0b0001,
+                _ => 0b0,
+            };
+            castles = castles | v;
+        } 
+        chessboard.castling_rights = castles;
+
+        //Get the en passant square
+        let fen_passant = fen_parts[3];
+        if fen_passant != "-" {
+            if let (Some(col), Some(row)) = (
+                fen_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
+                fen_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
+            ) {
+                if (1..=8).contains(&row) {
+                    let col_value = match col {
+                        'A' => 1,
+                        'B' => 2,
+                        'C' => 3,
+                        'D' => 4,
+                        'E' => 5,
+                        'F' => 6,
+                        'G' => 7,
+                        'H' => 8,
+                        _ => 0, // Handle unexpected characters
+                    };
+                    //gives a number (1-64)
+                    chessboard.en_passant = (9 - col_value) + 8 * (row - 1);
+                }
             }
         }
 
-        //Get the en passant square
-        // en passant square = take column value and then add 8 * row number
-        let fen_passant = fen_parts[3];
-        if fen_passant != "-" {
-            let col = fen_passant.chars().next().unwrap(); // Extract the first character
-            let row = fen_passant.chars().nth(1).unwrap(); // Extract the second character
-            let col_value = match col {
-                'a' | 'A' => 1,
-                'b' | 'B' => 2,
-                'c' | 'C' => 3,
-                'd' | 'D' => 4,
-                'e' | 'E' => 5,
-                'f' | 'F' => 6,
-                'g' | 'G' => 7,
-                'h' | 'H' => 8,
-                '-' => 0,
-            };
-            let row_value = match row.to_digit(10) {
-                Some(r) if r >= 1 && r <= 8 => r as u64
-            };
-    
-            chessboard.en_passant = col_value + 8 * (row_value - 1);
-        }
+        println!("White Pawns:   {:064b}", chessboard.white_pawns);
+        println!("White Knights: {:064b}", chessboard.white_knights);
+        println!("White Bishops: {:064b}", chessboard.white_bishops);
+        println!("White King:    {:064b}", chessboard.white_king);
+        println!("White Queen:   {:064b}", chessboard.white_queen);
+        println!("White Rooks:   {:064b}", chessboard.white_rooks);
+
+        println!("Black Pawns:   {:064b}", chessboard.black_pawns);
+        println!("Black Knights: {:064b}", chessboard.black_knights);
+        println!("Black Bishops: {:064b}", chessboard.black_bishops);
+        println!("Black King:    {:064b}", chessboard.black_king);
+        println!("Black Queen:   {:064b}", chessboard.black_queen);
+        println!("Black Rooks:   {:064b}", chessboard.black_rooks);
+
+        println!("En passant:    {:064b}", chessboard.en_passant);
+        println!("Castling:    {:064b}", chessboard.castling_rights);
+        println!("White turn {}", chessboard.white_turn);
 
         //Ignore rest of the FEN for now
-
+        return chessboard;
     }
 
     // serializer
-    pub fn to_string(cb: Chessboard) -> &str {
+    // pub fn to_string(cb: Chessboard) -> &str {
 
-    }
+    // }
 
     //MINIMAX Function Pseudo-code
     // fn minimax(position, depth, alpha, beta, maximixing_player) {

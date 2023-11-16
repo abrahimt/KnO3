@@ -10,6 +10,7 @@ impl DynamicColor {
     }
 }
 
+
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,
@@ -51,23 +52,6 @@ impl Chessboard {
         }
     }
 
-    fn get_pieces(&self) -> Vec<(char, u64)> {
-        vec![
-            ('P', self.white_pawns),
-            ('N', self.white_knights),
-            ('B', self.white_bishops),
-            ('K', self.white_king),
-            ('Q', self.white_queen),
-            ('R', self.white_rooks),
-            ('p', self.black_pawns),
-            ('n', self.black_knights),
-            ('b', self.black_bishops),
-            ('k', self.black_king),
-            ('q', self.black_queen),
-            ('r', self.black_rooks)
-        ]
-    }
-
     pub fn print(&self, pretty: bool) {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -91,6 +75,28 @@ impl Chessboard {
     }
 
 
+
+    /* *************** */
+    /* PRIVATE METHIDS */
+
+    fn get_pieces(&self) -> Vec<(char, u64)> {
+        vec![
+            ('P', self.white_pawns),
+            ('N', self.white_knights),
+            ('B', self.white_bishops),
+            ('K', self.white_king),
+            ('Q', self.white_queen),
+            ('R', self.white_rooks),
+            ('p', self.black_pawns),
+            ('n', self.black_knights),
+            ('b', self.black_bishops),
+            ('k', self.black_king),
+            ('q', self.black_queen),
+            ('r', self.black_rooks)
+        ]
+    }
+
+
     fn format_piece(&self, piece: char) -> String {
         let dc: DynamicColor = if piece.is_uppercase() { DynamicColor::White } else { DynamicColor::Black };
         let color_code = dc.to_termion();
@@ -98,6 +104,7 @@ impl Chessboard {
         let colored = format!("{}{}{}", color::Fg(color_code), spaced, style::Reset);
         return colored;
     }
+
 
     fn format_background(&self, rank: usize, file: usize) -> String {
         let bg_color = match (rank + file) % 2 == 0 {
@@ -107,6 +114,7 @@ impl Chessboard {
         format!("{}", bg_color)
     }
 
+
     fn piece_at_position(&self, rank: usize, file: usize) -> char { 
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);
@@ -115,12 +123,9 @@ impl Chessboard {
         '.'
     }
 
+
     fn whose_turn(&self) -> &str {
-        if self.white_turn {
-            "white"
-        } else {
-            "black"
-        }
+        if self.white_turn { "white" } else { "black" }
     }
 
 

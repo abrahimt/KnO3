@@ -1,7 +1,3 @@
-mod main;
-use main::min;
-use main::max;
-
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,
@@ -64,12 +60,12 @@ impl Chessboard {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-        //print!(" ");
-        //for file in files.iter() { print!("{file} "); }
-        //println!();
-        //for rank in ranks.iter() { println!("{rank}"); }
+        print!("  ");
+        for file in files.iter() { print!("{file} "); }
+        println!();
 
         for rank in ranks.iter() {
+            print!("{rank} ");
             for file in 0..files.len() {
                 let p = self.piece_at_position(*rank, file);
                 print!("{p} ");

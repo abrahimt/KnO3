@@ -22,6 +22,9 @@ pub struct Chessboard {
 }
 
 impl Chessboard {
+
+    // Initializes the chessboard with the starting positions of all the pieces
+    // and resets turn, castling, and en passant.
     pub fn initialize_board(&mut self) {
         // white pieces
         self.white_pawns = 0b0000000000000000000000000000000000000000000000001111111100000000;
@@ -37,15 +40,20 @@ impl Chessboard {
         self.black_king = 0b0000100000000000000000000000000000000000000000000000000000000000;
         self.black_queen = 0b0001000000000000000000000000000000000000000000000000000000000000;
         self.black_rooks = 0b1000000100000000000000000000000000000000000000000000000000000000;
+        // turn
+        self.white_turn = true;
+        // castling
+        self.castling_rights = 0b1111;
+        // en_passant
+        self.en_passant = 0;
     }
 
+    // This function returns a string representing whose turn it is in the chess game.
+    // It checks the boolean flag `white_turn` to determine if it's white's turn or black's turn.
     fn whose_turn(&self) -> &str {
-        if self.white_turn {
-            "white"
-        } else {
-            "black"
-        }
+        if self.white_turn { "white" } else { "black" }
     }
+    
 
     // parser
     pub fn from_string(&self, fen: &str) -> Chessboard {
@@ -226,13 +234,12 @@ impl Chessboard {
         if chessboard.en_passant == 0 {
             string_array.push("- ".to_string());
         } else {
-            let row = (chessboard.en_passant as u8 - 1) / 8 + 1;
-            let col = (chessboard.en_passant as u8 - 1) % 8;
+            let row = (input - 1) / 8 + 1;
+            let col = (input - 1) % 8;
         
-            let col_char = ('A' as u8 + col) as char;
-            let row_str = row.to_string();
+            let column_char = (b'A' + col) as char;
         
-            string_array.push(format!("{}{} ", col_char, row_str));
+            format!("{}{}", column_char, row)
         }
 
         // Set the rest to default

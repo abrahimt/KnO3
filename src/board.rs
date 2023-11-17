@@ -167,7 +167,7 @@ impl Chessboard {
         // Ignore the rest of the FEN string for now
         return chessboard;
     }
-
+    
     // Serializer function that converts a Chessboard struct to a FEN (Forsyth–Edwards Notation) string
     pub fn to_string(chessboard: Chessboard) -> String {
         // Initialize a vector to store FEN components as strings
@@ -175,7 +175,60 @@ impl Chessboard {
         let fen_string;
 
         // Piece placement
+        for rank in (1..=8).rev() {
+            let mut empty_squares = 0;
+            let mut row_string = String::new();
 
+            // Iterate through each file (column) in the rank
+            for file in 1..=8 {
+                let square_index = (rank - 1) * 8 + (file - 1);
+
+                // Determine the piece on the current square
+                let piece = if (chessboard.white_pawns >> square_index) & 1 != 0 {
+                    'P'
+                } else if (chessboard.white_rooks >> square_index) & 1 != 0 {
+                    'R'
+                } else if (chessboard.white_knights >> square_index) & 1 != 0 {
+                    'N'
+                } else if (chessboard.white_bishops >> square_index) & 1 != 0 {
+                    'B'
+                } else if (chessboard.white_queen >> square_index) & 1 != 0 {
+                    'Q'
+                } else if (chessboard.white_king >> square_index) & 1 != 0 {
+                    'K'
+                } else if (chessboard.black_pawns >> square_index) & 1 != 0 {
+                    'p'
+                } else if (chessboard.black_rooks >> square_index) & 1 != 0 {
+                    'r'
+                } else if (chessboard.black_knights >> square_index) & 1 != 0 {
+                    'n'
+                } else if (chessboard.black_bishops >> square_index) & 1 != 0 {
+                    'b'
+                } else if (chessboard.black_queen >> square_index) & 1 != 0 {
+                    'q'
+                } else if (chessboard.black_king >> square_index) & 1 != 0 {
+                    'k'
+                } else {
+                    empty_squares += 1;
+                    continue;
+                };
+
+                // Handle empty squares and append piece to the row string
+                if empty_squares > 0 {
+                    row_string.push_str(&empty_squares.to_string());
+                    empty_squares = 0;
+                }
+                row_string.push(piece);
+            }
+
+            // Append the count of empty squares at the end of the row string
+            if empty_squares > 0 {
+                row_string.push_str(&empty_squares.to_string());
+            }
+
+            // Add the row string to the FEN components vector
+            string_array.push(row_string);
+        }
 
         // Whose turn
         string_array.push(if chessboard.white_turn {
@@ -190,6 +243,7 @@ impl Chessboard {
             rights => {
                 let mut rights_string = String::new();
 
+                // Check individual castling rights and append to rights_string
                 if rights & 0b1000 != 0 {
                     rights_string.push('K');
                 }

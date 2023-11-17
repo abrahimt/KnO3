@@ -54,147 +54,117 @@ impl Chessboard {
         if self.white_turn { "white" } else { "black" }
     }
     
+// Parser function that converts a FEN (Forsyth–Edwards Notation) string to a Chessboard struct
+pub fn from_string(&self, fen: &str) -> Chessboard {
+    // Initialize a new Chessboard with default values
+    let mut chessboard = Chessboard {
+        // Initialize bitboards for each piece and other game state variables
+        black_pawns: 0,
+        black_rooks: 0,
+        black_knights: 0,
+        black_bishops: 0,
+        black_queen: 0,
+        black_king: 0,
+        white_pawns: 0,
+        white_rooks: 0,
+        white_knights: 0,
+        white_bishops: 0,
+        white_queen: 0,
+        white_king: 0,
+        castling_rights: 0,
+        white_turn: true,
+        en_passant: 0,
+    };
 
-    // parser
-    pub fn from_string(&self, fen: &str) -> Chessboard {
-        let mut chessboard = Chessboard {
-            black_pawns: 0,
-            black_rooks: 0,
-            black_knights: 0,
-            black_bishops: 0,
-            black_queen: 0,
-            black_king: 0,
-            white_pawns: 0,
-            white_rooks: 0,
-            white_knights: 0,
-            white_bishops: 0,
-            white_queen: 0,
-            white_king: 0,
-            castling_rights: 0,
-            white_turn: true,
-            en_passant: 0,
-        };
+    // Split the FEN string into parts using ' ' as the delimiter
+    let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 
-        //Split fen with ' ' as delimiter
-        let fen_parts: Vec<&str> = fen.split_whitespace().collect();
-
-        // Piece placement
-        let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
-        for (mut rank, row) in board_rows.iter().rev().enumerate() {
-            rank += 1;
-            // Initialize the file (column) index
-            let mut file = 0;
-            // Iterate over each character in the FEN row
-            for piece in row.chars() {
-                if piece.is_digit(10) {
-                    // If the character represents an empty square, skip that number of files
-                    let empty_squares = piece.to_digit(10).unwrap() as usize;
-                    file += empty_squares;
-                } else {
-                    // If the character represents a piece, update the corresponding bitboard
-                    let square_index = 8 * (rank - 1) + file;
-
-                    if piece.is_ascii_lowercase() {
-                        match piece {
-                            'p' => {
-                                chessboard.black_pawns |= pow(2, square_index);
-                            }
-                            'r' => {
-                                chessboard.black_rooks |= pow(2, square_index);
-                            }
-                            'b' => {
-                                chessboard.black_bishops |= pow(2, square_index);
-                            }
-                            'k' => {
-                                chessboard.black_king |= pow(2, square_index);
-                            }
-                            'q' => {
-                                chessboard.black_queen |= pow(2, square_index);
-                            }
-                            'n' => {
-                                chessboard.black_knights |= pow(2, square_index);
-                            }
-                            _ => {
-                                // Handle other lowercase characters if needed
-                            }
-                        }
-                    } else {
-                        match piece {
-                            'P' => {
-                                chessboard.white_pawns |= pow(2, square_index);
-                            }
-                            'R' => {
-                                chessboard.white_rooks |= pow(2, square_index);
-                            }
-                            'B' => {
-                                chessboard.white_bishops |= pow(2, square_index);
-                            }
-                            'K' => {
-                                chessboard.white_king |= pow(2, square_index);
-                            }
-                            'Q' => {
-                                chessboard.white_queen |= pow(2, square_index);
-                            }
-                            'N' => {
-                                chessboard.white_knights |= pow(2, square_index);
-                            }
-                            _ => {
-                                // Handle other uppercase characters if needed
-                            }
-                        }
+    // Parse the piece placement part of the FEN string
+    let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
+    for (mut rank, row) in board_rows.iter().rev().enumerate() {
+        rank += 1;
+        let mut file = 0; // Initialize the file (column) index
+        for piece in row.chars() {
+            if piece.is_digit(10) {
+                let empty_squares = piece.to_digit(10).unwrap() as usize;
+                file += empty_squares; // Skip empty squares
+            } else {
+                let square_index = 8 * (rank - 1) + file;
+                // Update the corresponding bitboard based on the piece type and color
+                if piece.is_ascii_lowercase() {
+                    // Black pieces
+                    match piece {
+                        'p' => chessboard.black_pawns |= pow(2, square_index),
+                        'r' => chessboard.black_rooks |= pow(2, square_index),
+                        'b' => chessboard.black_bishops |= pow(2, square_index),
+                        'k' => chessboard.black_king |= pow(2, square_index),
+                        'q' => chessboard.black_queen |= pow(2, square_index),
+                        'n' => chessboard.black_knights |= pow(2, square_index),
+                        _ => { /* Handle other lowercase characters if needed */ }
                     }
-                    // Move to the next file
-                    file += 1;
+                } else {
+                    // White pieces
+                    match piece {
+                        'P' => chessboard.white_pawns |= pow(2, square_index),
+                        'R' => chessboard.white_rooks |= pow(2, square_index),
+                        'B' => chessboard.white_bishops |= pow(2, square_index),
+                        'K' => chessboard.white_king |= pow(2, square_index),
+                        'Q' => chessboard.white_queen |= pow(2, square_index),
+                        'N' => chessboard.white_knights |= pow(2, square_index),
+                        _ => { /* Handle other uppercase characters if needed */ }
+                    }
                 }
+                file += 1; // Move to the next file
             }
         }
-
-        // Whose turn it is
-        chessboard.white_turn = fen_parts[1] == "w";
-
-        // Castling rights
-        let fen_castle = fen_parts[2];
-        let mut castles = 0;
-        for c in fen_castle.chars() {
-            let v = match c {
-                'K' => 0b1000,
-                'Q' => 0b0100,
-                'k' => 0b0010,
-                'q' => 0b0001,
-                _ => 0b0,
-            };
-            castles = castles | v;
-        }
-        chessboard.castling_rights = castles;
-
-        // En passant square
-        let fen_passant = fen_parts[3];
-        if fen_passant != "-" {
-            if let (Some(col), Some(row)) = (
-                fen_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
-                fen_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
-            ) {
-                if (1..=8).contains(&row) {
-                    let col_value = match col {
-                        'A' => 1,
-                        'B' => 2,
-                        'C' => 3,
-                        'D' => 4,
-                        'E' => 5,
-                        'F' => 6,
-                        'G' => 7,
-                        'H' => 8,
-                        _ => 0, // Handle unexpected characters
-                    };
-                    //gives a number (1-64)
-                    chessboard.en_passant = (9 - col_value) + 8 * (row - 1);
-                }
-            }
-        }
-
-        //Ignore rest of the FEN for now
-        return chessboard;
     }
+
+    // Parse whose turn it is
+    chessboard.white_turn = fen_parts[1] == "w";
+
+    // Parse castling rights
+    let fen_castle = fen_parts[2];
+    let mut castles = 0;
+    for c in fen_castle.chars() {
+        let v = match c {
+            'K' => 0b1000,
+            'Q' => 0b0100,
+            'k' => 0b0010,
+            'q' => 0b0001,
+            _ => 0b0,
+        };
+        castles |= v;
+    }
+    chessboard.castling_rights = castles;
+
+    // Parse en passant square
+    let fen_passant = fen_parts[3];
+    if fen_passant != "-" {
+        if let (Some(col), Some(row)) = (
+            fen_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
+            fen_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
+        ) {
+            if (1..=8).contains(&row) {
+                let col_value = match col {
+                    'A' => 1,
+                    'B' => 2,
+                    'C' => 3,
+                    'D' => 4,
+                    'E' => 5,
+                    'F' => 6,
+                    'G' => 7,
+                    'H' => 8,
+                    _ => 0, // Handle unexpected characters
+                };
+                chessboard.en_passant = (9 - col_value) + 8 * (row - 1);
+            }
+        }
+    }
+
+    // Ignore the rest of the FEN string for now
+    return chessboard;
+}
+
 
     // serializer
     pub fn to_string(chessboard: Chessboard) -> String {

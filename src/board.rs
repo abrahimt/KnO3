@@ -50,105 +50,28 @@ impl Chessboard {
         }
     }
 
-
-    /// Prints the chessboard to the console
-    /// * `pretty` - Print with extra formatting
-    pub fn print(&self, pretty: bool) {
-        let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
-        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
-        for rank in ranks.iter() {
-            print!("{rank} ");
-            for file in 0..files.len() {
-                let piece = self.piece_at_position(*rank, file);
-                if !pretty { print!("{piece} "); continue; }
-
-                let fg = self.find_fg(piece);
-                let frmt_piece = format!("{:^3}", piece);
-                let bk = self.find_bkgnd(*rank, file);
-                let _ = execute!(
-                    stdout(),
-                    SetForegroundColor(fg),
-                    SetBackgroundColor(bk),
-                    Print(frmt_piece),
-                    ResetColor
-                );
-            }
-            println!();
-        }
-
-        print!("  ");
-        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
-        println!();
-        return;
-    }
-
-
-    /* *************** */
-    /* PRIVATE FUNCTIONS */
-
-    /// Maps the pieces on the board to the character that represents them in the console.
-    /// # Return:
-    /// A vector of tuples, where each tuple contains a chess piece character and it's
-    /// corresponding bitboard positions.
-    fn get_pieces(&self) -> Vec<(char, u64)> {
-        vec![
-            ('P', self.white_pawns),
-            ('N', self.white_knights),
-            ('B', self.white_bishops),
-            ('K', self.white_king),
-            ('Q', self.white_queen),
-            ('R', self.white_rooks),
-            ('p', self.black_pawns),
-            ('n', self.black_knights),
-            ('b', self.black_bishops),
-            ('k', self.black_king),
-            ('q', self.black_queen),
-            ('r', self.black_rooks)
-        ]
-    }
-
-    /// # Return: The color of the piece
-    fn find_fg(&self, p: char) -> Color {
-        if p.is_uppercase() {
-            Color::White
-        } else {
-            Color::Black
+    /// Create an new instance of a chessboard, with no pieces on it.
+    pub fn empty() -> Chessboard {
+        Chessboard {
+            white_pawns: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            white_knights: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            white_bishops: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            white_king: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            white_queen: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            white_rooks: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            black_pawns: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            black_knights: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            black_bishops: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            black_king: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            black_queen: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            black_rooks: 0b0000000000000000000000000000000000000000000000000000000000000000,
+            castling_rights: 0b1111,
+            en_passant: 0,
+            white_turn: true
         }
     }
 
-    /// # Return: The color of the board at this position
-    fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
-        if (rank + file) % 2 == 0 {
-            return Color::Rgb {
-                r: 190,
-                g: 140,
-                b: 170,
-            };
-        } else {
-            return Color::Rgb {
-                r: 255,
-                g: 206,
-                b: 158,
-            };
-        }
-    }
-
-    /// Retrieve the chess piece at a specific position on the chessboard.
-    /// * `rank` - The rank of the square.
-    /// * `file` - The file (A=0) of the square.
-    /// # Return:
-    /// The character representation of the piece at this position.
-    /// If there is no piece here it will return a period.
-    fn piece_at_position(&self, rank: usize, file: usize) -> char { 
-        for (p_type, positions) in self.get_pieces() {
-            let rank_byte = positions >> ((rank - 1) * 8);
-            if (rank_byte & (1 << file)) != 0 { return p_type; }
-        }
-        '.'
-    }
-
-    /// Forsyth–Edwards Notation Parser
+        /// Forsyth–Edwards Notation Parser
     /// * `fen` - The FEN to be converted to a Chessboard.
     /// # Return: Chessboard with the position from the FEN.
     pub fn from_string(&self, fen: &str) -> Chessboard {
@@ -255,6 +178,104 @@ impl Chessboard {
 
         // Ignore the rest of the FEN string for now
         return chessboard;
+    }
+
+
+    /// Prints the chessboard to the console
+    /// * `pretty` - Print with extra formatting
+    pub fn print(&self, pretty: bool) {
+        let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
+        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+        for rank in ranks.iter() {
+            print!("{rank} ");
+            for file in 0..files.len() {
+                let piece = self.piece_at_position(*rank, file);
+                if !pretty { print!("{piece} "); continue; }
+
+                let fg = self.find_fg(piece);
+                let frmt_piece = format!("{:^3}", piece);
+                let bk = self.find_bkgnd(*rank, file);
+                let _ = execute!(
+                    stdout(),
+                    SetForegroundColor(fg),
+                    SetBackgroundColor(bk),
+                    Print(frmt_piece),
+                    ResetColor
+                );
+            }
+            println!();
+        }
+
+        print!("  ");
+        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
+        println!();
+        return;
+    }
+
+
+    /* *************** */
+    /* PRIVATE FUNCTIONS */
+
+    /// Maps the pieces on the board to the character that represents them in the console.
+    /// # Return:
+    /// A vector of tuples, where each tuple contains a chess piece character and it's
+    /// corresponding bitboard positions.
+    fn get_pieces(&self) -> Vec<(char, u64)> {
+        vec![
+            ('P', self.white_pawns),
+            ('N', self.white_knights),
+            ('B', self.white_bishops),
+            ('K', self.white_king),
+            ('Q', self.white_queen),
+            ('R', self.white_rooks),
+            ('p', self.black_pawns),
+            ('n', self.black_knights),
+            ('b', self.black_bishops),
+            ('k', self.black_king),
+            ('q', self.black_queen),
+            ('r', self.black_rooks)
+        ]
+    }
+
+    /// # Return: The color of the piece
+    fn find_fg(&self, p: char) -> Color {
+        if p.is_uppercase() {
+            Color::White
+        } else {
+            Color::Black
+        }
+    }
+
+    /// # Return: The color of the board at this position
+    fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
+        if (rank + file) % 2 == 0 {
+            return Color::Rgb {
+                r: 190,
+                g: 140,
+                b: 170,
+            };
+        } else {
+            return Color::Rgb {
+                r: 255,
+                g: 206,
+                b: 158,
+            };
+        }
+    }
+
+    /// Retrieve the chess piece at a specific position on the chessboard.
+    /// * `rank` - The rank of the square.
+    /// * `file` - The file (A=0) of the square.
+    /// # Return:
+    /// The character representation of the piece at this position.
+    /// If there is no piece here it will return a period.
+    fn piece_at_position(&self, rank: usize, file: usize) -> char { 
+        for (p_type, positions) in self.get_pieces() {
+            let rank_byte = positions >> ((rank - 1) * 8);
+            if (rank_byte & (1 << file)) != 0 { return p_type; }
+        }
+        '.'
     }
 
     /// Forsyth–Edwards Notation Serializer

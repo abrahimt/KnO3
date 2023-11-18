@@ -1,13 +1,14 @@
-extern crate num_traits;
-use num_traits::pow;
-use std::string;
-use termion::{color, style};
+//use termion::{color, style};
+use std::io::stdout;
+use crossterm::{
+    execute,
+    style::{ Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
+};
 
 /// Can represent any color
-enum DynamicColor {
-    White,
-    Black,
-}
+/*
+enum DynamicColor { White, Black }
+
 impl DynamicColor {
     fn to_termion(&self) -> &dyn color::Color {
         match self {
@@ -15,7 +16,14 @@ impl DynamicColor {
             DynamicColor::Black => &color::Black,
         }
     }
+    fn to_crossterm(&self) -> Color {
+        match self {
+            DynamicColor::White => Color::White,
+            DynamicColor::Black => Color::Black
+        }
+    }
 }
+    */
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitmap. Each byte represents a rank and a 1 indicates a presence in
@@ -34,36 +42,13 @@ pub struct Chessboard {
     pub(crate) white_queen: u64,
     pub(crate) white_king: u64,
     pub(crate) white_turn: bool,
-    pub(crate) castling_rights: u8, //KQkq
-    pub(crate) en_passant: u32, //a square that has en passant ability (1-64) 0 means no en passant
+    pub(crate) white_castle: u8, //11, 01 (representing sides of the board)
+    pub(crate) black_castle: u8, //11, 01 (representing sides of the board)
+    pub(crate) en_passant: u8,   //a square that has en passant ability (1-64)
 }
 
 impl Chessboard {
-    // Initializes the chessboard with the starting positions of all the pieces
-    // and resets turn, castling, and en passant.
-    pub fn initialize_board(&mut self) {
-        // white pieces
-        self.white_pawns = 0b0000000000000000000000000000000000000000000000001111111100000000;
-        self.white_knights = 0b0000000000000000000000000000000000000000000000000000000001000010;
-        self.white_bishops = 0b0000000000000000000000000000000000000000000000000000000000100100;
-        self.white_king = 0b0000000000000000000000000000000000000000000000000000000000001000;
-        self.white_queen = 0b0000000000000000000000000000000000000000000000000000000000010000;
-        self.white_rooks = 0b0000000000000000000000000000000000000000000000000000000010000001;
-        // black pieces
-        self.black_pawns = 0b0000000011111111000000000000000000000000000000000000000000000000;
-        self.black_knights = 0b0100001000000000000000000000000000000000000000000000000000000000;
-        self.black_bishops = 0b0010010000000000000000000000000000000000000000000000000000000000;
-        self.black_king = 0b0000100000000000000000000000000000000000000000000000000000000000;
-        self.black_queen = 0b0001000000000000000000000000000000000000000000000000000000000000;
-        self.black_rooks = 0b1000000100000000000000000000000000000000000000000000000000000000;
-        // turn
-        self.white_turn = true;
-        // castling
-        self.castling_rights = 0b1111;
-        // en_passant
-        self.en_passant = 0;
-    }
-
+  
     /// Create a new instance of a chessboard, setup to start a new game.
     pub fn new() -> Chessboard {
         Chessboard {
@@ -110,12 +95,16 @@ impl Chessboard {
                     continue;
                 }
 
-                let output = format!(
-                    "{}{}",
-                    self.format_background(*rank, file),
-                    self.format_piece(piece)
-                );
-                print!("{output}");
+                let fg = self.find_fg(piece);
+                let frmt_piece = format!("{:^3}", piece);
+                let bk = self.find_bkgnd(*rank, file);
+                execute!(
+                    stdout(),
+                    SetForegroundColor(fg),
+                    SetBackgroundColor(bk),
+                    Print(frmt_piece),
+                    ResetColor
+                    );
             }
             println!();
         }
@@ -146,6 +135,7 @@ impl Chessboard {
         ]
     }
 
+    /*
     /// Formats the chesspiece to be pretty printed.
     /// * `piece` - The piece to format, uppercase is white.
     /// # Return: A formatted string representing the piece.
@@ -160,11 +150,24 @@ impl Chessboard {
         let colored = format!("{}{}{}", color::Fg(color_code), spaced, style::Reset);
         return colored;
     }
+    */
+    fn find_fg(&self, p: char) -> Color {
+        if p.is_uppercase() { Color::White } else { Color::Black }
+    }
+
+    fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
+        if (rank + file) % 2 == 0 {
+            return Color::Rgb { r: 190, g: 140, b: 170 };
+        } else {
+            return Color::Rgb { r: 255, g: 206, b: 158 };
+        }
+    }
 
     /// Formats the background color for a chess square.
     /// * `rank` - The rank of the square.
     /// * `file` - The file (A=0) of the square.
     /// # Return: A formatted string representing the background color.
+    /*
     fn format_background(&self, rank: usize, file: usize) -> String {
         let bg_color = match (rank + file) % 2 == 0 {
             true => color::Bg(color::Rgb(190, 140, 170)),
@@ -172,6 +175,7 @@ impl Chessboard {
         };
         format!("{}", bg_color)
     }
+    */
 
     /// Retrieve the chess piece at a specific position on the chessboard.
     /// * `rank` - The rank of the square.

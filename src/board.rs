@@ -1,4 +1,3 @@
-use termion::{color, style};
 
 /// Can represent any color
 enum DynamicColor { White, Black }
@@ -112,6 +111,7 @@ impl Chessboard {
     /// Formats the chesspiece to be pretty printed.
     /// * `piece` - The piece to format, uppercase is white.
     /// # Return: A formatted string representing the piece.
+    /*
     fn format_piece(&self, piece: char) -> String {
         let dc: DynamicColor = if piece.is_uppercase() { DynamicColor::White } else { DynamicColor::Black };
         let color_code = dc.to_termion();
@@ -119,12 +119,14 @@ impl Chessboard {
         let colored = format!("{}{}{}", color::Fg(color_code), spaced, style::Reset);
         return colored;
     }
+    */
 
 
     /// Formats the background color for a chess square.
     /// * `rank` - The rank of the square.
     /// * `file` - The file (A=0) of the square.
     /// # Return: A formatted string representing the background color.
+    /*
     fn format_background(&self, rank: usize, file: usize) -> String {
         let bg_color = match (rank + file) % 2 == 0 {
             true =>  color::Bg(color::Rgb(190, 140, 170)),
@@ -132,6 +134,7 @@ impl Chessboard {
         };
         format!("{}", bg_color)
     }
+    */
 
 
     /// Retrieve the chess piece at a specific position on the chessboard.

@@ -221,7 +221,6 @@ impl Chessboard {
 
         // Parse castling rights
         let fen_castle = fen_parts[2];
-        let mut castles = 0;
         for c in fen_castle.chars() {
             let v = match c {
                 'K' => 0b1000,
@@ -230,9 +229,8 @@ impl Chessboard {
                 'q' => 0b0001,
                 _ => 0b0,
             };
-            castles |= v;
+            chessboard.castling_rights |= v;
         }
-        chessboard.castling_rights = castles;
 
         // Parse en passant square
         let fen_passant = fen_parts[3];

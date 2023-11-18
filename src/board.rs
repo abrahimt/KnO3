@@ -74,24 +74,8 @@ impl Chessboard {
         /// Forsyth–Edwards Notation Parser
     /// * `fen` - The FEN to be converted to a Chessboard.
     /// # Return: Chessboard with the position from the FEN.
-    pub fn from_string(&self, fen: &str) -> Chessboard {
-        let mut chessboard = Chessboard {
-            black_pawns: 0,
-            black_rooks: 0,
-            black_knights: 0,
-            black_bishops: 0,
-            black_king: 0,
-            black_queen: 0,
-            white_pawns: 0,
-            white_rooks: 0,
-            white_knights: 0,
-            white_bishops: 0,
-            white_queen: 0,
-            white_king: 0,
-            castling_rights: 0,
-            white_turn: true,
-            en_passant: 0
-        };
+    pub fn from_string(fen: &str) -> Chessboard {
+        let mut chessboard = Chessboard::new();
 
         // Split the FEN string into parts using ' ' as the delimiter
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();

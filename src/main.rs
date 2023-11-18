@@ -1,10 +1,5 @@
 mod board;
 use board::Chessboard;
-use std::io::stdout;
-use crossterm::{
-    execute,
-    style::{ Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
-};
 
 fn main() {
     let mut cb = Chessboard::new();

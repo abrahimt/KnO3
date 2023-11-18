@@ -1,31 +1,9 @@
-//use termion::{color, style};
 use std::{io::stdout, u8};
-
+use num_traits::pow;
 use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use num_traits::pow;
-
-/// Can represent any color
-/*
-enum DynamicColor { White, Black }
-
-impl DynamicColor {
-    fn to_termion(&self) -> &dyn color::Color {
-        match self {
-            DynamicColor::White => &color::White,
-            DynamicColor::Black => &color::Black,
-        }
-    }
-    fn to_crossterm(&self) -> Color {
-        match self {
-            DynamicColor::White => Color::White,
-            DynamicColor::Black => Color::Black
-        }
-    }
-}
-    */
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitmap. Each byte represents a rank and a 1 indicates a presence in
@@ -112,12 +90,12 @@ impl Chessboard {
     }
 
     /* *************** */
-    /* PRIVATE METHIDS */
+    /* PRIVATE METHODS */
 
     /// Maps the pieces on the board to the character that represents them in the console.
     /// # Return:
     /// A vector of tuples, where each tuple contains a chess piece character and it's
-    /// correcsponding bitboard positions.
+    /// corresponding bitboard positions.
     fn get_pieces(&self) -> Vec<(char, u64)> {
         vec![
             ('P', self.white_pawns),
@@ -136,7 +114,7 @@ impl Chessboard {
     }
 
     /*
-    /// Formats the chesspiece to be pretty printed.
+    /// Formats the chess piece to be pretty printed.
     /// * `piece` - The piece to format, uppercase is white.
     /// # Return: A formatted string representing the piece.
     fn format_piece(&self, piece: char) -> String {
@@ -203,14 +181,6 @@ impl Chessboard {
             }
         }
         '.'
-    }
-
-    fn whose_turn(&self) -> &str {
-        if self.white_turn {
-            "white"
-        } else {
-            "black"
-        }
     }
 
     // Parser function that converts a FEN (Forsyth–Edwards Notation) string to a Chessboard struct
@@ -454,7 +424,7 @@ impl Chessboard {
 }
 
 //MINIMAX Function Pseudo-code
-// fn minimax(position, depth, alpha, beta, maximixing_player) {
+// fn minimax(position, depth, alpha, beta, maximizing_player) {
 //     if depth == 0 or game over in position
 //         return static evaluation of position
 //     if maximizing_player (white)

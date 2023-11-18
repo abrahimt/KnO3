@@ -1,15 +1,9 @@
-use termion::{color, style};
+use std::io::stdout;
+use crossterm::{
+    execute,
+    style::{ Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
+};
 
-/// Can represent any color
-enum DynamicColor { White, Black }
-impl DynamicColor {
-    fn to_termion(&self) -> &dyn color::Color {
-        match self {
-            DynamicColor::White => &color::White,
-            DynamicColor::Black => &color::Black
-        }
-    }
-}
 
 
 /// Struct representing a chessboard with piece positions and game state
@@ -33,6 +27,7 @@ pub struct Chessboard {
     pub(crate) black_castle: u8, //11, 01 (representing sides of the board)
     pub(crate) en_passant: u8,   //a square that has en passant ability (1-64)
 }
+
 
 impl Chessboard {
     /// Create a new instance of a chessboard, setup to start a new game.
@@ -64,24 +59,31 @@ impl Chessboard {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-        print!("  ");
-        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
-        println!();
-
         for rank in ranks.iter() {
             print!("{rank} ");
             for file in 0..files.len() {
                 let piece = self.piece_at_position(*rank, file);
                 if !pretty { print!("{piece} "); continue; }
 
-                let output = format!("{}{}", self.format_background(*rank, file), self.format_piece(piece));
-                print!("{output}");
+                let fg = self.find_fg(piece);
+                let frmt_piece = format!("{:^3}", piece);
+                let bk = self.find_bkgnd(*rank, file);
+                let _ = execute!(
+                    stdout(),
+                    SetForegroundColor(fg),
+                    SetBackgroundColor(bk),
+                    Print(frmt_piece),
+                    ResetColor
+                    );
             }
             println!();
         }
+
+        print!("  ");
+        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
+        println!();
         return;
     }
-
 
 
     /* *************** */
@@ -108,29 +110,19 @@ impl Chessboard {
         ]
     }
 
-
-    /// Formats the chesspiece to be pretty printed.
-    /// * `piece` - The piece to format, uppercase is white.
-    /// # Return: A formatted string representing the piece.
-    fn format_piece(&self, piece: char) -> String {
-        let dc: DynamicColor = if piece.is_uppercase() { DynamicColor::White } else { DynamicColor::Black };
-        let color_code = dc.to_termion();
-        let spaced = format!("{:^3}", piece);
-        let colored = format!("{}{}{}", color::Fg(color_code), spaced, style::Reset);
-        return colored;
+    /// # Return: The color of the piece
+    fn find_fg(&self, p: char) -> Color {
+        if p.is_uppercase() { Color::White } else { Color::Black }
     }
 
 
-    /// Formats the background color for a chess square.
-    /// * `rank` - The rank of the square.
-    /// * `file` - The file (A=0) of the square.
-    /// # Return: A formatted string representing the background color.
-    fn format_background(&self, rank: usize, file: usize) -> String {
-        let bg_color = match (rank + file) % 2 == 0 {
-            true =>  color::Bg(color::Rgb(190, 140, 170)),
-            false => color::Bg(color::Rgb(255, 206, 158))
-        };
-        format!("{}", bg_color)
+    /// # Return: The color of the board at this position
+    fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
+        if (rank + file) % 2 == 0 {
+            return Color::Rgb { r: 190, g: 140, b: 170 };
+        } else {
+            return Color::Rgb { r: 255, g: 206, b: 158 };
+        }
     }
 
 

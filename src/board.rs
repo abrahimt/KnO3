@@ -1,19 +1,21 @@
 extern crate num_traits;
-use std::string;
 use num_traits::pow;
+use std::string;
 use termion::{color, style};
 
 /// Can represent any color
-enum DynamicColor { White, Black }
+enum DynamicColor {
+    White,
+    Black,
+}
 impl DynamicColor {
     fn to_termion(&self) -> &dyn color::Color {
         match self {
             DynamicColor::White => &color::White,
-            DynamicColor::Black => &color::Black
+            DynamicColor::Black => &color::Black,
         }
     }
 }
-
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitmap. Each byte represents a rank and a 1 indicates a presence in
@@ -62,14 +64,6 @@ impl Chessboard {
         self.en_passant = 0;
     }
 
-    // This function returns a string representing whose turn it is in the chess game.
-    // It checks the boolean flag `white_turn` to determine if it's white's turn or black's turn.
-    fn whose_turn(&self) -> &str {
-        if self.white_turn {
-            "white"
-        } else {
-            "black"
-
     /// Create a new instance of a chessboard, setup to start a new game.
     pub fn new() -> Chessboard {
         Chessboard {
@@ -85,13 +79,11 @@ impl Chessboard {
             black_king: 0b0000100000000000000000000000000000000000000000000000000000000000,
             black_queen: 0b0001000000000000000000000000000000000000000000000000000000000000,
             black_rooks: 0b1000000100000000000000000000000000000000000000000000000000000000,
-            white_castle: 3,
-            black_castle: 3,
+            castling_rights: 0b1111,
             en_passant: 0,
-            white_turn: true
+            white_turn: true,
         }
     }
-
 
     /// Prints the chessboard to the console
     /// * `pretty` - Print with extra formatting
@@ -100,24 +92,35 @@ impl Chessboard {
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
         print!("  ");
-        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
+        for file in files.iter() {
+            if pretty {
+                print!(" {file} ")
+            } else {
+                print!("{file} ");
+            }
+        }
         println!();
 
         for rank in ranks.iter() {
             print!("{rank} ");
             for file in 0..files.len() {
                 let piece = self.piece_at_position(*rank, file);
-                if !pretty { print!("{piece} "); continue; }
+                if !pretty {
+                    print!("{piece} ");
+                    continue;
+                }
 
-                let output = format!("{}{}", self.format_background(*rank, file), self.format_piece(piece));
+                let output = format!(
+                    "{}{}",
+                    self.format_background(*rank, file),
+                    self.format_piece(piece)
+                );
                 print!("{output}");
             }
             println!();
         }
         return;
     }
-
-
 
     /* *************** */
     /* PRIVATE METHIDS */
@@ -139,22 +142,24 @@ impl Chessboard {
             ('b', self.black_bishops),
             ('k', self.black_king),
             ('q', self.black_queen),
-            ('r', self.black_rooks)
+            ('r', self.black_rooks),
         ]
     }
-
 
     /// Formats the chesspiece to be pretty printed.
     /// * `piece` - The piece to format, uppercase is white.
     /// # Return: A formatted string representing the piece.
     fn format_piece(&self, piece: char) -> String {
-        let dc: DynamicColor = if piece.is_uppercase() { DynamicColor::White } else { DynamicColor::Black };
+        let dc: DynamicColor = if piece.is_uppercase() {
+            DynamicColor::White
+        } else {
+            DynamicColor::Black
+        };
         let color_code = dc.to_termion();
         let spaced = format!("{:^3}", piece);
         let colored = format!("{}{}{}", color::Fg(color_code), spaced, style::Reset);
         return colored;
     }
-
 
     /// Formats the background color for a chess square.
     /// * `rank` - The rank of the square.
@@ -162,12 +167,11 @@ impl Chessboard {
     /// # Return: A formatted string representing the background color.
     fn format_background(&self, rank: usize, file: usize) -> String {
         let bg_color = match (rank + file) % 2 == 0 {
-            true =>  color::Bg(color::Rgb(190, 140, 170)),
-            false => color::Bg(color::Rgb(255, 206, 158))
+            true => color::Bg(color::Rgb(190, 140, 170)),
+            false => color::Bg(color::Rgb(255, 206, 158)),
         };
         format!("{}", bg_color)
     }
-
 
     /// Retrieve the chess piece at a specific position on the chessboard.
     /// * `rank` - The rank of the square.
@@ -175,17 +179,22 @@ impl Chessboard {
     /// # Return:
     /// The character representation of the piece at this position.
     /// If there is no piece here it will return a period.
-    fn piece_at_position(&self, rank: usize, file: usize) -> char { 
+    fn piece_at_position(&self, rank: usize, file: usize) -> char {
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);
-            if (rank_byte & (1 << file)) != 0 { return p_type; }
+            if (rank_byte & (1 << file)) != 0 {
+                return p_type;
+            }
         }
         '.'
     }
 
-
     fn whose_turn(&self) -> &str {
-        if self.white_turn { "white" } else { "black" }
+        if self.white_turn {
+            "white"
+        } else {
+            "black"
+        }
     }
 
     // Parser function that converts a FEN (Forsyth–Edwards Notation) string to a Chessboard struct
@@ -298,7 +307,7 @@ impl Chessboard {
         // Ignore the rest of the FEN string for now
         return chessboard;
     }
-    
+
     // Serializer function that converts a Chessboard struct to a FEN (Forsyth–Edwards Notation) string
     pub fn to_string(chessboard: Chessboard) -> String {
         // Initialize a vector to store FEN components as strings
@@ -418,28 +427,27 @@ impl Chessboard {
         // Return the FEN string
         fen_string
     }
-
-    //MINIMAX Function Pseudo-code
-    // fn minimax(position, depth, alpha, beta, maximixing_player) {
-    //     if depth == 0 or game over in position
-    //         return static evaluation of position
-    //     if maximizing_player (white)
-    //         max_eval = -infinity
-    //         for each child of position
-    //             eval = minimax(child, depth - 1, alpha, beta, false)
-    //             max_eval = max(max_eval, eval)
-    //             alpha = max(alpha, eval)
-    //             if beta <= alpha
-    //                 break
-    //         return max_eval
-    //     else
-    //         min_eval = +infinity
-    //         for each child of position
-    //         eval = minimax(child, depth - 1, alpha, beta, true)
-    //         min_eval = min(min_eval, eval)
-    //         beta = min(beta, eval)
-    //         if beta <= alpha
-    //             break
-    //     return min_eval
-    // }
 }
+//MINIMAX Function Pseudo-code
+// fn minimax(position, depth, alpha, beta, maximixing_player) {
+//     if depth == 0 or game over in position
+//         return static evaluation of position
+//     if maximizing_player (white)
+//         max_eval = -infinity
+//         for each child of position
+//             eval = minimax(child, depth - 1, alpha, beta, false)
+//             max_eval = max(max_eval, eval)
+//             alpha = max(alpha, eval)
+//             if beta <= alpha
+//                 break
+//         return max_eval
+//     else
+//         min_eval = +infinity
+//         for each child of position
+//         eval = minimax(child, depth - 1, alpha, beta, true)
+//         min_eval = min(min_eval, eval)
+//         beta = min(beta, eval)
+//         if beta <= alpha
+//             break
+//     return min_eval
+// }

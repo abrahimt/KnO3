@@ -28,6 +28,7 @@ pub struct Chessboard {
     pub(crate) en_passant: u8,   //a square that has en passant ability (1-64)
 }
 
+
 impl Chessboard {
     /// Create a new instance of a chessboard, setup to start a new game.
     pub fn new() -> Chessboard {

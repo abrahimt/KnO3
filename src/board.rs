@@ -71,7 +71,7 @@ impl Chessboard {
         }
     }
 
-        /// Forsyth–Edwards Notation Parser
+    /// Forsyth–Edwards Notation Parser
     /// * `fen` - The FEN to be converted to a Chessboard.
     /// # Return: Chessboard with the position from the FEN.
     pub fn from_string(fen: &str) -> Chessboard {

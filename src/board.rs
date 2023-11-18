@@ -227,13 +227,12 @@ impl Chessboard {
         ]
     }
 
+    /// Foreground color to display for this piece
     /// # Return: The color of the piece
+    #[rustfmt::skip]
     fn find_fg(&self, p: char) -> Color {
-        if p.is_uppercase() {
-            Color::White
-        } else {
-            Color::Black
-        }
+        if p.is_uppercase() { Color::White }
+        else                { Color::Black }
     }
 
     /// # Return: The color of the board at this position

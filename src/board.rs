@@ -1,10 +1,9 @@
-use std::{ io::stdout, u8 };
-use num_traits::pow;
 use crossterm::{
     execute,
-    style::{ Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor },
+    style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-
+use num_traits::pow;
+use std::{io::stdout, u8};
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
@@ -22,11 +21,10 @@ pub struct Chessboard {
     pub(crate) white_bishops: u64,
     pub(crate) white_queen: u64,
     pub(crate) white_king: u64,
-    pub(crate) white_turn: bool, // True if it's white's turn
+    pub(crate) white_turn: bool,    // True if it's white's turn
     pub(crate) castling_rights: u8, // KQkq will be represented by 4 bits
-    pub(crate) en_passant: u8, //a square that has en passant ability (1-64)
+    pub(crate) en_passant: u8,      //a square that has en passant ability (1-64)
 }
-
 
 impl Chessboard {
     /// Create a new instance of a chessboard, setup to start a new game.
@@ -46,7 +44,7 @@ impl Chessboard {
             black_rooks: 0b1000000100000000000000000000000000000000000000000000000000000000,
             castling_rights: 0b1111,
             en_passant: 0,
-            white_turn: true
+            white_turn: true,
         }
     }
 
@@ -67,7 +65,7 @@ impl Chessboard {
             black_rooks: 0b0000000000000000000000000000000000000000000000000000000000000000,
             castling_rights: 0b1111,
             en_passant: 0,
-            white_turn: true
+            white_turn: true,
         }
     }
 
@@ -164,7 +162,6 @@ impl Chessboard {
         return chessboard;
     }
 
-
     /// Prints the chessboard to the console
     /// * `pretty` - Print with extra formatting
     pub fn print(&self, pretty: bool) {
@@ -175,7 +172,10 @@ impl Chessboard {
             print!("{rank} ");
             for file in 0..files.len() {
                 let piece = self.piece_at_position(*rank, file);
-                if !pretty { print!("{piece} "); continue; }
+                if !pretty {
+                    print!("{piece} ");
+                    continue;
+                }
 
                 let fg = self.find_fg(piece);
                 let frmt_piece = format!("{:^3}", piece);
@@ -192,11 +192,16 @@ impl Chessboard {
         }
 
         print!("  ");
-        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
+        for file in files.iter() {
+            if pretty {
+                print!(" {file} ")
+            } else {
+                print!("{file} ");
+            }
+        }
         println!();
         return;
     }
-
 
     /* *************** */
     /* PRIVATE FUNCTIONS */
@@ -218,7 +223,7 @@ impl Chessboard {
             ('b', self.black_bishops),
             ('k', self.black_king),
             ('q', self.black_queen),
-            ('r', self.black_rooks)
+            ('r', self.black_rooks),
         ]
     }
 
@@ -254,10 +259,12 @@ impl Chessboard {
     /// # Return:
     /// The character representation of the piece at this position.
     /// If there is no piece here it will return a period.
-    fn piece_at_position(&self, rank: usize, file: usize) -> char { 
+    fn piece_at_position(&self, rank: usize, file: usize) -> char {
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);
-            if (rank_byte & (1 << file)) != 0 { return p_type; }
+            if (rank_byte & (1 << file)) != 0 {
+                return p_type;
+            }
         }
         '.'
     }

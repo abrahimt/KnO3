@@ -2,14 +2,14 @@ use std::{ io::stdout, u8 };
 use num_traits::pow;
 use crossterm::{
     execute,
-    style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
+    style::{ Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor },
 };
 
 
 
 
 /// Struct representing a chessboard with piece positions and game state
-/// Each `piece` is a uint64 bitmap. Each byte represents a rank and a 1 indicates a presence in
+/// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
 /// that position.
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
@@ -24,8 +24,8 @@ pub struct Chessboard {
     pub(crate) white_bishops: u64,
     pub(crate) white_queen: u64,
     pub(crate) white_king: u64,
-    pub(crate) white_turn: bool,
-    pub(crate) castling_rights: u8,
+    pub(crate) white_turn: bool, // True if it's white's turn
+    pub(crate) castling_rights: u8, // KQkq will be represented by 4 bits
     pub(crate) en_passant: u8, //a square that has en passant ability (1-64)
 }
 
@@ -390,7 +390,7 @@ impl Chessboard {
 }
 
 //MINIMAX Function Pseudo-code
-// fn minimax(position, depth, alpha, beta, maximixing_player) {
+// fn minimax(position, depth, alpha, beta, maximizing_player) {
 //     if depth == 0 or game over in position
 //         return static evaluation of position
 //     if maximizing_player (white)

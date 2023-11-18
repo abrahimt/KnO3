@@ -45,8 +45,7 @@ impl Chessboard {
             black_king: 0b0000100000000000000000000000000000000000000000000000000000000000,
             black_queen: 0b0001000000000000000000000000000000000000000000000000000000000000,
             black_rooks: 0b1000000100000000000000000000000000000000000000000000000000000000,
-            white_castle: 3,
-            black_castle: 3,
+            castling_rights: 0b1111,
             en_passant: 0,
             white_turn: true
         }
@@ -156,6 +155,26 @@ impl Chessboard {
     fn whose_turn(&self) -> &str {
         if self.white_turn { "white" } else { "black" }
     }
+
+
+    pub fn from_string(&self, fen: &str) -> Chessboard {
+        let mut chessboard = Chessboard {
+            black_pawns: 0,
+            black_rooks: 0,
+            black_knights: 0,
+            black_bishops: 0,
+            black_king: 0,
+            black_queen: 0,
+            white_pawns: 0,
+            white_rooks: 0,
+            white_knights: 0,
+            white_bishops: 0,
+            white_queen: 0,
+            white_king: 0,
+            castling_rights: 0,
+            white_turn: true,
+            en_passant: 0
+        };
 
 
         // Split the FEN string into parts using ' ' as the delimiter

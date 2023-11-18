@@ -1,5 +1,12 @@
+//use termion::{color, style};
+use std::io::stdout;
+use crossterm::{
+    execute,
+    style::{ Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
+};
 
 /// Can represent any color
+/*
 enum DynamicColor { White, Black }
 impl DynamicColor {
     fn to_termion(&self) -> &dyn color::Color {
@@ -8,7 +15,14 @@ impl DynamicColor {
             DynamicColor::Black => &color::Black
         }
     }
+    fn to_crossterm(&self) -> Color {
+        match self {
+            DynamicColor::White => Color::White,
+            DynamicColor::Black => Color::Black
+        }
+    }
 }
+    */
 
 
 /// Struct representing a chessboard with piece positions and game state
@@ -73,13 +87,22 @@ impl Chessboard {
                 let piece = self.piece_at_position(*rank, file);
                 if !pretty { print!("{piece} "); continue; }
 
-                let output = format!("{}{}", self.format_background(*rank, file), self.format_piece(piece));
-                print!("{output}");
+                let fg = self.find_fg(piece);
+                let frmt_piece = format!("{:^3}", piece);
+                let bk = self.find_bkgnd(*rank, file);
+                execute!(
+                    stdout(),
+                    SetForegroundColor(fg),
+                    SetBackgroundColor(bk),
+                    Print(frmt_piece),
+                    ResetColor
+                    );
             }
             println!();
         }
         return;
     }
+
 
 
 
@@ -108,9 +131,6 @@ impl Chessboard {
     }
 
 
-    /// Formats the chesspiece to be pretty printed.
-    /// * `piece` - The piece to format, uppercase is white.
-    /// # Return: A formatted string representing the piece.
     /*
     fn format_piece(&self, piece: char) -> String {
         let dc: DynamicColor = if piece.is_uppercase() { DynamicColor::White } else { DynamicColor::Black };
@@ -120,7 +140,17 @@ impl Chessboard {
         return colored;
     }
     */
+    fn find_fg(&self, p: char) -> Color {
+        if p.is_uppercase() { Color::White } else { Color::Black }
+    }
 
+    fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
+        if (rank + file) % 2 == 0 {
+            return Color::Rgb { r: 190, g: 140, b: 170 };
+        } else {
+            return Color::Rgb { r: 255, g: 206, b: 158 };
+        }
+    }
 
     /// Formats the background color for a chess square.
     /// * `rank` - The rank of the square.

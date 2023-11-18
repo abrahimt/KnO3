@@ -67,7 +67,7 @@ impl Chessboard {
                 let fg = self.find_fg(piece);
                 let frmt_piece = format!("{:^3}", piece);
                 let bk = self.find_bkgnd(*rank, file);
-                execute!(
+                let _ = execute!(
                     stdout(),
                     SetForegroundColor(fg),
                     SetBackgroundColor(bk),

@@ -6,8 +6,6 @@ use crossterm::{
 };
 
 
-
-
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
 /// that position.
@@ -87,7 +85,7 @@ impl Chessboard {
 
 
     /* *************** */
-    /* PRIVATE METHODS */
+    /* PRIVATE FUNCTIONS */
 
     /// Maps the pieces on the board to the character that represents them in the console.
     /// # Return:
@@ -119,7 +117,6 @@ impl Chessboard {
         }
     }
 
-
     /// # Return: The color of the board at this position
     fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
         if (rank + file) % 2 == 0 {
@@ -137,7 +134,6 @@ impl Chessboard {
         }
     }
 
-
     /// Retrieve the chess piece at a specific position on the chessboard.
     /// * `rank` - The rank of the square.
     /// * `file` - The file (A=0) of the square.
@@ -152,7 +148,9 @@ impl Chessboard {
         '.'
     }
 
-
+    /// Forsyth–Edwards Notation Parser
+    /// * `fen` - The FEN to be converted to a Chessboard.
+    /// # Return: Chessboard with the position from the FEN.
     pub fn from_string(&self, fen: &str) -> Chessboard {
         let mut chessboard = Chessboard {
             black_pawns: 0,
@@ -171,7 +169,6 @@ impl Chessboard {
             white_turn: true,
             en_passant: 0
         };
-
 
         // Split the FEN string into parts using ' ' as the delimiter
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
@@ -260,7 +257,9 @@ impl Chessboard {
         return chessboard;
     }
 
-    // Serializer function that converts a Chessboard struct to a FEN (Forsyth–Edwards Notation) string
+    /// Forsyth–Edwards Notation Serializer
+    /// * `chessboard` - The chessboard position to be converted to a FEN.
+    /// # Return: FEN string representing the board's position.
     pub fn to_string(&self) -> String {
         // Initialize a vector to store FEN components as strings
         let mut string_array: Vec<String> = Vec::with_capacity(6);

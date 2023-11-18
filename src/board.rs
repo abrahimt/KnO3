@@ -1,9 +1,10 @@
-use std::{io::stdout, u8};
+use std::{ io::stdout, u8 };
+use num_traits::pow;
 use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use num_traits::pow;
+
 
 
 
@@ -86,12 +87,12 @@ impl Chessboard {
 
 
     /* *************** */
-    /* PRIVATE METHIDS */
+    /* PRIVATE METHODS */
 
     /// Maps the pieces on the board to the character that represents them in the console.
     /// # Return:
     /// A vector of tuples, where each tuple contains a chess piece character and it's
-    /// correcsponding bitboard positions.
+    /// corresponding bitboard positions.
     fn get_pieces(&self) -> Vec<(char, u64)> {
         vec![
             ('P', self.white_pawns),
@@ -149,11 +150,6 @@ impl Chessboard {
             if (rank_byte & (1 << file)) != 0 { return p_type; }
         }
         '.'
-    }
-
-
-    fn whose_turn(&self) -> &str {
-        if self.white_turn { "white" } else { "black" }
     }
 
 

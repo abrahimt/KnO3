@@ -1,9 +1,11 @@
 //use termion::{color, style};
-use std::io::stdout;
+use std::{io::stdout, u8};
+
 use crossterm::{
     execute,
-    style::{ Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
+    style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
+use num_traits::pow;
 
 /// Can represent any color
 /*
@@ -42,13 +44,11 @@ pub struct Chessboard {
     pub(crate) white_queen: u64,
     pub(crate) white_king: u64,
     pub(crate) white_turn: bool,
-    pub(crate) white_castle: u8, //11, 01 (representing sides of the board)
-    pub(crate) black_castle: u8, //11, 01 (representing sides of the board)
-    pub(crate) en_passant: u8,   //a square that has en passant ability (1-64)
+    pub(crate) castling_rights: u8,
+    pub(crate) en_passant: u8, //a square that has en passant ability (1-64)
 }
 
 impl Chessboard {
-  
     /// Create a new instance of a chessboard, setup to start a new game.
     pub fn new() -> Chessboard {
         Chessboard {
@@ -104,7 +104,7 @@ impl Chessboard {
                     SetBackgroundColor(bk),
                     Print(frmt_piece),
                     ResetColor
-                    );
+                );
             }
             println!();
         }
@@ -152,14 +152,26 @@ impl Chessboard {
     }
     */
     fn find_fg(&self, p: char) -> Color {
-        if p.is_uppercase() { Color::White } else { Color::Black }
+        if p.is_uppercase() {
+            Color::White
+        } else {
+            Color::Black
+        }
     }
 
     fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
         if (rank + file) % 2 == 0 {
-            return Color::Rgb { r: 190, g: 140, b: 170 };
+            return Color::Rgb {
+                r: 190,
+                g: 140,
+                b: 170,
+            };
         } else {
-            return Color::Rgb { r: 255, g: 206, b: 158 };
+            return Color::Rgb {
+                r: 255,
+                g: 206,
+                b: 158,
+            };
         }
     }
 
@@ -292,7 +304,7 @@ impl Chessboard {
                 fen_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
             ) {
                 if (1..=8).contains(&row) {
-                    let col_value = match col {
+                    let col_value: u8 = match col {
                         'A' => 1,
                         'B' => 2,
                         'C' => 3,
@@ -303,7 +315,7 @@ impl Chessboard {
                         'H' => 8,
                         _ => 0, // Handle unexpected characters
                     };
-                    chessboard.en_passant = col_value + 8 * (row - 1);
+                    chessboard.en_passant = col_value + 8 * (row as u8 - 1);
                 }
             }
         }
@@ -313,10 +325,10 @@ impl Chessboard {
     }
 
     // Serializer function that converts a Chessboard struct to a FEN (Forsyth–Edwards Notation) string
-    pub fn to_string(chessboard: Chessboard) -> String {
+    pub fn to_string(&self) -> String {
         // Initialize a vector to store FEN components as strings
         let mut string_array: Vec<String> = Vec::with_capacity(6);
-        let fen_string;
+        let mut fen_string;
 
         // Piece placement
         for rank in (1..=8).rev() {
@@ -328,29 +340,29 @@ impl Chessboard {
                 let square_index = (rank - 1) * 8 + (file - 1);
 
                 // Determine the piece on the current square
-                let piece = if (chessboard.white_pawns >> square_index) & 1 != 0 {
+                let piece = if (self.white_pawns >> square_index) & 1 != 0 {
                     'P'
-                } else if (chessboard.white_rooks >> square_index) & 1 != 0 {
+                } else if (self.white_rooks >> square_index) & 1 != 0 {
                     'R'
-                } else if (chessboard.white_knights >> square_index) & 1 != 0 {
+                } else if (self.white_knights >> square_index) & 1 != 0 {
                     'N'
-                } else if (chessboard.white_bishops >> square_index) & 1 != 0 {
+                } else if (self.white_bishops >> square_index) & 1 != 0 {
                     'B'
-                } else if (chessboard.white_queen >> square_index) & 1 != 0 {
+                } else if (self.white_queen >> square_index) & 1 != 0 {
                     'Q'
-                } else if (chessboard.white_king >> square_index) & 1 != 0 {
+                } else if (self.white_king >> square_index) & 1 != 0 {
                     'K'
-                } else if (chessboard.black_pawns >> square_index) & 1 != 0 {
+                } else if (self.black_pawns >> square_index) & 1 != 0 {
                     'p'
-                } else if (chessboard.black_rooks >> square_index) & 1 != 0 {
+                } else if (self.black_rooks >> square_index) & 1 != 0 {
                     'r'
-                } else if (chessboard.black_knights >> square_index) & 1 != 0 {
+                } else if (self.black_knights >> square_index) & 1 != 0 {
                     'n'
-                } else if (chessboard.black_bishops >> square_index) & 1 != 0 {
+                } else if (self.black_bishops >> square_index) & 1 != 0 {
                     'b'
-                } else if (chessboard.black_queen >> square_index) & 1 != 0 {
+                } else if (self.black_queen >> square_index) & 1 != 0 {
                     'q'
-                } else if (chessboard.black_king >> square_index) & 1 != 0 {
+                } else if (self.black_king >> square_index) & 1 != 0 {
                     'k'
                 } else {
                     empty_squares += 1;
@@ -372,17 +384,29 @@ impl Chessboard {
 
             // Add the row string to the FEN components vector
             string_array.push(row_string);
+            string_array.push("/".to_owned());
         }
 
+        let binding = string_array.concat();
+        fen_string = binding.chars();
+        fen_string.next_back();
+        let fen_string_no_slash = fen_string.as_str();
+        for item in &mut string_array {
+            item.clear();
+        }
+        string_array.push(fen_string_no_slash.to_owned());
+
+        string_array.push(" ".to_owned());
+
         // Whose turn
-        string_array.push(if chessboard.white_turn {
+        string_array.push(if self.white_turn {
             "w ".to_string()
         } else {
             "b ".to_string()
         });
 
         // Castling rights
-        string_array.push(match chessboard.castling_rights {
+        string_array.push(match self.castling_rights {
             0 => "- ".to_string(),
             rights => {
                 let mut rights_string = String::new();
@@ -401,37 +425,34 @@ impl Chessboard {
                     rights_string.push('q');
                 }
 
+                rights_string.push(' ');
                 rights_string
             }
         });
 
         // En passant
-        if chessboard.en_passant == 0 {
+        if self.en_passant == 0 {
             string_array.push("- ".to_string());
         } else {
             // Convert en passant square to algebraic notation
-            let row = (chessboard.en_passant - 1) / 8 + 1;
-            let col = (chessboard.en_passant - 1) % 8;
+            let row = (self.en_passant - 1) / 8 + 1;
+            let col = (self.en_passant - 1) % 8;
 
             let column_char = (b'A' + col) as char;
 
             string_array.push(format!("{}{}", column_char, row));
+            string_array.push(" ".to_owned());
         }
 
         // Set the rest to default values
         string_array.push("0 ".to_string());
         string_array.push("1".to_string());
 
-        // Combine array elements into a single string
-        fen_string = string_array.concat();
-
-        // Print the FEN string (for debugging purposes)
-        println!("{:?}", fen_string);
-
         // Return the FEN string
-        fen_string
+        string_array.concat()
     }
 }
+
 //MINIMAX Function Pseudo-code
 // fn minimax(position, depth, alpha, beta, maximixing_player) {
 //     if depth == 0 or game over in position

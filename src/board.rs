@@ -2,7 +2,7 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{io::stdout, u8};
+use std::{error::Error, io::stdout, u8};
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
@@ -74,85 +74,89 @@ impl Chessboard {
     /// # Return: Chessboard with the position from the FEN.
     pub fn from_string(fen: &str) -> Chessboard {
         let mut chessboard = Chessboard::new();
+        if !Self::valid_fen(fen) {
+            println!("{} is an invalid FEN. Try again.", fen);
+            chessboard
+        } else {
+            // Split the FEN string into parts using ' ' as the delimiter
+            let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 
-        // Split the FEN string into parts using ' ' as the delimiter
-        let fen_parts: Vec<&str> = fen.split_whitespace().collect();
-
-        // Parse the piece placement part of the FEN string
-        let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
-        let two:u64 = 2;
-        for (mut rank, row) in board_rows.iter().rev().enumerate() {
-            rank += 1;
-            let mut file = 0; // Initialize the file (column) index
-            for piece in row.chars() {
-                if piece.is_digit(10) {
-                    let empty_squares = piece.to_digit(10).unwrap() as usize;
-                    file += empty_squares; // Skip empty squares
-                } else {
-                    let square_index = 8 * (rank - 1) + file;
-                    // Update the corresponding bitboard based on the piece type and color
-                    match piece {
-                        'p' => chessboard.black_pawns |= two.pow(square_index as u32),
-                        'r' => chessboard.black_rooks |= two.pow(square_index as u32),
-                        'b' => chessboard.black_bishops |= two.pow(square_index as u32),
-                        'k' => chessboard.black_king |= two.pow(square_index as u32),
-                        'q' => chessboard.black_queen |= two.pow(square_index as u32),
-                        'n' => chessboard.black_knights |= two.pow(square_index as u32),
-                        'P' => chessboard.white_pawns |= two.pow(square_index as u32),
-                        'R' => chessboard.white_rooks |= two.pow(square_index as u32),
-                        'B' => chessboard.white_bishops |= two.pow(square_index as u32),
-                        'K' => chessboard.white_king |= two.pow(square_index as u32),
-                        'Q' => chessboard.white_queen |= two.pow(square_index as u32),
-                        'N' => chessboard.white_knights |= two.pow(square_index as u32),
-                        _ => { /* Handle other characters if needed */ }
+            // Parse the piece placement part of the FEN string
+            let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
+            let two: u64 = 2;
+            for (mut rank, row) in board_rows.iter().rev().enumerate() {
+                rank += 1;
+                let mut file = 0; // Initialize the file (column) index
+                for piece in row.chars() {
+                    if piece.is_digit(10) {
+                        let empty_squares = piece.to_digit(10).unwrap() as usize;
+                        file += empty_squares; // Skip empty squares
+                    } else {
+                        let square_index = 8 * (rank - 1) + file;
+                        // Update the corresponding bitboard based on the piece type and color
+                        match piece {
+                            'p' => chessboard.black_pawns |= two.pow(square_index as u32),
+                            'r' => chessboard.black_rooks |= two.pow(square_index as u32),
+                            'b' => chessboard.black_bishops |= two.pow(square_index as u32),
+                            'k' => chessboard.black_king |= two.pow(square_index as u32),
+                            'q' => chessboard.black_queen |= two.pow(square_index as u32),
+                            'n' => chessboard.black_knights |= two.pow(square_index as u32),
+                            'P' => chessboard.white_pawns |= two.pow(square_index as u32),
+                            'R' => chessboard.white_rooks |= two.pow(square_index as u32),
+                            'B' => chessboard.white_bishops |= two.pow(square_index as u32),
+                            'K' => chessboard.white_king |= two.pow(square_index as u32),
+                            'Q' => chessboard.white_queen |= two.pow(square_index as u32),
+                            'N' => chessboard.white_knights |= two.pow(square_index as u32),
+                            _ => { /* Handle other characters if needed */ }
+                        }
+                        file += 1; // Move to the next file
                     }
-                    file += 1; // Move to the next file
                 }
             }
-        }
 
-        // Parse whose turn it is
-        chessboard.white_turn = fen_parts[1] == "w";
+            // Parse whose turn it is
+            chessboard.white_turn = fen_parts[1] == "w";
 
-        // Parse castling rights
-        let fen_castle = fen_parts[2];
-        for c in fen_castle.chars() {
-            let v = match c {
-                'K' => 0b1000,
-                'Q' => 0b0100,
-                'k' => 0b0010,
-                'q' => 0b0001,
-                _ => 0b0,
-            };
-            chessboard.castling_rights |= v;
-        }
+            // Parse castling rights
+            let fen_castle = fen_parts[2];
+            for c in fen_castle.chars() {
+                let v = match c {
+                    'K' => 0b1000,
+                    'Q' => 0b0100,
+                    'k' => 0b0010,
+                    'q' => 0b0001,
+                    _ => 0b0,
+                };
+                chessboard.castling_rights |= v;
+            }
 
-        // Parse en passant square
-        let fen_passant = fen_parts[3];
-        if fen_passant != "-" {
-            if let (Some(col), Some(row)) = (
-                fen_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
-                fen_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
-            ) {
-                if (1..=8).contains(&row) {
-                    let col_value: u8 = match col {
-                        'A' => 1,
-                        'B' => 2,
-                        'C' => 3,
-                        'D' => 4,
-                        'E' => 5,
-                        'F' => 6,
-                        'G' => 7,
-                        'H' => 8,
-                        _ => 0, // Handle unexpected characters
-                    };
-                    chessboard.en_passant = col_value + 8 * (row as u8 - 1);
+            // Parse en passant square
+            let fen_passant = fen_parts[3];
+            if fen_passant != "-" {
+                if let (Some(col), Some(row)) = (
+                    fen_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
+                    fen_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
+                ) {
+                    if (1..=8).contains(&row) {
+                        let col_value: u8 = match col {
+                            'A' => 1,
+                            'B' => 2,
+                            'C' => 3,
+                            'D' => 4,
+                            'E' => 5,
+                            'F' => 6,
+                            'G' => 7,
+                            'H' => 8,
+                            _ => 0, // Handle unexpected characters
+                        };
+                        chessboard.en_passant = col_value + 8 * (row as u8 - 1);
+                    }
                 }
             }
-        }
 
-        // Ignore the rest of the FEN string for now
-        return chessboard;
+            // Ignore the rest of the FEN string for now
+            chessboard
+        }
     }
 
     /// Prints the chessboard to the console
@@ -218,6 +222,12 @@ impl Chessboard {
             ('q', self.black_queen),
             ('r', self.black_rooks),
         ]
+    }
+
+    fn valid_fen(fen: &str) -> bool {
+        let is_valid: bool = false;
+        //Check if fen is valid
+        is_valid
     }
 
     /// Foreground color to display for this piece

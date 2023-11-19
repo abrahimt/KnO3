@@ -275,44 +275,17 @@ impl Chessboard {
 
             // Iterate through each file (column) in the rank
             for file in 1..=8 {
-                let square_index = (rank - 1) * 8 + (file - 1);
+                let square_ndx = (rank - 1) * 8 + (file - 1);
 
-                // Determine the piece on the current square
-                let piece = if (self.white_pawns >> square_index) & 1 != 0 {
-                    'P'
-                } else if (self.white_rooks >> square_index) & 1 != 0 {
-                    'R'
-                } else if (self.white_knights >> square_index) & 1 != 0 {
-                    'N'
-                } else if (self.white_bishops >> square_index) & 1 != 0 {
-                    'B'
-                } else if (self.white_queen >> square_index) & 1 != 0 {
-                    'Q'
-                } else if (self.white_king >> square_index) & 1 != 0 {
-                    'K'
-                } else if (self.black_pawns >> square_index) & 1 != 0 {
-                    'p'
-                } else if (self.black_rooks >> square_index) & 1 != 0 {
-                    'r'
-                } else if (self.black_knights >> square_index) & 1 != 0 {
-                    'n'
-                } else if (self.black_bishops >> square_index) & 1 != 0 {
-                    'b'
-                } else if (self.black_queen >> square_index) & 1 != 0 {
-                    'q'
-                } else if (self.black_king >> square_index) & 1 != 0 {
-                    'k'
-                } else {
-                    empty_squares += 1;
-                    continue;
-                };
-
-                // Handle empty squares and append piece to the row string
-                if empty_squares > 0 {
-                    row_string.push_str(&empty_squares.to_string());
-                    empty_squares = 0;
+                for &(piece, mask) in self.get_pieces().iter() {
+                    if (mask >> square_ndx) & 1 != 0 {
+                        if empty_squares > 0 { 
+                            row_string.push_str(&empty_squares.to_string());
+                        }
+                        row_string.push(piece);
+                        empty_squares = 0;
+                    }
                 }
-                row_string.push(piece);
             }
 
             // Append the count of empty squares at the end of the row string

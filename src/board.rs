@@ -335,23 +335,22 @@ impl Chessboard {
         string_array.push(match self.castling_rights {
             0 => "- ".to_string(),
             rights => {
-                let mut rights_string = String::new();
+                let rights_string = "KQkq"
+                    .chars()
+                    .filter(|&c| {
+                        (rights
+                            & match c {
+                                'K' => 0b1000,
+                                'Q' => 0b0100,
+                                'k' => 0b0010,
+                                'q' => 0b0001,
+                                _ => 0,
+                            })
+                            != 0
+                    })
+                    .collect::<String>();
 
-                if rights & 0b1000 != 0 {
-                    rights_string.push('K');
-                }
-                if rights & 0b0100 != 0 {
-                    rights_string.push('Q');
-                }
-                if rights & 0b0010 != 0 {
-                    rights_string.push('k');
-                }
-                if rights & 0b0001 != 0 {
-                    rights_string.push('q');
-                }
-
-                rights_string.push(' ');
-                rights_string
+                format!("{} ", rights_string)
             }
         });
     }

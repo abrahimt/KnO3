@@ -90,28 +90,20 @@ impl Chessboard {
                 } else {
                     let square_index = 8 * (rank - 1) + file;
                     // Update the corresponding bitboard based on the piece type and color
-                    if piece.is_ascii_lowercase() {
-                        // Black pieces
-                        match piece {
-                            'p' => chessboard.black_pawns |= pow(2, square_index),
-                            'r' => chessboard.black_rooks |= pow(2, square_index),
-                            'b' => chessboard.black_bishops |= pow(2, square_index),
-                            'k' => chessboard.black_king |= pow(2, square_index),
-                            'q' => chessboard.black_queen |= pow(2, square_index),
-                            'n' => chessboard.black_knights |= pow(2, square_index),
-                            _ => { /* Handle other lowercase characters if needed */ }
-                        }
-                    } else {
-                        // White pieces
-                        match piece {
-                            'P' => chessboard.white_pawns |= pow(2, square_index),
-                            'R' => chessboard.white_rooks |= pow(2, square_index),
-                            'B' => chessboard.white_bishops |= pow(2, square_index),
-                            'K' => chessboard.white_king |= pow(2, square_index),
-                            'Q' => chessboard.white_queen |= pow(2, square_index),
-                            'N' => chessboard.white_knights |= pow(2, square_index),
-                            _ => { /* Handle other uppercase characters if needed */ }
-                        }
+                    match piece {
+                        'p' => chessboard.black_pawns |= pow(2, square_index),
+                        'r' => chessboard.black_rooks |= pow(2, square_index),
+                        'b' => chessboard.black_bishops |= pow(2, square_index),
+                        'k' => chessboard.black_king |= pow(2, square_index),
+                        'q' => chessboard.black_queen |= pow(2, square_index),
+                        'n' => chessboard.black_knights |= pow(2, square_index),
+                        'P' => chessboard.white_pawns |= pow(2, square_index),
+                        'R' => chessboard.white_rooks |= pow(2, square_index),
+                        'B' => chessboard.white_bishops |= pow(2, square_index),
+                        'K' => chessboard.white_king |= pow(2, square_index),
+                        'Q' => chessboard.white_queen |= pow(2, square_index),
+                        'N' => chessboard.white_knights |= pow(2, square_index),
+                        _ => { /* Handle other characters if needed */ }
                     }
                     file += 1; // Move to the next file
                 }

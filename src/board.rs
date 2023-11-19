@@ -77,7 +77,7 @@ impl Chessboard {
     /// # Return: Resulting chessboard with the position from the FEN.
     pub fn from_string(fen: &str) -> Result<Chessboard, String> {
         if !Self::valid_fen(fen) { return Err("Invalid FEN".to_string()); }
-        let mut chessboard = Chessboard::new();
+        let mut chessboard = Chessboard::empty();
         // Split the FEN string into parts using ' ' as the delimiter
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 

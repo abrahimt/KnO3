@@ -69,7 +69,6 @@ impl Chessboard {
         }
     }
 
-
     /// Create a new instance of a chessboard, based on a FEN string
     /// Forsyth–Edwards Notation Parser
     /// * `fen` - The FEN to be converted to a Chessboard.
@@ -156,7 +155,6 @@ impl Chessboard {
         return chessboard;
     }
 
-
     /// Prints the chessboard to the console
     /// * `pretty` - Print with extra formatting
     pub fn print(&self, pretty: bool) {
@@ -197,7 +195,6 @@ impl Chessboard {
         println!();
         return;
     }
-
 
     /* *************** */
     /* PRIVATE FUNCTIONS */
@@ -275,7 +272,7 @@ impl Chessboard {
 
                 for &(piece, mask) in self.get_pieces().iter() {
                     if (mask >> square_ndx) & 1 != 0 {
-                        if empty_squares > 0 { 
+                        if empty_squares > 0 {
                             row_string.push_str(&empty_squares.to_string());
                         }
                         row_string.push(piece);

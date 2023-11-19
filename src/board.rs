@@ -225,7 +225,7 @@ impl Chessboard {
     }
 
     fn valid_fen(fen: &str) -> bool {
-        let is_valid: bool = false;
+        let is_valid: bool = true;
         //Check if fen is valid
         is_valid
     }
@@ -299,16 +299,16 @@ impl Chessboard {
             let mut row_string = String::new();
 
             for file in 1..=8 {
-                let square_ndx = (rank - 1) * 8 + (file - 1);
+                let piece = self.piece_at_position(rank, file);
 
-                for &(piece, mask) in self.get_pieces().iter() {
-                    if (mask >> square_ndx) & 1 != 0 {
-                        if empty_squares > 0 {
-                            row_string.push_str(&empty_squares.to_string());
-                        }
-                        row_string.push(piece);
+                if piece == '.' {
+                    empty_squares += 1;
+                } else {
+                    if empty_squares > 0 {
+                        row_string.push_str(&empty_squares.to_string());
                         empty_squares = 0;
                     }
+                    row_string.push(piece);
                 }
             }
 

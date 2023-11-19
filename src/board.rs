@@ -232,20 +232,12 @@ impl Chessboard {
     }
 
     /// # Return: The color of the board at this position
+    #[rustfmt::skip]
     fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
-        if (rank + file) % 2 == 0 {
-            return Color::Rgb {
-                r: 190,
-                g: 140,
-                b: 170,
-            };
-        } else {
-            return Color::Rgb {
-                r: 255,
-                g: 206,
-                b: 158,
-            };
-        }
+        let lght = Color::Rgb { r: 190, g: 140, b: 170 };
+        let dark = Color::Rgb { r: 255, g: 206, b: 158 };
+        if (rank + file) % 2 == 0 { lght }
+        else                      { dark }
     }
 
     /// Retrieve the chess piece at a specific position on the chessboard.

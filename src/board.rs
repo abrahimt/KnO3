@@ -26,6 +26,9 @@ pub struct Chessboard {
 }
 
 impl Chessboard {
+    /* *********** */
+    /* Constructos */
+
     /// Create a new instance of a chessboard, setup to start a new game.
     pub fn new() -> Chessboard {
         Chessboard {
@@ -158,6 +161,9 @@ impl Chessboard {
             chessboard
         }
     }
+
+    /* **************** */
+    /* Public Functions */
 
     /// Prints the chessboard to the console
     /// * `pretty` - Print with extra formatting

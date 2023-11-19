@@ -267,16 +267,37 @@ impl Chessboard {
     /// * `chessboard` - The chessboard position to be converted to a FEN.
     /// # Return: FEN string representing the board's position.
     pub fn to_string(&self) -> String {
-        // Initialize a vector to store FEN components as strings
         let mut string_array: Vec<String> = Vec::with_capacity(6);
-        let mut fen_string;
 
         // Piece placement
+        self.set_pieces(&mut string_array);
+
+        // Whose turn
+        string_array.push(if self.white_turn {
+            String::from("w ")
+        } else {
+            String::from("b ")
+        });
+
+        // Castling rights
+        self.set_castling_rights(&mut string_array);
+
+        // En passant
+        self.set_en_passant(&mut string_array);
+
+        // Set the rest to default values
+        string_array.push("0 ".to_string());
+        string_array.push("1".to_string());
+
+        // Return the FEN string
+        string_array.concat()
+    }
+
+    fn set_pieces(&self, string_array: &mut Vec<String>) {
         for rank in (1..=8).rev() {
             let mut empty_squares = 0;
             let mut row_string = String::new();
 
-            // Iterate through each file (column) in the rank
             for file in 1..=8 {
                 let square_ndx = (rank - 1) * 8 + (file - 1);
 
@@ -291,41 +312,31 @@ impl Chessboard {
                 }
             }
 
-            // Append the count of empty squares at the end of the row string
             if empty_squares > 0 {
                 row_string.push_str(&empty_squares.to_string());
             }
 
-            // Add the row string to the FEN components vector
             string_array.push(row_string);
             string_array.push("/".to_owned());
         }
 
         let binding = string_array.concat();
-        fen_string = binding.chars();
+        let mut fen_string = binding.chars();
         fen_string.next_back();
         let fen_string_no_slash = fen_string.as_str();
-        for item in &mut string_array {
+        for item in string_array.iter_mut() {
             item.clear();
         }
         string_array.push(fen_string_no_slash.to_owned());
-
         string_array.push(" ".to_owned());
+    }
 
-        // Whose turn
-        string_array.push(if self.white_turn {
-            "w ".to_string()
-        } else {
-            "b ".to_string()
-        });
-
-        // Castling rights
+    fn set_castling_rights(&self, string_array: &mut Vec<String>) {
         string_array.push(match self.castling_rights {
             0 => "- ".to_string(),
             rights => {
                 let mut rights_string = String::new();
 
-                // Check individual castling rights and append to rights_string
                 if rights & 0b1000 != 0 {
                     rights_string.push('K');
                 }
@@ -343,27 +354,19 @@ impl Chessboard {
                 rights_string
             }
         });
+    }
 
-        // En passant
+    fn set_en_passant(&self, string_array: &mut Vec<String>) {
         if self.en_passant == 0 {
             string_array.push("- ".to_string());
         } else {
-            // Convert en passant square to algebraic notation
             let row = (self.en_passant - 1) / 8 + 1;
             let col = (self.en_passant - 1) % 8;
-
             let column_char = (b'A' + col) as char;
 
             string_array.push(format!("{}{}", column_char, row));
             string_array.push(" ".to_owned());
         }
-
-        // Set the rest to default values
-        string_array.push("0 ".to_string());
-        string_array.push("1".to_string());
-
-        // Return the FEN string
-        string_array.concat()
     }
 }
 

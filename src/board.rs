@@ -48,7 +48,7 @@ impl Chessboard {
         }
     }
 
-    /// Create an new instance of a chessboard, with no pieces on it.
+    /// Create a new instance of a chessboard, with no pieces on it.
     pub fn empty() -> Chessboard {
         Chessboard {
             white_pawns: 0,
@@ -69,6 +69,8 @@ impl Chessboard {
         }
     }
 
+
+    /// Create a new instance of a chessboard, based on a FEN string
     /// Forsyth–Edwards Notation Parser
     /// * `fen` - The FEN to be converted to a Chessboard.
     /// # Return: Chessboard with the position from the FEN.
@@ -154,6 +156,7 @@ impl Chessboard {
         return chessboard;
     }
 
+
     /// Prints the chessboard to the console
     /// * `pretty` - Print with extra formatting
     pub fn print(&self, pretty: bool) {
@@ -194,6 +197,7 @@ impl Chessboard {
         println!();
         return;
     }
+
 
     /* *************** */
     /* PRIVATE FUNCTIONS */

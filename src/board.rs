@@ -2,7 +2,6 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use num_traits::pow;
 use std::{io::stdout, u8};
 
 /// Struct representing a chessboard with piece positions and game state
@@ -81,6 +80,7 @@ impl Chessboard {
 
         // Parse the piece placement part of the FEN string
         let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
+        let two:u64 = 2;
         for (mut rank, row) in board_rows.iter().rev().enumerate() {
             rank += 1;
             let mut file = 0; // Initialize the file (column) index
@@ -92,18 +92,18 @@ impl Chessboard {
                     let square_index = 8 * (rank - 1) + file;
                     // Update the corresponding bitboard based on the piece type and color
                     match piece {
-                        'p' => chessboard.black_pawns |= pow(2, square_index),
-                        'r' => chessboard.black_rooks |= pow(2, square_index),
-                        'b' => chessboard.black_bishops |= pow(2, square_index),
-                        'k' => chessboard.black_king |= pow(2, square_index),
-                        'q' => chessboard.black_queen |= pow(2, square_index),
-                        'n' => chessboard.black_knights |= pow(2, square_index),
-                        'P' => chessboard.white_pawns |= pow(2, square_index),
-                        'R' => chessboard.white_rooks |= pow(2, square_index),
-                        'B' => chessboard.white_bishops |= pow(2, square_index),
-                        'K' => chessboard.white_king |= pow(2, square_index),
-                        'Q' => chessboard.white_queen |= pow(2, square_index),
-                        'N' => chessboard.white_knights |= pow(2, square_index),
+                        'p' => chessboard.black_pawns |= two.pow(square_index as u32),
+                        'r' => chessboard.black_rooks |= two.pow(square_index as u32),
+                        'b' => chessboard.black_bishops |= two.pow(square_index as u32),
+                        'k' => chessboard.black_king |= two.pow(square_index as u32),
+                        'q' => chessboard.black_queen |= two.pow(square_index as u32),
+                        'n' => chessboard.black_knights |= two.pow(square_index as u32),
+                        'P' => chessboard.white_pawns |= two.pow(square_index as u32),
+                        'R' => chessboard.white_rooks |= two.pow(square_index as u32),
+                        'B' => chessboard.white_bishops |= two.pow(square_index as u32),
+                        'K' => chessboard.white_king |= two.pow(square_index as u32),
+                        'Q' => chessboard.white_queen |= two.pow(square_index as u32),
+                        'N' => chessboard.white_knights |= two.pow(square_index as u32),
                         _ => { /* Handle other characters if needed */ }
                     }
                     file += 1; // Move to the next file

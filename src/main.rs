@@ -1,4 +1,5 @@
 mod board;
+mod fen_util;
 use board::Chessboard;
 
 fn main() {

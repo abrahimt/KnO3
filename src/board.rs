@@ -3,6 +3,7 @@ use crossterm::{
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
 use std::{error::Error, io::stdout, u8};
+use crate::fen_util;
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
@@ -71,6 +72,7 @@ impl Chessboard {
         }
     }
 
+    //fn parse_positions
     /// Create a new instance of a chessboard, based on a FEN string
     /// Forsyth–Edwards Notation Parser
     /// * `fen` - The FEN to be converted to a Chessboard.
@@ -82,37 +84,7 @@ impl Chessboard {
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 
         // Parse the piece placement part of the FEN string
-        let board_rows: Vec<&str> = fen_parts[0].split('/').collect();
-        let two: u64 = 2;
-        for (mut rank, row) in board_rows.iter().rev().enumerate() {
-            rank += 1;
-            let mut file = 0; // Initialize the file (column) index
-            for piece in row.chars() {
-                if piece.is_digit(10) {
-                    let empty_squares = piece.to_digit(10).unwrap() as usize;
-                    file += empty_squares; // Skip empty squares
-                } else {
-                    let square_index = 8 * (rank - 1) + file;
-                    // Update the corresponding bitboard based on the piece type and color
-                    match piece {
-                        'p' => chessboard.black_pawns |= two.pow(square_index as u32),
-                        'r' => chessboard.black_rooks |= two.pow(square_index as u32),
-                        'b' => chessboard.black_bishops |= two.pow(square_index as u32),
-                        'k' => chessboard.black_king |= two.pow(square_index as u32),
-                        'q' => chessboard.black_queen |= two.pow(square_index as u32),
-                        'n' => chessboard.black_knights |= two.pow(square_index as u32),
-                        'P' => chessboard.white_pawns |= two.pow(square_index as u32),
-                        'R' => chessboard.white_rooks |= two.pow(square_index as u32),
-                        'B' => chessboard.white_bishops |= two.pow(square_index as u32),
-                        'K' => chessboard.white_king |= two.pow(square_index as u32),
-                        'Q' => chessboard.white_queen |= two.pow(square_index as u32),
-                        'N' => chessboard.white_knights |= two.pow(square_index as u32),
-                        _ => { /* Handle other characters if needed */ }
-                    }
-                    file += 1; // Move to the next file
-                }
-            }
-        }
+        fen_util::place_pieces(&mut chessboard, fen_parts[0]);
 
         // Parse whose turn it is
         chessboard.white_turn = fen_parts[1] == "w";

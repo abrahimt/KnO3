@@ -1,5 +1,6 @@
 use crate::board::Chessboard;
 
+#[rustfmt::skip]
 pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
     for (row_index, row_string) in fen_rows.split('/').rev().enumerate() {
         let mut file_ndx: usize = 0;

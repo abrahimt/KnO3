@@ -74,7 +74,7 @@ impl Chessboard {
     /// Create a new instance of a chessboard, based on a FEN string
     /// Forsyth–Edwards Notation Parser
     /// * `fen` - The FEN to be converted to a Chessboard.
-    /// # Return: Chessboard with the position from the FEN.
+    /// # Return: Resulting chessboard with the position from the FEN.
     pub fn from_string(fen: &str) -> Result<Chessboard, String> {
         let mut chessboard = Chessboard::new();
         if !Self::valid_fen(fen) { return Err("Invalid FEN".to_string()); }

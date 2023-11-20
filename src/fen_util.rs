@@ -39,13 +39,13 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 }
 
 /// Validates if the given FEN (Forsyth-Edwards Notation) string is well-formed.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `fen` - A FEN string to be validated.
-/// 
+///
 /// # Returns
-/// 
+///
 /// A boolean indicating whether the FEN string is valid.
 pub fn valid_fen(fen: &str) -> bool {
     let is_valid: bool = true;
@@ -54,9 +54,9 @@ pub fn valid_fen(fen: &str) -> bool {
 }
 
 /// Generates a FEN (Forsyth-Edwards Notation) string representing the current state of the chessboard.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
 pub fn set_pieces(chessboard: &Chessboard, string_array: &mut Vec<String>) {
@@ -90,12 +90,10 @@ pub fn set_pieces(chessboard: &Chessboard, string_array: &mut Vec<String>) {
     string_array.push(" ".to_owned());
 }
 
-
-
 /// Sets the castling rights information in the FEN (Forsyth-Edwards Notation) string.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
 pub fn set_castling_rights(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
@@ -123,9 +121,9 @@ pub fn set_castling_rights(chessboard: &mut Chessboard, string_array: &mut Vec<S
 }
 
 /// Sets the en passant information in the FEN (Forsyth-Edwards Notation) string.
-/// 
+///
 /// # Arguments
-/// 
+///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
 pub fn set_en_passant(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
@@ -142,7 +140,10 @@ pub fn set_en_passant(chessboard: &mut Chessboard, string_array: &mut Vec<String
 }
 
 /// Parse the piece placement part of the FEN string.
-pub fn parse_piece_placement(chessboard: &mut Chessboard, piece_placement: &str) -> Result<(), String> {
+pub fn parse_piece_placement(
+    chessboard: &mut Chessboard,
+    piece_placement: &str,
+) -> Result<(), String> {
     self::place_pieces(chessboard, piece_placement);
     Ok(())
 }

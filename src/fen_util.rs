@@ -59,7 +59,7 @@ pub fn valid_fen(fen: &str) -> bool {
 ///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn set_pieces(chessboard: &Chessboard, string_array: &mut Vec<String>) {
+pub fn get_fen_placement(chessboard: &Chessboard, string_array: &mut Vec<String>) {
     for rank in (1..=8).rev() {
         let mut empty_squares = 0;
         let mut row_string = String::new();
@@ -96,7 +96,7 @@ pub fn set_pieces(chessboard: &Chessboard, string_array: &mut Vec<String>) {
 ///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn set_castling_rights(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
+pub fn get_fen_castles(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
     string_array.push(match chessboard.castling_rights {
         0 => "- ".to_string(),
         rights => {
@@ -126,7 +126,7 @@ pub fn set_castling_rights(chessboard: &mut Chessboard, string_array: &mut Vec<S
 ///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn set_en_passant(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
+pub fn get_fen_passant(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
     if chessboard.en_passant == 0 {
         string_array.push("- ".to_string());
     } else {

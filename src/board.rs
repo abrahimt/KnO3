@@ -207,20 +207,16 @@ impl Chessboard {
         let mut string_array: Vec<String> = Vec::with_capacity(6);
 
         // Piece placement
-        fen_util::set_pieces(self, &mut string_array);
+        fen_util::get_fen_placement(self, &mut string_array);
 
         // Whose turn
-        string_array.push(if self.white_turn {
-            String::from("w ")
-        } else {
-            String::from("b ")
-        });
+        if self.white_turn { "w " } else { "b " }.to_string();
 
         // Castling rights
-        fen_util::set_castling_rights(self, &mut string_array);
+        fen_util::get_fen_castles(self, &mut string_array);
 
         // En passant
-        fen_util::set_en_passant(self, &mut string_array);
+        fen_util::get_fen_passant(self, &mut string_array);
 
         // Set the rest to default values
         string_array.push("0 ".to_string());

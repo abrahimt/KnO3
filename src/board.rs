@@ -202,6 +202,7 @@ impl Chessboard {
     /// Forsyth–Edwards Notation Serializer
     /// * `chessboard` - The chessboard position to be converted to a FEN.
     /// # Return: FEN string representing the board's position.
+    #[allow(clippy::all)]
     pub fn to_string(self) -> String {
         let mut string_array: [&str; 6] = ["", "", "", "", "", ""];
 

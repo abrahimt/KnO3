@@ -52,23 +52,19 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 pub fn valid_fen(fen: &str) -> bool {
     // Define the regex pattern for a valid FEN string
     let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
-
     // Check if the provided FEN string matches the pattern
     if let Some(captures) = regex.captures(fen) {
         // Extract the position part of the FEN and split it into rows
         let fen_list = captures.get(1).unwrap().as_str().split("/");
-
         // Check if there are exactly 8 rows in the position part
         if fen_list.clone().count() != 8 {
             return false;
         }
-
         // Iterate through each row in the position part
         for fen_part in fen_list {
             let mut field_sum = 0;
             let mut previous_was_digit = false;
             let mut previous_was_piece = false;
-
             // Iterate through each character in the row
             for c in fen_part.chars() {
                 // Check if the character is a digit
@@ -98,13 +94,11 @@ pub fn valid_fen(fen: &str) -> bool {
                     return false;
                 }
             }
-
             // Check if there are exactly 8 columns in each row
             if field_sum != 8 {
                 return false;
             }
         }
-
         // The FEN string passed all checks and is valid
         true
     } else {

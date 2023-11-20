@@ -3,7 +3,7 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{error::Error, io::stdout, u8};
+use std::{io::stdout, u8};
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in

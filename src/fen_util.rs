@@ -149,9 +149,10 @@ pub fn parse_piece_placement(
 }
 
 /// Parse whose turn it is.
-pub fn parse_whose_turn(chessboard: &mut Chessboard, turn_indicator: &str) {
-    chessboard.white_turn = turn_indicator == "w";
+pub fn parse_whose_turn(chessboard: &mut Chessboard, whose_turn: &str) {
+    chessboard.white_turn = whose_turn == "w";
 }
+
 
 /// Parse castling rights.
 pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {

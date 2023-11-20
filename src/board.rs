@@ -210,7 +210,7 @@ impl Chessboard {
         fen_util::get_fen_placement(self, &mut string_array);
 
         // Whose turn
-        if self.white_turn { "w " } else { "b " }.to_string();
+        string_array[1] = if self.white_turn { " w " } else { " b " }.to_string();
 
         // Castling rights
         fen_util::get_fen_castles(self, &mut string_array);

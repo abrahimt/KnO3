@@ -149,7 +149,8 @@ pub fn get_fen_castles(chessboard: &mut Chessboard, string_array: &mut [&str; 6]
 ///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn get_fen_passant<'a>(chessboard: &'a mut Chessboard, string_array: &'a mut [&'a str; 6]) -> String {
+/*
+pub fn get_fen_passant(chessboard: Chessboard, string_array: &mut [&str; 6]) -> String {
     if chessboard.en_passant == 0 {
         string_array[3] = "- ";
     } else {
@@ -160,6 +161,17 @@ pub fn get_fen_passant<'a>(chessboard: &'a mut Chessboard, string_array: &'a mut
         string_array[3] = &format!("{}{} ", column_char, row);
     }
     string_array[3].to_string()
+}*/
+
+pub fn get_fen_passant(chessboard: Chessboard) -> String {
+    let passant = chessboard.en_passant;
+    if passant == 0 {
+        return "-".to_string();
+    }
+    let row = (passant - 1) / 8 + 1;
+    let col = (passant - 1) % 8;
+    let chr = (b'A' + col) as char;
+    format!("{}{}", chr, row)
 }
 
 /// Parse the piece placement part of the FEN string.

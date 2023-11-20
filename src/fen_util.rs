@@ -11,7 +11,7 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
     for (row_index, row_string) in fen_rows.split('/').rev().enumerate() {
         let mut file_ndx: usize = 0;
         for piece in row_string.chars() {
-            if piece.is_digit(10) {
+            if piece.is_ascii_digit() {
                 file_ndx += piece.to_digit(10).unwrap_or(0) as usize;
                 continue;
             }

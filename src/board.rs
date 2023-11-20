@@ -140,7 +140,6 @@ impl Chessboard {
             }
         }
         println!();
-        return;
     }
 
     /* *************** */

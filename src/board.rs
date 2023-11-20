@@ -1,13 +1,12 @@
-use std::io::stdout;
+use crate::fen_util;
 use crossterm::{
     execute,
-    style::{ Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
+    style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-
-
+use std::{error::Error, io::stdout, u8};
 
 /// Struct representing a chessboard with piece positions and game state
-/// Each `piece` is a uint64 bitmap. Each byte represents a rank and a 1 indicates a presence in
+/// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
 /// that position.
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
@@ -22,14 +21,15 @@ pub struct Chessboard {
     pub(crate) white_bishops: u64,
     pub(crate) white_queen: u64,
     pub(crate) white_king: u64,
-    pub(crate) white_turn: bool,
-    pub(crate) white_castle: u8, //11, 01 (representing sides of the board)
-    pub(crate) black_castle: u8, //11, 01 (representing sides of the board)
-    pub(crate) en_passant: u8,   //a square that has en passant ability (1-64)
+    pub(crate) white_turn: bool,    // True if it's white's turn
+    pub(crate) castling_rights: u8, // KQkq will be represented by 4 bits
+    pub(crate) en_passant: u8,      //a square that has en passant ability (1-64)
 }
 
-
 impl Chessboard {
+    /* *********** */
+    /* Constructos */
+
     /// Create a new instance of a chessboard, setup to start a new game.
     pub fn new() -> Chessboard {
         Chessboard {
@@ -45,13 +45,62 @@ impl Chessboard {
             black_king: 0b0000100000000000000000000000000000000000000000000000000000000000,
             black_queen: 0b0001000000000000000000000000000000000000000000000000000000000000,
             black_rooks: 0b1000000100000000000000000000000000000000000000000000000000000000,
-            white_castle: 3,
-            black_castle: 3,
+            castling_rights: 0b1111,
             en_passant: 0,
-            white_turn: true
+            white_turn: true,
         }
     }
 
+    /// Create a new instance of a chessboard, with no pieces on it.
+    pub fn empty() -> Chessboard {
+        Chessboard {
+            white_pawns: 0,
+            white_knights: 0,
+            white_bishops: 0,
+            white_king: 0,
+            white_queen: 0,
+            white_rooks: 0,
+            black_pawns: 0,
+            black_knights: 0,
+            black_bishops: 0,
+            black_king: 0,
+            black_queen: 0,
+            black_rooks: 0,
+            castling_rights: 0,
+            en_passant: 0,
+            white_turn: true,
+        }
+    }
+
+    /// Create a new instance of a chessboard, based on a FEN string.
+    /// Forsyth–Edwards Notation Parser.
+    ///
+    /// # Arguments
+    ///
+    /// * `fen` - The FEN to be converted to a Chessboard.
+    ///
+    /// # Return
+    ///
+    /// Resulting chessboard with the position from the FEN.
+    pub fn from_string(fen: &str) -> Result<Chessboard, String> {
+        if !fen_util::valid_fen(fen) {
+            return Err("Invalid FEN".to_string());
+        }
+
+        let mut chessboard = Chessboard::empty();
+
+        let fen_parts: Vec<&str> = fen.split_whitespace().collect();
+
+        fen_util::parse_piece_placement(&mut chessboard, fen_parts[0])?;
+        fen_util::parse_whose_turn(&mut chessboard, fen_parts[1]);
+        fen_util::parse_castling_rights(&mut chessboard, fen_parts[2]);
+        fen_util::parse_en_passant(&mut chessboard, fen_parts[3]);
+
+        Ok(chessboard)
+    }
+
+    /* **************** */
+    /* Public Functions */
 
     /// Prints the chessboard to the console
     /// * `pretty` - Print with extra formatting
@@ -63,7 +112,10 @@ impl Chessboard {
             print!("{rank} ");
             for file in 0..files.len() {
                 let piece = self.piece_at_position(*rank, file);
-                if !pretty { print!("{piece} "); continue; }
+                if !pretty {
+                    print!("{piece} ");
+                    continue;
+                }
 
                 let fg = self.find_fg(piece);
                 let frmt_piece = format!("{:^3}", piece);
@@ -74,25 +126,30 @@ impl Chessboard {
                     SetBackgroundColor(bk),
                     Print(frmt_piece),
                     ResetColor
-                    );
+                );
             }
             println!();
         }
 
         print!("  ");
-        for file in files.iter() { if pretty { print!(" {file} ") } else { print!("{file} "); } }
+        for file in files.iter() {
+            if pretty {
+                print!(" {file} ")
+            } else {
+                print!("{file} ");
+            }
+        }
         println!();
         return;
     }
 
-
     /* *************** */
-    /* PRIVATE METHIDS */
+    /* PRIVATE FUNCTIONS */
 
     /// Maps the pieces on the board to the character that represents them in the console.
     /// # Return:
     /// A vector of tuples, where each tuple contains a chess piece character and it's
-    /// correcsponding bitboard positions.
+    /// corresponding bitboard positions.
     fn get_pieces(&self) -> Vec<(char, u64)> {
         vec![
             ('P', self.white_pawns),
@@ -106,123 +163,90 @@ impl Chessboard {
             ('b', self.black_bishops),
             ('k', self.black_king),
             ('q', self.black_queen),
-            ('r', self.black_rooks)
+            ('r', self.black_rooks),
         ]
     }
 
+    /// Foreground color to display for this piece
     /// # Return: The color of the piece
+    #[rustfmt::skip]
     fn find_fg(&self, p: char) -> Color {
-        if p.is_uppercase() { Color::White } else { Color::Black }
+        if p.is_uppercase() { Color::White }
+        else                { Color::Black }
     }
-
 
     /// # Return: The color of the board at this position
+    #[rustfmt::skip]
     fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
-        if (rank + file) % 2 == 0 {
-            return Color::Rgb { r: 190, g: 140, b: 170 };
-        } else {
-            return Color::Rgb { r: 255, g: 206, b: 158 };
-        }
+        let lght = Color::Rgb { r: 190, g: 140, b: 170 };
+        let dark = Color::Rgb { r: 255, g: 206, b: 158 };
+        if (rank + file) % 2 == 0 { lght }
+        else                      { dark }
     }
 
-
     /// Retrieve the chess piece at a specific position on the chessboard.
-    /// * `rank` - The rank of the square.
-    /// * `file` - The file (A=0) of the square.
+    /// * `rank` - The rank of the square (1-indexed).
+    /// * `file` - The file (A=0) of the square (0-indexed).
     /// # Return:
     /// The character representation of the piece at this position.
-    /// If there is no piece here it will return a period.
-    fn piece_at_position(&self, rank: usize, file: usize) -> char { 
+    /// If there is no piece here, it will return a period.
+    pub fn piece_at_position(&self, rank: usize, file: usize) -> char {
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);
-            if (rank_byte & (1 << file)) != 0 { return p_type; }
+            if (rank_byte & (1 << file)) != 0 {
+                return p_type;
+            }
         }
         '.'
     }
 
+    /// Forsyth–Edwards Notation Serializer
+    /// * `chessboard` - The chessboard position to be converted to a FEN.
+    /// # Return: FEN string representing the board's position.
+    pub fn to_string(&mut self) -> String {
+        let mut string_array: Vec<String> = Vec::with_capacity(6);
 
-    fn whose_turn(&self) -> &str {
-        if self.white_turn { "white" } else { "black" }
+        // Piece placement
+        fen_util::get_fen_placement(self, &mut string_array);
+
+        // Whose turn
+        if self.white_turn { "w " } else { "b " }.to_string();
+
+        // Castling rights
+        fen_util::get_fen_castles(self, &mut string_array);
+
+        // En passant
+        fen_util::get_fen_passant(self, &mut string_array);
+
+        // Set the rest to default values
+        string_array.push("0 ".to_string());
+        string_array.push("1".to_string());
+
+        // Return the FEN string
+        string_array.concat()
     }
-
-
-    //MINIMAX Function Pseudo-code
-    // fn minimax(position, depth, alpha, beta, maximixing_player) {
-    //     if depth == 0 or game over in position
-    //         return static evaluation of position
-    //     if maximizing_player (white)
-    //         max_eval = -infinity
-    //         for each child of position
-    //             eval = minimax(child, depth - 1, alpha, beta, false)
-    //             max_eval = max(max_eval, eval)
-    //             alpha = max(alpha, eval)
-    //             if beta <= alpha
-    //                 break
-    //         return max_eval
-    //     else
-    //         min_eval = +infinity
-    //         for each child of position
-    //         eval = minimax(child, depth - 1, alpha, beta, true)
-    //         min_eval = min(min_eval, eval)
-    //         beta = min(beta, eval)
-    //         if beta <= alpha
-    //             break
-    //     return min_eval
-    // }
 }
-//Below here is just ideas for functions:
 
-//fn what_occupy square() {
-//     check each piece type with the square and see which returns true
-// }
-
-// fn is_square_occupied(square) {
-// bitwise and every piece together
-// search through the new u64 and see where there are 1s
-// return the indices of the 1s
-// }
-
-// en_passant_square() {
-//     // Return the square where an en passant capture is possible, or -1 if not possible
-//     // For example, if the last move was a double-step pawn move, return the square where the opponent's pawn can capture en passant.
-// }
-
-// castling_rights() {
-//     // Use flags or bitmasks to represent castling rights for both players
-//     // For example, if kingside castling is allowed for white, set white_kingside_castle = true
-//     // Similarly, maintain flags for black's castling rights
-// }
-
-// make_move(move) {
-//     // Update the bitboards and game state based on the move
-//     // For example, if it's a pawn move, update the pawn bitboard
-//     // If it's a capture, clear the bit for the captured piece
-//     // Update en passant square and castling rights accordingly
-//     // Switch turns: white_turn = !white_turn;
-// }
-
-// generate_legal_moves() {
-//     legal_moves = []
-
-//     for each piece in pieces_of_current_turn {
-//         possible_moves = generate_moves_for_piece(piece)
-//         for each move in possible_moves {
-//             if is_legal_move(move) {
-//                 legal_moves.push(move)
-//             }
-//         }
-//     }
-//
-//     return legal_moves
-// }
-
-// generate_moves_for_piece(piece) {
-//     // Generate all possible moves for the given piece
-//     // Consider piece-specific movement rules (e.g., pawn's initial double move, castling for king, etc.)
-// }
-
-// is_legal_move(move) {
-//     // Check if the given move is legal
-//     // Verify that the move adheres to the rules of chesce-s, including piespecific rules and board state
-//     // Check for legality includes considerations like not moving into check, en passant captures, castling rules, etc.
+//MINIMAX Function Pseudo-code
+// fn minimax(position, depth, alpha, beta, maximizing_player) {
+//     if depth == 0 or game over in position
+//         return static evaluation of position
+//     if maximizing_player (white)
+//         max_eval = -infinity
+//         for each child of position
+//             eval = minimax(child, depth - 1, alpha, beta, false)
+//             max_eval = max(max_eval, eval)
+//             alpha = max(alpha, eval)
+//             if beta <= alpha
+//                 break
+//         return max_eval
+//     else
+//         min_eval = +infinity
+//         for each child of position
+//         eval = minimax(child, depth - 1, alpha, beta, true)
+//         min_eval = min(min_eval, eval)
+//         beta = min(beta, eval)
+//         if beta <= alpha
+//             break
+//     return min_eval
 // }

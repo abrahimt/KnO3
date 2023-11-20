@@ -204,13 +204,13 @@ impl Chessboard {
     /// * `chessboard` - The chessboard position to be converted to a FEN.
     /// # Return: FEN string representing the board's position.
     pub fn to_string(&mut self) -> String {
-        let mut string_array: Vec<String> = Vec::with_capacity(6);
+        let mut string_array: [&str; 6];
 
         // Piece placement
         fen_util::get_fen_placement(self, &mut string_array);
 
         // Whose turn
-        string_array[1] = if self.white_turn { " w " } else { " b " }.to_string();
+        string_array[1] = if self.white_turn { " w " } else { " b " };
 
         // Castling rights
         fen_util::get_fen_castles(self, &mut string_array);
@@ -219,8 +219,8 @@ impl Chessboard {
         fen_util::get_fen_passant(self, &mut string_array);
 
         // Set the rest to default values
-        string_array.push("0 ".to_string());
-        string_array.push("1".to_string());
+        string_array[4] = "0 ";
+        string_array[5] = "1";
 
         // Return the FEN string
         string_array.concat()

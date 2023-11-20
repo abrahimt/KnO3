@@ -59,7 +59,8 @@ pub fn valid_fen(fen: &str) -> bool {
 ///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn get_fen_placement(chessboard: &Chessboard, string_array: &mut Vec<String>) {
+pub fn get_fen_placement(chessboard: &Chessboard, string_array: &mut [&str; 6]) -> String {
+    let mut return_array:[&str; 8];
     for rank in (1..=8).rev() {
         let mut empty_squares = 0;
         let mut row_string = String::new();
@@ -81,14 +82,14 @@ pub fn get_fen_placement(chessboard: &Chessboard, string_array: &mut Vec<String>
             row_string.push_str(&empty_squares.to_string());
         }
 
-        string_array.push(row_string);
+        return_array[rank - 1] = &row_string;
     }
 
     let fen_string = string_array.join("/");
-    string_array.clear();
-    string_array.push(fen_string);
-    string_array.push(" ".to_owned());
+    string_array[0] = &fen_string;
+    fen_string
 }
+
 
 /// Sets the castling rights information in the FEN (Forsyth-Edwards Notation) string.
 ///
@@ -96,9 +97,9 @@ pub fn get_fen_placement(chessboard: &Chessboard, string_array: &mut Vec<String>
 ///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn get_fen_castles(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
-    string_array.push(match chessboard.castling_rights {
-        0 => "- ".to_string(),
+pub fn get_fen_castles(chessboard: &mut Chessboard, string_array: &mut [&str; 6]) {
+    string_array[2] = (match chessboard.castling_rights {
+        0 => "- ",
         rights => {
             let rights_string = "KQkq"
                 .chars()
@@ -126,17 +127,17 @@ pub fn get_fen_castles(chessboard: &mut Chessboard, string_array: &mut Vec<Strin
 ///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn get_fen_passant(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
+pub fn get_fen_passant<'a>(chessboard: &'a mut Chessboard, string_array: &'a mut [&'a str; 6]) -> String {
     if chessboard.en_passant == 0 {
-        string_array.push("- ".to_string());
+        string_array[3] = "- ";
     } else {
         let row = (chessboard.en_passant - 1) / 8 + 1;
         let col = (chessboard.en_passant - 1) % 8;
         let column_char = (b'A' + col) as char;
 
-        string_array.push(format!("{}{}", column_char, row));
-        string_array.push(" ".to_owned());
+        string_array[3] = &format!("{}{} ", column_char, row);
     }
+    string_array[3].to_string()
 }
 
 /// Parse the piece placement part of the FEN string.

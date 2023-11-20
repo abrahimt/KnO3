@@ -91,12 +91,33 @@ pub fn get_fen_placement(chessboard: &Chessboard, string_array: &mut [&str; 6]) 
 }
 
 
+/// Get the castling right substring of a FEN
+/// * `chessboard` - The chessboard containing the current game state
+/// # Returns
+/// A string representing the caslting rights in FEN format
+pub fn get_fen_castles(chessboard: Chessboard) -> String {
+    let state = chessboard.castling_rights;
+    let rights: String = ['K', 'Q', 'k', 'q']
+        .iter()
+        .filter(|&&c| state & match c {
+            'K' => 0b1000,
+            'Q' => 0b0100,
+            'k' => 0b0010,
+            'q' => 0b0001,
+            _ => 0 // TODO: Throw error here?
+        } != 0)
+        .collect();
+
+    println!("The rights are {rights}");
+    if rights.is_empty() { "-".to_string() } else { rights }
+}
 /// Sets the castling rights information in the FEN (Forsyth-Edwards Notation) string.
 ///
 /// # Arguments
 ///
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
+/*
 pub fn get_fen_castles(chessboard: &mut Chessboard, string_array: &mut [&str; 6]) {
     string_array[2] = (match chessboard.castling_rights {
         0 => "- ",
@@ -120,6 +141,7 @@ pub fn get_fen_castles(chessboard: &mut Chessboard, string_array: &mut [&str; 6]
         }
     });
 }
+*/
 
 /// Sets the en passant information in the FEN (Forsyth-Edwards Notation) string.
 ///

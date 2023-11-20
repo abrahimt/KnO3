@@ -17,6 +17,17 @@ jobs:
       - name: Format
         run: cargo fmt -- --check
 
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+      - name: Audit
+        run: cargo audit
+      - name: Lint
+        run: cargo clippy --verbose -- -D warnings
+
   build:
     runs-on: ubuntu-latest
     steps:

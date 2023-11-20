@@ -207,7 +207,8 @@ impl Chessboard {
         let mut string_array: [&str; 6] = ["","","","","",""];
 
         // Piece placement
-        fen_util::get_fen_placement(&self, &mut string_array);
+        let pieces = &fen_util::get_fen_placement(&self);
+        string_array[0] = pieces;
 
         // Whose turn
         string_array[1] = if self.white_turn { " w " } else { " b " };

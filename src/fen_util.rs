@@ -54,40 +54,29 @@ pub fn valid_fen(fen: &str) -> bool {
 }
 
 /// Generates a FEN (Forsyth-Edwards Notation) string representing the current state of the chessboard.
-///
-/// # Arguments
-///
-/// * `chessboard` - A mutable reference to the chessboard.
-/// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn get_fen_placement(chessboard: &Chessboard, string_array: &mut [&str; 6]) -> String {
-    let mut return_array:[&str; 8];
+pub fn get_fen_placement(chessboard: &Chessboard) -> String {
+    let mut result: String = "".to_string();
     for rank in (1..=8).rev() {
         let mut empty_squares = 0;
-        let mut row_string = String::new();
 
         for file in 0..=7 {
-            let piece = chessboard.piece_at_position(rank, file);
-            if piece == '.' {
+            let p = chessboard.piece_at_position(rank, file);
+            if p == '.' {
                 empty_squares += 1;
-            } else {
-                if empty_squares > 0 {
-                    row_string.push_str(&empty_squares.to_string());
-                    empty_squares = 0;
-                }
-                row_string.push(piece);
+                continue;
+            } else if empty_squares > 0 {
+                result.push_str(&empty_squares.to_string());
+                empty_squares = 0;
             }
+            result.push_str(&p.to_string());
         }
-
-        if empty_squares > 0 {
-            row_string.push_str(&empty_squares.to_string());
-        }
-
-        return_array[rank - 1] = &row_string;
+        if empty_squares > 0 { result.push_str(&empty_squares.to_string()); }
+        result.push_str(&"/".to_string());
     }
 
-    let fen_string = string_array.join("/");
-    string_array[0] = &fen_string;
-    fen_string
+    let mut c = result.chars();
+    c.next_back();
+    c.as_str().to_string()
 }
 
 

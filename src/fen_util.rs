@@ -113,7 +113,6 @@ pub fn valid_fen(fen: &str) -> bool {
     }
 }
 
-
 /// Generates a FEN (Forsyth-Edwards Notation) string representing the current state of the chessboard.
 pub fn get_fen_placement(chessboard: &Chessboard) -> String {
     let mut result: String = "".to_string();

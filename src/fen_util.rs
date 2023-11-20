@@ -47,7 +47,7 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// # Returns
 ///
 /// A boolean indicating whether the FEN string is valid.
-#[allow(clippy::all)]
+#[allow(unused_variables)]
 pub fn valid_fen(fen: &str) -> bool {
     let is_valid: bool = true;
     //Check if fen is valid
@@ -74,7 +74,7 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
         if empty_squares > 0 {
             result.push_str(&empty_squares.to_string());
         }
-        result.push_str(&"/");
+        result.push('/');
     }
 
     let mut c = result.chars();

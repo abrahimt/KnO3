@@ -111,57 +111,7 @@ pub fn get_fen_castles(chessboard: &Chessboard) -> String {
     println!("The rights are {rights}");
     if rights.is_empty() { "-".to_string() } else { rights }
 }
-/// Sets the castling rights information in the FEN (Forsyth-Edwards Notation) string.
-///
-/// # Arguments
-///
-/// * `chessboard` - A mutable reference to the chessboard.
-/// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-/*
-pub fn get_fen_castles(chessboard: &mut Chessboard, string_array: &mut [&str; 6]) {
-    string_array[2] = (match chessboard.castling_rights {
-        0 => "- ",
-        rights => {
-            let rights_string = "KQkq"
-                .chars()
-                .filter(|&c| {
-                    (rights
-                        & match c {
-                            'K' => 0b1000,
-                            'Q' => 0b0100,
-                            'k' => 0b0010,
-                            'q' => 0b0001,
-                            _ => 0,
-                        })
-                        != 0
-                })
-                .collect::<String>();
 
-            format!("{} ", rights_string)
-        }
-    });
-}
-*/
-
-/// Sets the en passant information in the FEN (Forsyth-Edwards Notation) string.
-///
-/// # Arguments
-///
-/// * `chessboard` - A mutable reference to the chessboard.
-/// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-/*
-pub fn get_fen_passant(chessboard: Chessboard, string_array: &mut [&str; 6]) -> String {
-    if chessboard.en_passant == 0 {
-        string_array[3] = "- ";
-    } else {
-        let row = (chessboard.en_passant - 1) / 8 + 1;
-        let col = (chessboard.en_passant - 1) % 8;
-        let column_char = (b'A' + col) as char;
-
-        string_array[3] = &format!("{}{} ", column_char, row);
-    }
-    string_array[3].to_string()
-}*/
 
 pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let passant = chessboard.en_passant;

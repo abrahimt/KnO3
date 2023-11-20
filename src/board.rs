@@ -72,65 +72,32 @@ impl Chessboard {
         }
     }
 
-    //fn parse_positions
-    /// Create a new instance of a chessboard, based on a FEN string
-    /// Forsyth–Edwards Notation Parser
-    /// * `fen` - The FEN to be converted to a Chessboard.
-    /// # Return: Resulting chessboard with the position from the FEN.
-    pub fn from_string(fen: &str) -> Result<Chessboard, String> {
-        if !fen_util::valid_fen(fen) {
-            return Err("Invalid FEN".to_string());
-        }
-        let mut chessboard = Chessboard::empty();
-        // Split the FEN string into parts using ' ' as the delimiter
-        let fen_parts: Vec<&str> = fen.split_whitespace().collect();
-
-        // Parse the piece placement part of the FEN string
-        fen_util::place_pieces(&mut chessboard, fen_parts[0]);
-
-        // Parse whose turn it is
-        chessboard.white_turn = fen_parts[1] == "w";
-
-        // Parse castling rights
-        let fen_castle = fen_parts[2];
-        for c in fen_castle.chars() {
-            let v = match c {
-                'K' => 0b1000,
-                'Q' => 0b0100,
-                'k' => 0b0010,
-                'q' => 0b0001,
-                _ => 0b0,
-            };
-            chessboard.castling_rights |= v;
-        }
-
-        // Parse en passant square
-        let fen_passant = fen_parts[3];
-        if fen_passant != "-" {
-            if let (Some(col), Some(row)) = (
-                fen_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
-                fen_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
-            ) {
-                if (1..=8).contains(&row) {
-                    let col_value: u8 = match col {
-                        'A' => 1,
-                        'B' => 2,
-                        'C' => 3,
-                        'D' => 4,
-                        'E' => 5,
-                        'F' => 6,
-                        'G' => 7,
-                        'H' => 8,
-                        _ => 0, // Handle unexpected characters
-                    };
-                    chessboard.en_passant = col_value + 8 * (row as u8 - 1);
-                }
-            }
-        }
-
-        // Ignore the rest of the FEN string for now
-        Ok(chessboard)
+/// Create a new instance of a chessboard, based on a FEN string.
+/// Forsyth–Edwards Notation Parser.
+/// 
+/// # Arguments
+/// 
+/// * `fen` - The FEN to be converted to a Chessboard.
+/// 
+/// # Return
+/// 
+/// Resulting chessboard with the position from the FEN.
+pub fn from_string(fen: &str) -> Result<Chessboard, String> {
+    if !fen_util::valid_fen(fen) {
+        return Err("Invalid FEN".to_string());
     }
+
+    let mut chessboard = Chessboard::empty();
+
+    let fen_parts: Vec<&str> = fen.split_whitespace().collect();
+
+    fen_util::parse_piece_placement(&mut chessboard, fen_parts[0])?;
+    fen_util::parse_whose_turn(&mut chessboard, fen_parts[1]);
+    fen_util::parse_castling_rights(&mut chessboard, fen_parts[2]);
+    fen_util::parse_en_passant(&mut chessboard, fen_parts[3]);
+
+    Ok(chessboard)
+}
 
     /* **************** */
     /* Public Functions */
@@ -217,21 +184,22 @@ impl Chessboard {
         else                      { dark }
     }
 
-    /// Retrieve the chess piece at a specific position on the chessboard.
-    /// * `rank` - The rank of the square.
-    /// * `file` - The file (A=0) of the square.
-    /// # Return:
-    /// The character representation of the piece at this position.
-    /// If there is no piece here it will return a period.
-    pub fn piece_at_position(&self, rank: usize, file: usize) -> char {
-        for (p_type, positions) in self.get_pieces() {
-            let rank_byte = positions >> ((rank - 1) * 8);
-            if (rank_byte & (1 << file)) != 0 {
-                return p_type;
-            }
+/// Retrieve the chess piece at a specific position on the chessboard.
+/// * `rank` - The rank of the square (1-indexed).
+/// * `file` - The file (A=0) of the square (0-indexed).
+/// # Return:
+/// The character representation of the piece at this position.
+/// If there is no piece here, it will return a period.
+pub fn piece_at_position(&self, rank: usize, file: usize) -> char {
+    for (p_type, positions) in self.get_pieces() {
+        let rank_byte = positions >> ((rank - 1) * 8);
+        if (rank_byte & (1 << file)) != 0 {
+            return p_type;
         }
-        '.'
     }
+    '.'
+}
+
 
     /// Forsyth–Edwards Notation Serializer
     /// * `chessboard` - The chessboard position to be converted to a FEN.

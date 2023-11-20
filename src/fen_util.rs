@@ -59,14 +59,13 @@ pub fn valid_fen(fen: &str) -> bool {
 /// 
 /// * `chessboard` - A mutable reference to the chessboard.
 /// * `string_array` - A mutable vector of strings to store intermediate FEN string components.
-pub fn set_pieces(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
+pub fn set_pieces(chessboard: &Chessboard, string_array: &mut Vec<String>) {
     for rank in (1..=8).rev() {
         let mut empty_squares = 0;
         let mut row_string = String::new();
 
-        for file in 1..=8 {
+        for file in 0..=7 {
             let piece = chessboard.piece_at_position(rank, file);
-
             if piece == '.' {
                 empty_squares += 1;
             } else {
@@ -83,19 +82,15 @@ pub fn set_pieces(chessboard: &mut Chessboard, string_array: &mut Vec<String>) {
         }
 
         string_array.push(row_string);
-        string_array.push("/".to_owned());
     }
 
-    let binding = string_array.concat();
-    let mut fen_string = binding.chars();
-    fen_string.next_back();
-    let fen_string_no_slash = fen_string.as_str();
-    for item in string_array.iter_mut() {
-        item.clear();
-    }
-    string_array.push(fen_string_no_slash.to_owned());
+    let fen_string = string_array.join("/");
+    string_array.clear();
+    string_array.push(fen_string);
     string_array.push(" ".to_owned());
 }
+
+
 
 /// Sets the castling rights information in the FEN (Forsyth-Edwards Notation) string.
 /// 
@@ -143,5 +138,55 @@ pub fn set_en_passant(chessboard: &mut Chessboard, string_array: &mut Vec<String
 
         string_array.push(format!("{}{}", column_char, row));
         string_array.push(" ".to_owned());
+    }
+}
+
+/// Parse the piece placement part of the FEN string.
+pub fn parse_piece_placement(chessboard: &mut Chessboard, piece_placement: &str) -> Result<(), String> {
+    self::place_pieces(chessboard, piece_placement);
+    Ok(())
+}
+
+/// Parse whose turn it is.
+pub fn parse_whose_turn(chessboard: &mut Chessboard, turn_indicator: &str) {
+    chessboard.white_turn = turn_indicator == "w";
+}
+
+/// Parse castling rights.
+pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
+    for c in castle_rights.chars() {
+        let v = match c {
+            'K' => 0b1000,
+            'Q' => 0b0100,
+            'k' => 0b0010,
+            'q' => 0b0001,
+            _ => 0b0,
+        };
+        chessboard.castling_rights |= v;
+    }
+}
+
+/// Parse en passant square.
+pub fn parse_en_passant(chessboard: &mut Chessboard, en_passant: &str) {
+    if en_passant != "-" {
+        if let (Some(col), Some(row)) = (
+            en_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
+            en_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
+        ) {
+            if (1..=8).contains(&row) {
+                let col_value: u8 = match col {
+                    'A' => 1,
+                    'B' => 2,
+                    'C' => 3,
+                    'D' => 4,
+                    'E' => 5,
+                    'F' => 6,
+                    'G' => 7,
+                    'H' => 8,
+                    _ => 0,
+                };
+                chessboard.en_passant = col_value + 8 * (row as u8 - 1);
+            }
+        }
     }
 }

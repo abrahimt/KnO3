@@ -203,20 +203,22 @@ impl Chessboard {
     /// Forsyth–Edwards Notation Serializer
     /// * `chessboard` - The chessboard position to be converted to a FEN.
     /// # Return: FEN string representing the board's position.
-    pub fn to_string(&mut self) -> String {
+    pub fn to_string(self) -> String {
         let mut string_array: [&str; 6] = ["","","","","",""];
 
         // Piece placement
-        fen_util::get_fen_placement(self, &mut string_array);
+        fen_util::get_fen_placement(&self, &mut string_array);
 
         // Whose turn
         string_array[1] = if self.white_turn { " w " } else { " b " };
 
         // Castling rights
-        fen_util::get_fen_castles(self, &mut string_array);
+        let castle = &fen_util::get_fen_castles(&self);
+        string_array[2] = castle;
 
         // En passant
-        fen_util::get_fen_passant(self, &mut string_array);
+        let passant = &fen_util::get_fen_passant(&self);
+        string_array[3] = passant;
 
         // Set the rest to default values
         string_array[4] = "0 ";

@@ -95,7 +95,7 @@ pub fn get_fen_placement(chessboard: &Chessboard, string_array: &mut [&str; 6]) 
 /// * `chessboard` - The chessboard containing the current game state
 /// # Returns
 /// A string representing the caslting rights in FEN format
-pub fn get_fen_castles(chessboard: Chessboard) -> String {
+pub fn get_fen_castles(chessboard: &Chessboard) -> String {
     let state = chessboard.castling_rights;
     let rights: String = ['K', 'Q', 'k', 'q']
         .iter()
@@ -163,7 +163,7 @@ pub fn get_fen_passant(chessboard: Chessboard, string_array: &mut [&str; 6]) -> 
     string_array[3].to_string()
 }*/
 
-pub fn get_fen_passant(chessboard: Chessboard) -> String {
+pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let passant = chessboard.en_passant;
     if passant == 0 {
         return "-".to_string();

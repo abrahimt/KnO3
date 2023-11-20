@@ -145,7 +145,7 @@ pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
 pub fn parse_en_passant(chessboard: &mut Chessboard, en_passant: &str) {
     if en_passant != "-" {
         if let (Some(col), Some(row)) = (
-            en_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
+            en_passant.chars().next().map(|c| c.to_ascii_uppercase()),
             en_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
         ) {
             if (1..=8).contains(&row) {

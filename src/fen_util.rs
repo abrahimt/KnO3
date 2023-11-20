@@ -70,7 +70,9 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
             }
             result.push_str(&p.to_string());
         }
-        if empty_squares > 0 { result.push_str(&empty_squares.to_string()); }
+        if empty_squares > 0 {
+            result.push_str(&empty_squares.to_string());
+        }
         result.push_str(&"/".to_string());
     }
 
@@ -79,11 +81,11 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
     c.as_str().to_string()
 }
 
-
 /// Get the castling right substring of a FEN
 /// * `chessboard` - The chessboard containing the current game state
 /// # Returns
 /// A string representing the caslting rights in FEN format
+#[rustfmt::skip]
 pub fn get_fen_castles(chessboard: &Chessboard) -> String {
     let state = chessboard.castling_rights;
     let rights: String = ['K', 'Q', 'k', 'q']
@@ -99,7 +101,6 @@ pub fn get_fen_castles(chessboard: &Chessboard) -> String {
 
     if rights.is_empty() { "-".to_string() } else { rights }
 }
-
 
 pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let passant = chessboard.en_passant;
@@ -125,7 +126,6 @@ pub fn parse_piece_placement(
 pub fn parse_whose_turn(chessboard: &mut Chessboard, whose_turn: &str) {
     chessboard.white_turn = whose_turn == "w";
 }
-
 
 /// Parse castling rights.
 pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {

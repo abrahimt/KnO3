@@ -204,7 +204,7 @@ impl Chessboard {
     /// * `chessboard` - The chessboard position to be converted to a FEN.
     /// # Return: FEN string representing the board's position.
     pub fn to_string(&mut self) -> String {
-        let mut string_array: [&str; 6];
+        let mut string_array: [&str; 6] = ["","","","","",""];
 
         // Piece placement
         fen_util::get_fen_placement(self, &mut string_array);

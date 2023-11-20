@@ -1,3 +1,5 @@
+use regex::Regex;
+
 use crate::board::Chessboard;
 
 /// Places pieces on the chessboard based on the FEN (Forsyth-Edwards Notation) rows provided.
@@ -38,7 +40,7 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
     }
 }
 
-/// Validates if the given FEN (Forsyth-Edwards Notation) string is well-formed.
+/// Function to check if a given FEN (Forsyth-Edwards Notation) string is valid
 ///
 /// # Arguments
 ///
@@ -48,10 +50,69 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 ///
 /// A boolean indicating whether the FEN string is valid.
 pub fn valid_fen(fen: &str) -> bool {
-    let is_valid: bool = true;
-    //Check if fen is valid
-    is_valid
+    // Define the regex pattern for a valid FEN string
+    let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
+
+    // Check if the provided FEN string matches the pattern
+    if let Some(captures) = regex.captures(fen) {
+        // Extract the position part of the FEN and split it into rows
+        let fen_list = captures.get(1).unwrap().as_str().split("/");
+
+        // Check if there are exactly 8 rows in the position part
+        if fen_list.clone().count() != 8 {
+            return false;
+        }
+
+        // Iterate through each row in the position part
+        for fen_part in fen_list {
+            let mut field_sum = 0;
+            let mut previous_was_digit = false;
+            let mut previous_was_piece = false;
+
+            // Iterate through each character in the row
+            for c in fen_part.chars() {
+                // Check if the character is a digit
+                if c.is_digit(10) {
+                    // Check for two subsequent digits
+                    if previous_was_digit {
+                        return false;
+                    }
+                    // Accumulate the digit to the column sum
+                    field_sum += c.to_digit(10).unwrap();
+                    previous_was_digit = true;
+                    previous_was_piece = false;
+                } else if c == '~' {
+                    // Check if ~ is not after a piece
+                    if !previous_was_piece {
+                        return false;
+                    }
+                    previous_was_digit = false;
+                    previous_was_piece = false;
+                } else if "pnbqkrPBNQKR".contains(c) {
+                    // Count the piece and update flags
+                    field_sum += 1;
+                    previous_was_digit = false;
+                    previous_was_piece = true;
+                } else {
+                    // Invalid character in the FEN string
+                    return false;
+                }
+            }
+
+            // Check if there are exactly 8 columns in each row
+            if field_sum != 8 {
+                return false;
+            }
+        }
+
+        // The FEN string passed all checks and is valid
+        true
+    } else {
+        // The FEN string does not match the expected pattern
+        false
+    }
 }
+
 
 /// Generates a FEN (Forsyth-Edwards Notation) string representing the current state of the chessboard.
 pub fn get_fen_placement(chessboard: &Chessboard) -> String {

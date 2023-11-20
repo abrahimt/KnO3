@@ -3,7 +3,7 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{error::Error, io::stdout, u8};
+use std::{io::stdout, u8};
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
@@ -203,27 +203,30 @@ impl Chessboard {
     /// Forsyth–Edwards Notation Serializer
     /// * `chessboard` - The chessboard position to be converted to a FEN.
     /// # Return: FEN string representing the board's position.
-    pub fn to_string(&mut self) -> String {
-        let mut string_array: Vec<String> = Vec::with_capacity(6);
+    pub fn to_string(self) -> String {
+        let mut string_array: [&str; 6] = ["", "", "", "", "", ""];
 
         // Piece placement
-        fen_util::get_fen_placement(self, &mut string_array);
+        let pieces = &fen_util::get_fen_placement(&self);
+        string_array[0] = pieces;
 
         // Whose turn
-        if self.white_turn { "w " } else { "b " }.to_string();
+        string_array[1] = if self.white_turn { "w" } else { "b" };
 
         // Castling rights
-        fen_util::get_fen_castles(self, &mut string_array);
+        let castle = &fen_util::get_fen_castles(&self);
+        string_array[2] = castle;
 
         // En passant
-        fen_util::get_fen_passant(self, &mut string_array);
+        let passant = &fen_util::get_fen_passant(&self);
+        string_array[3] = passant;
 
         // Set the rest to default values
-        string_array.push("0 ".to_string());
-        string_array.push("1".to_string());
+        string_array[4] = "0";
+        string_array[5] = "1";
 
         // Return the FEN string
-        string_array.concat()
+        string_array.join(" ")
     }
 }
 

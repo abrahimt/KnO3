@@ -17,6 +17,24 @@ jobs:
       - name: Format
         run: cargo fmt -- --check
 
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+      - name: Audit
+        run: cargo audit
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Clippy
+        run: rustup component add clippy
+      - name: Lint
+        run: cargo clippy -- -D warnings
+
   build:
     runs-on: ubuntu-latest
     steps:

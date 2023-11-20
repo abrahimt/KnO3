@@ -97,7 +97,6 @@ pub fn get_fen_castles(chessboard: &Chessboard) -> String {
         } != 0)
         .collect();
 
-    println!("The rights are {rights}");
     if rights.is_empty() { "-".to_string() } else { rights }
 }
 

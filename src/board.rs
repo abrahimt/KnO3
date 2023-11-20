@@ -211,7 +211,7 @@ impl Chessboard {
         string_array[0] = pieces;
 
         // Whose turn
-        string_array[1] = if self.white_turn { " w " } else { " b " };
+        string_array[1] = if self.white_turn { "w" } else { "b" };
 
         // Castling rights
         let castle = &fen_util::get_fen_castles(&self);
@@ -222,11 +222,11 @@ impl Chessboard {
         string_array[3] = passant;
 
         // Set the rest to default values
-        string_array[4] = "0 ";
+        string_array[4] = "0";
         string_array[5] = "1";
 
         // Return the FEN string
-        string_array.concat()
+        string_array.join(" ")
     }
 }
 

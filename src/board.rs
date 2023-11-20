@@ -1,9 +1,9 @@
+use crate::fen_util;
 use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
 use std::{error::Error, io::stdout, u8};
-use crate::fen_util;
 
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
@@ -78,7 +78,9 @@ impl Chessboard {
     /// * `fen` - The FEN to be converted to a Chessboard.
     /// # Return: Resulting chessboard with the position from the FEN.
     pub fn from_string(fen: &str) -> Result<Chessboard, String> {
-        if !Self::valid_fen(fen) { return Err("Invalid FEN".to_string()); }
+        if !fen_util::valid_fen(fen) {
+            return Err("Invalid FEN".to_string());
+        }
         let mut chessboard = Chessboard::empty();
         // Split the FEN string into parts using ' ' as the delimiter
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
@@ -198,12 +200,6 @@ impl Chessboard {
         ]
     }
 
-    fn valid_fen(fen: &str) -> bool {
-        let is_valid: bool = true;
-        //Check if fen is valid
-        is_valid
-    }
-
     /// Foreground color to display for this piece
     /// # Return: The color of the piece
     #[rustfmt::skip]
@@ -227,7 +223,7 @@ impl Chessboard {
     /// # Return:
     /// The character representation of the piece at this position.
     /// If there is no piece here it will return a period.
-    fn piece_at_position(&self, rank: usize, file: usize) -> char {
+    pub fn piece_at_position(&self, rank: usize, file: usize) -> char {
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);
             if (rank_byte & (1 << file)) != 0 {
@@ -240,11 +236,11 @@ impl Chessboard {
     /// Forsyth–Edwards Notation Serializer
     /// * `chessboard` - The chessboard position to be converted to a FEN.
     /// # Return: FEN string representing the board's position.
-    pub fn to_string(&self) -> String {
+    pub fn to_string(&mut self) -> String {
         let mut string_array: Vec<String> = Vec::with_capacity(6);
 
         // Piece placement
-        self.set_pieces(&mut string_array);
+        fen_util::set_pieces(self, &mut string_array);
 
         // Whose turn
         string_array.push(if self.white_turn {
@@ -254,10 +250,10 @@ impl Chessboard {
         });
 
         // Castling rights
-        self.set_castling_rights(&mut string_array);
+        fen_util::set_castling_rights(self, &mut string_array);
 
         // En passant
-        self.set_en_passant(&mut string_array);
+        fen_util::set_en_passant(self, &mut string_array);
 
         // Set the rest to default values
         string_array.push("0 ".to_string());
@@ -265,81 +261,6 @@ impl Chessboard {
 
         // Return the FEN string
         string_array.concat()
-    }
-
-    fn set_pieces(&self, string_array: &mut Vec<String>) {
-        for rank in (1..=8).rev() {
-            let mut empty_squares = 0;
-            let mut row_string = String::new();
-
-            for file in 1..=8 {
-                let piece = self.piece_at_position(rank, file);
-
-                if piece == '.' {
-                    empty_squares += 1;
-                } else {
-                    if empty_squares > 0 {
-                        row_string.push_str(&empty_squares.to_string());
-                        empty_squares = 0;
-                    }
-                    row_string.push(piece);
-                }
-            }
-
-            if empty_squares > 0 {
-                row_string.push_str(&empty_squares.to_string());
-            }
-
-            string_array.push(row_string);
-            string_array.push("/".to_owned());
-        }
-
-        let binding = string_array.concat();
-        let mut fen_string = binding.chars();
-        fen_string.next_back();
-        let fen_string_no_slash = fen_string.as_str();
-        for item in string_array.iter_mut() {
-            item.clear();
-        }
-        string_array.push(fen_string_no_slash.to_owned());
-        string_array.push(" ".to_owned());
-    }
-
-    fn set_castling_rights(&self, string_array: &mut Vec<String>) {
-        string_array.push(match self.castling_rights {
-            0 => "- ".to_string(),
-            rights => {
-                let rights_string = "KQkq"
-                    .chars()
-                    .filter(|&c| {
-                        (rights
-                            & match c {
-                                'K' => 0b1000,
-                                'Q' => 0b0100,
-                                'k' => 0b0010,
-                                'q' => 0b0001,
-                                _ => 0,
-                            })
-                            != 0
-                    })
-                    .collect::<String>();
-
-                format!("{} ", rights_string)
-            }
-        });
-    }
-
-    fn set_en_passant(&self, string_array: &mut Vec<String>) {
-        if self.en_passant == 0 {
-            string_array.push("- ".to_string());
-        } else {
-            let row = (self.en_passant - 1) / 8 + 1;
-            let col = (self.en_passant - 1) % 8;
-            let column_char = (b'A' + col) as char;
-
-            string_array.push(format!("{}{}", column_char, row));
-            string_array.push(" ".to_owned());
-        }
     }
 }
 

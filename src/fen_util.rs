@@ -55,7 +55,7 @@ pub fn valid_fen(fen: &str) -> bool {
     // Check if the provided FEN string matches the pattern
     if let Some(captures) = regex.captures(fen) {
         // Extract the position part of the FEN and split it into rows
-        let fen_list = captures.get(1).unwrap().as_str().split("/");
+        let fen_list = captures.get(1).unwrap().as_str().split('/');
         // Check if there are exactly 8 rows in the position part
         if fen_list.clone().count() != 8 {
             return false;

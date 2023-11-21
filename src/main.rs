@@ -5,10 +5,10 @@ use board::Chessboard;
 fn main() {
     let mut cb = Chessboard::new();
     cb.print(true);
-    println!("New board {:?}", cb.to_string());
 
-    cb = Chessboard::from_string("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
-        .unwrap();
+    // cb = Chessboard::from_string("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
+    //     .unwrap();
+    Chessboard::move_piece(cb.white_pawns, "E4".to_owned(), "E6".to_owned());
 
     cb.print(true);
     println!("E4 only {:?}", cb.to_string());

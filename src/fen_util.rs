@@ -1,3 +1,5 @@
+use std::vec;
+
 use regex::Regex;
 
 use crate::board::Chessboard;
@@ -153,6 +155,19 @@ pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let col = (passant - 1) % 8;
     let chr = (b'A' + col) as char;
     format!("{}{}", chr, row)
+}
+
+pub fn square_to_rank_file(square: u8) -> (char, usize) {
+    let row = (square - 1) / 8 + 1;
+    let col = (square - 1) % 8;
+    let file = (b'A' + col) as char;
+    (file, row as usize)
+}
+
+pub fn rank_file_to_square(rank: usize, file: char) -> u8 {
+    let col = file as u8 - b'A';
+    let row = rank as u8;
+    row * 8 + col + 1
 }
 
 /// Parse the piece placement part of the FEN string.

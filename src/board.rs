@@ -111,7 +111,7 @@ impl Chessboard {
     /// # Example
     ///
     /// ```
-    /// use chess_engine::Chessboard;
+    /// use kn_o3::Chessboard;
     ///
     /// let fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     /// match Chessboard::from_string(fen_string) {
@@ -156,7 +156,7 @@ impl Chessboard {
     /// # Example
     ///
     /// ```
-    /// use chess_engine::Chessboard;
+    /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
     /// initial_position.print(true);
@@ -221,7 +221,7 @@ impl Chessboard {
     /// # Example
     ///
     /// ```
-    /// use chess_engine::Chessboard;
+    /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
     /// let piece_at_a1 = initial_position.piece_at_position(1, 0);
@@ -255,7 +255,7 @@ impl Chessboard {
     /// # Example
     ///
     /// ```
-    /// use chess_engine::Chessboard;
+    /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
     /// let fen_string = initial_position.to_string();
@@ -314,7 +314,7 @@ impl Chessboard {
     /// # Example
     ///
     /// ```
-    /// use chess_engine::Chessboard;
+    /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
     /// let pieces_mapping = initial_position.get_pieces();

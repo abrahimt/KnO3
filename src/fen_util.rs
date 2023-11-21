@@ -11,7 +11,7 @@ use regex::Regex;
 /// # Example
 /// 
 /// ```
-/// use chess_engine::Chessboard;
+/// use kn_o3::Chessboard;
 /// 
 /// let mut chessboard = Chessboard::empty();
 /// let fen_rows = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
@@ -67,7 +67,7 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// # Example
 ///
 /// ```
-/// use chess_engine::fen_util::valid_fen;
+/// use kn_o3::fen_util::valid_fen;
 ///
 /// let valid_fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 /// assert!(valid_fen(valid_fen_string));
@@ -137,7 +137,7 @@ pub fn valid_fen(fen: &str) -> bool {
 /// # Example
 ///
 /// ```
-/// use chess_engine::Chessboard;
+/// use kn_o3::Chessboard;
 ///
 /// let mut chessboard = Chessboard::new();
 /// let fen_string = get_fen_placement(&chessboard);
@@ -186,7 +186,7 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
 /// # Example
 /// 
 /// ```
-/// use chess_engine::Chessboard;
+/// use kn_o3::Chessboard;
 /// 
 /// let mut chessboard = Chessboard::new();
 /// chessboard.castling_rights = 0b1111; // All castling rights available
@@ -226,7 +226,7 @@ pub fn get_fen_castles(chessboard: &Chessboard) -> String {
 /// # Example
 ///
 /// ```
-/// use chess_engine::Chessboard;
+/// use kn_o3::Chessboard;
 ///
 /// let mut chessboard = Chessboard::new();
 /// chessboard.en_passant = 29; // Corresponding square for "e3"
@@ -261,7 +261,7 @@ pub fn get_fen_passant(chessboard: &Chessboard) -> String {
 /// # Example
 ///
 /// ```
-/// use chess_engine::Chessboard;
+/// use kn_o3::Chessboard;
 ///
 /// let mut chessboard = Chessboard::empty();
 /// let piece_placement = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
@@ -289,7 +289,7 @@ pub fn parse_piece_placement(
 /// # Example
 ///
 /// ```
-/// use chess_engine::Chessboard;
+/// use kn_o3::Chessboard;
 ///
 /// let mut chessboard = Chessboard::empty();
 /// let whose_turn = "w";
@@ -313,7 +313,7 @@ pub fn parse_whose_turn(chessboard: &mut Chessboard, whose_turn: &str) {
 /// # Example
 ///
 /// ```
-/// use chess_engine::Chessboard;
+/// use kn_o3::Chessboard;
 ///
 /// let mut chessboard = Chessboard::empty();
 /// let castling_rights = "KQkq";
@@ -348,7 +348,7 @@ pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
 /// # Example
 ///
 /// ```
-/// use chess_engine::Chessboard;
+/// use kn_o3::Chessboard;
 ///
 /// let mut chessboard = Chessboard::new();
 /// parse_en_passant(&mut chessboard, "e3");

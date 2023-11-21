@@ -142,6 +142,67 @@ impl Chessboard {
         println!();
     }
 
+    /// Generates a list of legal moves for the current position.
+    ///
+    /// # Returns
+    ///
+    /// A vector of legal moves represented as strings. Each string should follow the
+    /// algebraic notation for chess moves.
+    pub fn legal_moves(&self) -> Vec<String> {
+        let mut legal_moves = Vec::new();
+
+        // Iterate through each piece type on the board
+        for (piece, positions) in self.get_pieces() {
+            // Iterate through each square on the board
+            for rank in 1..=8 {
+                for file in 0..8 {
+                    // Check if the current piece exists on the current square
+                    let rank_byte = positions >> ((rank - 1) * 8);
+                    if (rank_byte & (1 << file)) != 0 {
+                        // Generate legal moves for the piece on this square
+                        let moves = self.generate_moves(piece, rank, file);
+                        legal_moves.extend(moves);
+                    }
+                }
+            }
+        }
+
+        legal_moves
+    }
+
+    /// Generates legal moves for a piece at a specific position.
+    ///
+    /// # Arguments
+    ///
+    /// - `piece`: The character representation of the piece.
+    /// - `rank`: The rank of the square (1-indexed).
+    /// - `file`: The file (A=0) of the square (0-indexed).
+    ///
+    /// # Returns
+    ///
+    /// A vector of legal moves represented as strings in algebraic notation.
+    pub fn generate_moves(&self, piece: char, rank: usize, file: usize) -> Vec<String> {
+        // Implement logic to generate legal moves for each piece type
+        // You can use the current state of the board to determine legal moves
+
+        // Example: Generate legal moves for a pawn
+        if piece == 'P' {
+            // Implement logic for pawn moves
+            // ...
+        }
+
+        // Example: Generate legal moves for a knight
+        if piece == 'N' {
+            // Implement logic for knight moves
+            // ...
+        }
+
+        // Continue with other piece types...
+
+        Vec::new() // Placeholder, replace with actual legal moves
+    }
+
+
     /* *************** */
     /* PRIVATE FUNCTIONS */
 

@@ -183,12 +183,24 @@ impl Chessboard {
     /// A vector of legal moves represented as strings in algebraic notation.
     pub fn generate_moves(&self, piece: char, rank: usize, file: usize) -> Vec<String> {
         // Implement logic to generate legal moves for each piece type
-        // You can use the current state of the board to determine legal moves
+        // Use the current state of the board to determine legal moves
 
         // Example: Generate legal moves for a pawn
         if piece == 'P' {
-            // Implement logic for pawn moves
-            // ...
+            //can only move if white turn
+            //If starting square, then can go 1 or 2 moves
+            //else if not starting square can go one move
+            //if en passant square is diagonal from it then it can move to that square
+            //if other color piece is diagonal from it then it can move to that square and capture
+            //if it reaches other side of board it can promote to same color of any piece type
+        }
+        if piece == 'p' {
+            //can only move if black turn
+            //If starting square, then can go 1 or 2 moves
+            //else if not starting square can go one move
+            //if en passant square is diagonal from it then it can move to that square
+            //if other color piece is diagonal from it then it can move to that square and capture
+            //if it reaches other side of board it can promote to same color of any piece type
         }
 
         // Example: Generate legal moves for a knight

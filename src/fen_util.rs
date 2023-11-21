@@ -13,7 +13,7 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
     for (row_index, row_string) in fen_rows.split('/').rev().enumerate() {
         let mut file_ndx: usize = 0;
         for piece in row_string.chars() {
-            if piece.is_digit(10) {
+            if piece.is_ascii_digit() {
                 file_ndx += piece.to_digit(10).unwrap_or(0) as usize;
                 continue;
             }
@@ -49,6 +49,7 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// # Returns
 ///
 /// A boolean indicating whether the FEN string is valid.
+#[allow(unused_variables)]
 pub fn valid_fen(fen: &str) -> bool {
     let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
     let captures = regex.captures(fen);
@@ -114,7 +115,7 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
         if empty_squares > 0 {
             result.push_str(&empty_squares.to_string());
         }
-        result.push_str(&"/".to_string());
+        result.push('/');
     }
 
     let mut c = result.chars();
@@ -186,7 +187,7 @@ pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
 pub fn parse_en_passant(chessboard: &mut Chessboard, en_passant: &str) {
     if en_passant != "-" {
         if let (Some(col), Some(row)) = (
-            en_passant.chars().nth(0).map(|c| c.to_ascii_uppercase()),
+            en_passant.chars().next().map(|c| c.to_ascii_uppercase()),
             en_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
         ) {
             if (1..=8).contains(&row) {

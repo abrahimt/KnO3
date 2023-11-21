@@ -26,13 +26,13 @@ fn main() {
     println!("nf3 {:?}", cb.to_string());
 }
 
-//min function
-#[rustfmt::skip]
-fn min<T: Ord>(a: T, b: T) -> T {
-    if a < b { a } else { b }
-}
-//max function
-#[rustfmt::skip]
-fn max<T: Ord>(a: T, b: T) -> T {
-    if a > b { a } else { b }
-}
+// //min function
+// #[rustfmt::skip]
+// fn min<T: Ord>(a: T, b: T) -> T {
+//     if a < b { a } else { b }
+// }
+// //max function
+// #[rustfmt::skip]
+// fn max<T: Ord>(a: T, b: T) -> T {
+//     if a > b { a } else { b }
+// }

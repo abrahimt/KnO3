@@ -1,3 +1,5 @@
+use regex::Regex;
+
 use crate::board::Chessboard;
 
 /// Places pieces on the chessboard based on the FEN (Forsyth-Edwards Notation) rows provided.
@@ -38,7 +40,7 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
     }
 }
 
-/// Validates if the given FEN (Forsyth-Edwards Notation) string is well-formed.
+/// Function to check if a given FEN (Forsyth-Edwards Notation) string is valid
 ///
 /// # Arguments
 ///
@@ -49,9 +51,48 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// A boolean indicating whether the FEN string is valid.
 #[allow(unused_variables)]
 pub fn valid_fen(fen: &str) -> bool {
-    let is_valid: bool = true;
-    //Check if fen is valid
-    is_valid
+    let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
+    let captures = regex.captures(fen);
+    if captures.is_none() {
+        return false;
+    }
+    let captures = captures.unwrap();
+
+    let fen_ranks = captures.get(1).unwrap().as_str().split('/');
+    if fen_ranks.clone().count() != 8 {
+        return false;
+    }
+    for fen_part in fen_ranks {
+        let mut piece_count = 0;
+        let mut previous_was_digit = false;
+        let mut previous_was_piece = false;
+        for p in fen_part.chars() {
+            if p.is_ascii_digit() {
+                if previous_was_digit {
+                    return false;
+                }
+                piece_count += p.to_digit(10).unwrap();
+                previous_was_digit = true;
+                previous_was_piece = false;
+            } else if p == '~' {
+                if !previous_was_piece {
+                    return false;
+                }
+                previous_was_digit = false;
+                previous_was_piece = false;
+            } else if "pnbqkrPBNQKR".contains(p) {
+                piece_count += 1;
+                previous_was_digit = false;
+                previous_was_piece = true;
+            } else {
+                return false;
+            }
+        }
+        if piece_count != 8 {
+            return false;
+        }
+    }
+    true
 }
 
 /// Generates a FEN (Forsyth-Edwards Notation) string representing the current state of the chessboard.

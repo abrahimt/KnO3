@@ -67,7 +67,7 @@ pub fn valid_fen(fen: &str) -> bool {
         let mut previous_was_digit = false;
         let mut previous_was_piece = false;
         for p in fen_part.chars() {
-            if p.is_digit(10) {
+            if p.is_ascii_digit() {
                 if previous_was_digit {
                     return false;
                 }

@@ -50,59 +50,44 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 ///
 /// A boolean indicating whether the FEN string is valid.
 pub fn valid_fen(fen: &str) -> bool {
-    // Define the regex pattern for a valid FEN string
     let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
-    // Check if the provided FEN string matches the pattern
     if let Some(captures) = regex.captures(fen) {
-        // Extract the position part of the FEN and split it into rows
         let fen_ranks = captures.get(1).unwrap().as_str().split('/');
-        // Check if there are exactly 8 rows in the position part
         if fen_ranks.clone().count() != 8 {
             return false;
         }
-        // Iterate through each row in the position part
         for fen_part in fen_ranks {
             let mut piece_count = 0;
             let mut previous_was_digit = false;
             let mut previous_was_piece = false;
-            // Iterate through each character in the row
             for p in fen_part.chars() {
-                // Check if the character is a digit
                 if p.is_digit(10) {
-                    // Check for two subsequent digits
                     if previous_was_digit {
                         return false;
                     }
-                    // Accumulate the digit to the column sum
                     piece_count += p.to_digit(10).unwrap();
                     previous_was_digit = true;
                     previous_was_piece = false;
                 } else if p == '~' {
-                    // Check if ~ is not after a piece
                     if !previous_was_piece {
                         return false;
                     }
                     previous_was_digit = false;
                     previous_was_piece = false;
                 } else if "pnbqkrPBNQKR".contains(p) {
-                    // Count the piece and update flags
                     piece_count += 1;
                     previous_was_digit = false;
                     previous_was_piece = true;
                 } else {
-                    // Invalid character in the FEN string
                     return false;
                 }
             }
-            // Check if there are exactly 8 columns in each row
             if piece_count != 8 {
                 return false;
             }
         }
-        // The FEN string passed all checks and is valid
         true
     } else {
-        // The FEN string does not match the expected pattern
         false
     }
 }

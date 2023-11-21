@@ -51,45 +51,47 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// A boolean indicating whether the FEN string is valid.
 pub fn valid_fen(fen: &str) -> bool {
     let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
-    if let Some(captures) = regex.captures(fen) {
-        let fen_ranks = captures.get(1).unwrap().as_str().split('/');
-        if fen_ranks.clone().count() != 8 {
-            return false;
-        }
-        for fen_part in fen_ranks {
-            let mut piece_count = 0;
-            let mut previous_was_digit = false;
-            let mut previous_was_piece = false;
-            for p in fen_part.chars() {
-                if p.is_digit(10) {
-                    if previous_was_digit {
-                        return false;
-                    }
-                    piece_count += p.to_digit(10).unwrap();
-                    previous_was_digit = true;
-                    previous_was_piece = false;
-                } else if p == '~' {
-                    if !previous_was_piece {
-                        return false;
-                    }
-                    previous_was_digit = false;
-                    previous_was_piece = false;
-                } else if "pnbqkrPBNQKR".contains(p) {
-                    piece_count += 1;
-                    previous_was_digit = false;
-                    previous_was_piece = true;
-                } else {
+    let captures = regex.captures(fen);
+    if captures.is_none() {
+        return false;
+    }
+    let captures = captures.unwrap();
+
+    let fen_ranks = captures.get(1).unwrap().as_str().split('/');
+    if fen_ranks.clone().count() != 8 {
+        return false;
+    }
+    for fen_part in fen_ranks {
+        let mut piece_count = 0;
+        let mut previous_was_digit = false;
+        let mut previous_was_piece = false;
+        for p in fen_part.chars() {
+            if p.is_digit(10) {
+                if previous_was_digit {
                     return false;
                 }
-            }
-            if piece_count != 8 {
+                piece_count += p.to_digit(10).unwrap();
+                previous_was_digit = true;
+                previous_was_piece = false;
+            } else if p == '~' {
+                if !previous_was_piece {
+                    return false;
+                }
+                previous_was_digit = false;
+                previous_was_piece = false;
+            } else if "pnbqkrPBNQKR".contains(p) {
+                piece_count += 1;
+                previous_was_digit = false;
+                previous_was_piece = true;
+            } else {
                 return false;
             }
         }
-        true
-    } else {
-        false
+        if piece_count != 8 {
+            return false;
+        }
     }
+    true
 }
 
 /// Generates a FEN (Forsyth-Edwards Notation) string representing the current state of the chessboard.

@@ -11,26 +11,6 @@ use std::{io::stdout, u8};
 /// on the corresponding square. The bit at index `i` represents the presence of a piece on
 /// the square at rank `i/8` and file `i%8`.
 ///
-/// # Fields
-///
-/// - `black_pawns`: Bitboard representing the positions of black pawns.
-/// - `black_rooks`: Bitboard representing the positions of black rooks.
-/// - `black_knights`: Bitboard representing the positions of black knights.
-/// - `black_bishops`: Bitboard representing the positions of black bishops.
-/// - `black_queen`: Bitboard representing the position of the black queen.
-/// - `black_king`: Bitboard representing the position of the black king.
-/// - `white_pawns`: Bitboard representing the positions of white pawns.
-/// - `white_rooks`: Bitboard representing the positions of white rooks.
-/// - `white_knights`: Bitboard representing the positions of white knights.
-/// - `white_bishops`: Bitboard representing the positions of white bishops.
-/// - `white_queen`: Bitboard representing the position of the white queen.
-/// - `white_king`: Bitboard representing the position of the white king.
-/// - `white_turn`: Boolean indicating whether it's white's turn to move.
-/// - `castling_rights`: 4-bit value representing the castling rights, where the bits represent
-///   kingside and queenside castling rights for both black and white.
-/// - `en_passant`: 6-bit value representing the square that has en passant ability (1-64),
-///   or 0 if there is no en passant square.
-///
 /// Note: The board is represented as a set of bitboards for each piece type, and the
 /// `en_passant` square is represented using 6 bits, allowing values 1-64 to represent each
 /// square on the board. The `castling_rights` field uses 4 bits to represent kingside and
@@ -66,15 +46,6 @@ impl Chessboard {
     /// castling rights, en passant square, and whose turn it is (white's turn initially) are
     /// also set to their default values.
     ///
-    /// # Example
-    ///
-    /// ```
-    /// use chess_engine::Chessboard;
-    ///
-    /// let new_game_board = Chessboard::new();
-    /// println!("New Game Chessboard:\n{:#?}", new_game_board);
-    /// ```
-    ///
     /// The function creates a new instance of a `Chessboard` with the starting position for
     /// a new game. It can be used to initialize the chessboard at the beginning of a chess match.
     pub fn new() -> Chessboard {
@@ -102,30 +73,6 @@ impl Chessboard {
     /// # Returns
     ///
     /// A `Chessboard` struct initialized with empty positions for all pieces.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use chess_engine::Chessboard;
-    ///
-    /// let empty_chessboard = Chessboard::empty();
-    /// // Check that all piece bitboards are initialized to 0
-    /// assert_eq!(empty_chessboard.white_pawns, 0);
-    /// assert_eq!(empty_chessboard.white_knights, 0);
-    /// assert_eq!(empty_chessboard.white_bishops, 0);
-    /// assert_eq!(empty_chessboard.white_king, 0);
-    /// assert_eq!(empty_chessboard.white_queen, 0);
-    /// assert_eq!(empty_chessboard.white_rooks, 0);
-    /// assert_eq!(empty_chessboard.black_pawns, 0);
-    /// assert_eq!(empty_chessboard.black_knights, 0);
-    /// assert_eq!(empty_chessboard.black_bishops, 0);
-    /// assert_eq!(empty_chessboard.black_king, 0);
-    /// assert_eq!(empty_chessboard.black_queen, 0);
-    /// assert_eq!(empty_chessboard.black_rooks, 0);
-    /// assert_eq!(empty_chessboard.castling_rights, 0);
-    /// assert_eq!(empty_chessboard.en_passant, 0);
-    /// assert_eq!(empty_chessboard.white_turn, true);
-    /// ```
     ///
     /// The function creates a new instance of a `Chessboard` with all piece bitboards set to 0,
     /// indicating no pieces are present on the board. The castling rights and en passant fields

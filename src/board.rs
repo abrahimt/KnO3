@@ -50,7 +50,7 @@ pub struct Chessboard {
     pub(crate) white_king: u64,
     pub(crate) white_turn: bool,    // True if it's white's turn
     pub(crate) castling_rights: u8, // KQkq will be represented by 4 bits
-    pub(crate) en_passant: u8,      //a square that has en passant ability (1-64)
+    pub(crate) en_passant: u8,      // a square that has en passant ability (1-64)
 }
 
 impl Chessboard {
@@ -97,7 +97,39 @@ impl Chessboard {
         }
     }
 
-    /// Create a new instance of a chessboard, with no pieces on it.
+    /// Creates a new instance of a chessboard with no pieces on it.
+    ///
+    /// # Returns
+    ///
+    /// A `Chessboard` struct initialized with empty positions for all pieces.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use chess_engine::Chessboard;
+    ///
+    /// let empty_chessboard = Chessboard::empty();
+    /// // Check that all piece bitboards are initialized to 0
+    /// assert_eq!(empty_chessboard.white_pawns, 0);
+    /// assert_eq!(empty_chessboard.white_knights, 0);
+    /// assert_eq!(empty_chessboard.white_bishops, 0);
+    /// assert_eq!(empty_chessboard.white_king, 0);
+    /// assert_eq!(empty_chessboard.white_queen, 0);
+    /// assert_eq!(empty_chessboard.white_rooks, 0);
+    /// assert_eq!(empty_chessboard.black_pawns, 0);
+    /// assert_eq!(empty_chessboard.black_knights, 0);
+    /// assert_eq!(empty_chessboard.black_bishops, 0);
+    /// assert_eq!(empty_chessboard.black_king, 0);
+    /// assert_eq!(empty_chessboard.black_queen, 0);
+    /// assert_eq!(empty_chessboard.black_rooks, 0);
+    /// assert_eq!(empty_chessboard.castling_rights, 0);
+    /// assert_eq!(empty_chessboard.en_passant, 0);
+    /// assert_eq!(empty_chessboard.white_turn, true);
+    /// ```
+    ///
+    /// The function creates a new instance of a `Chessboard` with all piece bitboards set to 0,
+    /// indicating no pieces are present on the board. The castling rights and en passant fields
+    /// are also initialized to 0, and it's set to white's turn.
     pub fn empty() -> Chessboard {
         Chessboard {
             white_pawns: 0,

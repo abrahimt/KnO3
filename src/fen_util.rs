@@ -55,38 +55,38 @@ pub fn valid_fen(fen: &str) -> bool {
     // Check if the provided FEN string matches the pattern
     if let Some(captures) = regex.captures(fen) {
         // Extract the position part of the FEN and split it into rows
-        let fen_list = captures.get(1).unwrap().as_str().split('/');
+        let fen_ranks = captures.get(1).unwrap().as_str().split('/');
         // Check if there are exactly 8 rows in the position part
-        if fen_list.clone().count() != 8 {
+        if fen_ranks.clone().count() != 8 {
             return false;
         }
         // Iterate through each row in the position part
-        for fen_part in fen_list {
-            let mut field_sum = 0;
+        for fen_part in fen_ranks {
+            let mut piece_count = 0;
             let mut previous_was_digit = false;
             let mut previous_was_piece = false;
             // Iterate through each character in the row
-            for c in fen_part.chars() {
+            for p in fen_part.chars() {
                 // Check if the character is a digit
-                if c.is_digit(10) {
+                if p.is_digit(10) {
                     // Check for two subsequent digits
                     if previous_was_digit {
                         return false;
                     }
                     // Accumulate the digit to the column sum
-                    field_sum += c.to_digit(10).unwrap();
+                    piece_count += p.to_digit(10).unwrap();
                     previous_was_digit = true;
                     previous_was_piece = false;
-                } else if c == '~' {
+                } else if p == '~' {
                     // Check if ~ is not after a piece
                     if !previous_was_piece {
                         return false;
                     }
                     previous_was_digit = false;
                     previous_was_piece = false;
-                } else if "pnbqkrPBNQKR".contains(c) {
+                } else if "pnbqkrPBNQKR".contains(p) {
                     // Count the piece and update flags
-                    field_sum += 1;
+                    piece_count += 1;
                     previous_was_digit = false;
                     previous_was_piece = true;
                 } else {
@@ -95,7 +95,7 @@ pub fn valid_fen(fen: &str) -> bool {
                 }
             }
             // Check if there are exactly 8 columns in each row
-            if field_sum != 8 {
+            if piece_count != 8 {
                 return false;
             }
         }

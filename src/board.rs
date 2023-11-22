@@ -150,7 +150,7 @@ impl Chessboard {
     ///
     /// # Returns
     ///
-    /// A tuple containing the corresponding file (character) and rank (usize) for the given square.
+    /// A tuple containing the corresponding file and rank for the given square.
     ///
     /// # Example
     ///
@@ -165,6 +165,7 @@ impl Chessboard {
         let file = (b'A' + col) as char;
         (file, row as usize)
     }
+
     /// Converts a chess rank and file to its corresponding square index (0-63).
     ///
     /// # Arguments
@@ -186,6 +187,7 @@ impl Chessboard {
     pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
         (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64
     }
+
     /// Moves a chess piece on the chessboard from the current position to the new position.
     ///
     /// # Arguments
@@ -268,7 +270,7 @@ impl Chessboard {
                 _ => {}
             }
         } else {
-            println!("Invalid input position or piece");
+            panic!("Invalid input position or piece");
         }
     }
 

@@ -1,6 +1,12 @@
 use kn_o3::board::Chessboard;
 use kn_o3::fen_util;
 
+/**
+  Forsynth-Edwards Notation (FEN)
+  https://www.chess.com/terms/fen-chess
+*/
+
+
 #[test]
 fn test_whose_turn() {
     let mut cb = Chessboard::empty();

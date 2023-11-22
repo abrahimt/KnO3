@@ -171,11 +171,14 @@ pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let passant = chessboard.en_passant;
     if passant == 0 {
         return "-".to_string();
+    } else if passant <= 64 && passant > 0 {
+        let row = (passant - 1) / 8 + 1;
+        let col = (passant - 1) % 8;
+        let chr = (b'A' + col) as char;
+        format!("{}{}", chr, row)
+    } else {
+        panic!("En_passant index out of bounds!");
     }
-    let row = (passant - 1) / 8 + 1;
-    let col = (passant - 1) % 8;
-    let chr = (b'A' + col) as char;
-    format!("{}{}", chr, row)
 }
 
 /// Parses the piece placement part of the Forsyth–Edwards Notation (FEN) string and updates the chessboard.

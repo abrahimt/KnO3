@@ -9,21 +9,21 @@ use std::{io::stdout, u8};
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
 /// that position.
 pub struct Chessboard {
-    pub(crate) black_pawns: u64,
-    pub(crate) black_rooks: u64,
-    pub(crate) black_knights: u64,
-    pub(crate) black_bishops: u64,
-    pub(crate) black_queen: u64,
-    pub(crate) black_king: u64,
-    pub(crate) white_pawns: u64,
-    pub(crate) white_rooks: u64,
-    pub(crate) white_knights: u64,
-    pub(crate) white_bishops: u64,
-    pub(crate) white_queen: u64,
-    pub(crate) white_king: u64,
-    pub(crate) white_turn: bool,    // True if it's white's turn
-    pub(crate) castling_rights: u8, // KQkq will be represented by 4 bits
-    pub(crate) en_passant: u8,      //a square that has en passant ability (1-64)
+    pub black_pawns: u64,
+    pub black_rooks: u64,
+    pub black_knights: u64,
+    pub black_bishops: u64,
+    pub black_queen: u64,
+    pub black_king: u64,
+    pub white_pawns: u64,
+    pub white_rooks: u64,
+    pub white_knights: u64,
+    pub white_bishops: u64,
+    pub white_queen: u64,
+    pub white_king: u64,
+    pub white_turn: bool,    // True if it's white's turn
+    pub castling_rights: u8, // KQkq will be represented by 4 bits
+    pub en_passant: u8,      //a square that has en passant ability (1-64)
 }
 
 impl Chessboard {

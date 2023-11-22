@@ -276,14 +276,9 @@ impl Chessboard {
         {
             let old_square = rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
             let new_square = rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
-                println!("before {:064b}", piece_bitboard);
                 // Delete the piece from the old square
                 piece_bitboard = piece_bitboard - two.pow(old_square.try_into().unwrap());
-                println!("during {:064b}", piece_bitboard);
-                // Add the piece to the new square
-                piece_bitboard = two.pow(new_square.try_into().unwrap()) & piece_bitboard;
-                println!("after  {:064b}", piece_bitboard);
-                        //delete the piece from old square
+                piece_bitboard = two.pow(new_square.try_into().unwrap()) | piece_bitboard;
         } else {
             // Handle the case when unwrapping fails (e.g., invalid input)
             println!("Invalid input positions");

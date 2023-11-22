@@ -7,21 +7,6 @@ use regex::Regex;
 /// 
 /// - `chessboard`: A mutable reference to the `Chessboard` struct to update with the piece placement.
 /// - `fen_rows`: A string representing the piece placement part of the FEN string.
-/// 
-/// # Example
-/// 
-/// ```
-/// use kn_o3::Chessboard;
-/// 
-/// let mut chessboard = Chessboard::empty();
-/// let fen_rows = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-/// place_pieces(&mut chessboard, fen_rows);
-/// ```
-/// 
-/// The function places pieces on the chessboard based on the FEN rows provided.
-/// It updates the bitboards for each piece type and color according to the FEN string.
-/// 
-/// Note: The function assumes that the FEN rows follow the standard FEN format for piece placement.
 #[rustfmt::skip]
 pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
     for (row_index, row_string) in fen_rows.split('/').rev().enumerate() {
@@ -63,21 +48,6 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// # Returns
 ///
 /// A boolean indicating whether the FEN string is valid.
-///
-/// # Example
-///
-/// ```
-/// use kn_o3::fen_util::valid_fen;
-///
-/// let valid_fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-/// assert!(valid_fen(valid_fen_string));
-///
-/// let invalid_fen_string = "invalid_fen_string";
-/// assert!(!valid_fen(invalid_fen_string));
-/// ```
-///
-/// The function checks if a given FEN string is valid based on the standard FEN format rules.
-/// It verifies the piece placement, active color, castling rights, en passant square, and move counters.
 #[allow(unused_variables)]
 pub fn valid_fen(fen: &str) -> bool {
     let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
@@ -132,20 +102,7 @@ pub fn valid_fen(fen: &str) -> bool {
 ///
 /// # Returns
 ///
-/// A string representing the FEN string for the current chessboard position.
-///
-/// # Example
-///
-/// ```
-/// use kn_o3::Chessboard;
-///
-/// let mut chessboard = Chessboard::new();
-/// let fen_string = get_fen_placement(&chessboard);
-/// assert_eq!(fen_string, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-/// ```
-///
-/// The function generates a FEN string representing the current state of the chessboard.
-/// It iterates through each rank and file, encoding the piece positions and empty squares.
+/// A string representing the FEN string for the current chessboard position. Example: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 pub fn get_fen_placement(chessboard: &Chessboard) -> String {
     let mut result: String = "".to_string();
     for rank in (1..=8).rev() {

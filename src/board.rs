@@ -7,14 +7,14 @@ use std::{io::stdout, u8};
 
 /// Struct representing a chessboard with piece positions and game state.
 ///
-/// Each `piece` is a uint64 bitboard, where each bit represents the presence of a piece
-/// on the corresponding square. The bit at index `i` represents the presence of a piece on
-/// the square at rank `i/8` and file `i%8`.
+/// Each `piece` is a uint64 bitboard, where each bit represents a square on the board.
+/// A set bit indicates this piece is present on that corresponding square.
 ///
 /// Note: The board is represented as a set of bitboards for each piece type, and the
 /// `en_passant` square is represented using 6 bits, allowing values 1-64 to represent each
 /// square on the board. The `castling_rights` field uses 4 bits to represent kingside and
-/// queenside castling rights for both black and white.
+/// queenside castling rights for both black and white. Castle white king side = 8, castle
+/// white queen side = 4, castle black king side = 2, caslte black queen side = 1.
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,
@@ -73,10 +73,6 @@ impl Chessboard {
     /// # Returns
     ///
     /// A `Chessboard` struct initialized with empty positions for all pieces.
-    ///
-    /// The function creates a new instance of a `Chessboard` with all piece bitboards set to 0,
-    /// indicating no pieces are present on the board. The castling rights and en passant fields
-    /// are also initialized to 0, and it's set to white's turn.
     pub fn empty() -> Chessboard {
         Chessboard {
             white_pawns: 0,
@@ -105,7 +101,7 @@ impl Chessboard {
     ///
     /// # Returns
     ///
-    /// A `Result` containing the resulting `Chessboard` with the position from the FEN string.
+    /// A `Result` containing the resulting `Chessboard` with the game state from the FEN string.
     /// If the FEN string is invalid, an `Err` variant with an error message is returned.
     ///
     /// # Example
@@ -123,10 +119,6 @@ impl Chessboard {
     ///     },
     /// }
     /// ```
-    ///
-    /// The function parses a valid FEN string and constructs a `Chessboard` with the specified
-    /// piece placement, turn, castling rights, and en passant details. If the FEN string is
-    /// invalid, it returns an `Err` variant with an error message.
     pub fn from_string(fen: &str) -> Result<Chessboard, String> {
         if !fen_util::valid_fen(fen) {
             return Err("Invalid FEN".to_string());
@@ -165,9 +157,6 @@ impl Chessboard {
     /// The function prints the current state of the chessboard to the console. If `pretty` is
     /// set to `true`, it adds extra formatting, including colors for pieces and backgrounds.
     /// Otherwise, it prints a simple representation of the board with piece characters.
-    ///
-    /// Note: The function uses ANSI escape codes for color formatting when `pretty` is set to
-    /// `true`. The piece characters are centered within each square for improved display.
     pub fn print(&self, pretty: bool) {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
         let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -227,11 +216,7 @@ impl Chessboard {
     /// let piece_at_a1 = initial_position.piece_at_position(1, 0);
     /// println!("Piece at a1: {}", piece_at_a1);
     /// ```
-    ///
-    /// The function iterates through each piece type on the chessboard, checking whether the
-    /// specified position is occupied by a piece of that type. If a piece is found, its character
-    /// representation is returned. If no piece is found at the specified position, a period ('.')
-    /// is returned.
+    /// Note: Uppercase pieces are white and lowercase pieces are black.
     pub fn piece_at_position(&self, rank: usize, file: usize) -> char {
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);
@@ -246,11 +231,9 @@ impl Chessboard {
     ///
     /// # Arguments
     ///
-    /// - `chessboard`: The chessboard position to be converted to FEN.
-    ///
     /// # Returns
     ///
-    /// A FEN string representing the board's position.
+    /// A FEN string representing the game state.
     ///
     /// # Example
     ///
@@ -261,14 +244,6 @@ impl Chessboard {
     /// let fen_string = initial_position.to_string();
     /// println!("FEN: {}", fen_string);
     /// ```
-    ///
-    /// The resulting FEN string will consist of six space-separated fields:
-    /// 1. Piece placement
-    /// 2. Whose turn it is ('w' for white, 'b' for black)
-    /// 3. Castling rights
-    /// 4. En passant target square (or "-" if none)
-    /// 5. Halfmove clock (always "0" in this implementation)
-    /// 6. Fullmove number (always "1" in this implementation)
     ///
     /// Note: The FEN string is used to represent the state of a chess position in a concise
     /// and human-readable format. It captures information about piece placement, castling rights,
@@ -353,21 +328,6 @@ impl Chessboard {
     ///
     /// The `Color` of the chess piece. If the piece is uppercase (representing a white piece),
     /// it returns `Color::White`; otherwise, it returns `Color::Black`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use chess_display::Color;
-    /// use chess_display::ChessboardDisplay;
-    ///
-    /// let display = ChessboardDisplay::new();
-    /// let piece_color = display.find_fg('K');
-    /// println!("Color of white king: {:?}", piece_color);
-    /// ```
-    ///
-    /// The function determines the color of a chess piece based on its character representation.
-    /// Uppercase letters represent white pieces, and lowercase letters represent black pieces.
-    /// The resulting color is returned as either `Color::White` or `Color::Black`.
     #[rustfmt::skip]
     fn find_fg(&self, p: char) -> Color {
         if p.is_uppercase() { Color::White }
@@ -386,21 +346,6 @@ impl Chessboard {
     /// The `Color` of the board at the specified position. The color is represented by an RGB
     /// value. Light squares are represented by (r: 190, g: 140, b: 170), and dark squares are
     /// represented by (r: 255, g: 206, b: 158).
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use chess_display::Color;
-    /// use chess_display::ChessboardDisplay;
-    ///
-    /// let display = ChessboardDisplay::new();
-    /// let background_color = display.find_bkgnd(1, 0);
-    /// println!("Background color at a1: {:?}", background_color);
-    /// ```
-    ///
-    /// The function calculates the background color of a square based on its position on the
-    /// chessboard. Light squares are determined by an even sum of the rank and file, while dark
-    /// squares are determined by an odd sum. The resulting color is returned as an RGB value.
     #[rustfmt::skip]
     fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
         let lght = Color::Rgb { r: 190, g: 140, b: 170 };

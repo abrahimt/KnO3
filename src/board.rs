@@ -107,7 +107,7 @@ impl Chessboard {
     /// * `pretty` - Print with extra formatting
     pub fn print(&self, pretty: bool) {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
-        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        let files = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
         for rank in ranks.iter() {
             print!("{rank} ");

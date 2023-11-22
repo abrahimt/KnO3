@@ -35,7 +35,7 @@ pub struct Chessboard {
 
 impl Chessboard {
     /* *********** */
-    /* Constructors */
+    /* Constructorrs */
 
     /// Creates a new instance of a chessboard, set up to start a new game.
     ///
@@ -53,14 +53,14 @@ impl Chessboard {
             white_pawns: 0b0000000000000000000000000000000000000000000000001111111100000000,
             white_knights: 0b0000000000000000000000000000000000000000000000000000000001000010,
             white_bishops: 0b0000000000000000000000000000000000000000000000000000000000100100,
-            white_king: 0b0000000000000000000000000000000000000000000000000000000000001000,
-            white_queen: 0b0000000000000000000000000000000000000000000000000000000000010000,
+            white_king: 0b0000000000000000000000000000000000000000000000000000000000010000,
+            white_queen: 0b0000000000000000000000000000000000000000000000000000000000001000,
             white_rooks: 0b0000000000000000000000000000000000000000000000000000000010000001,
             black_pawns: 0b0000000011111111000000000000000000000000000000000000000000000000,
             black_knights: 0b0100001000000000000000000000000000000000000000000000000000000000,
             black_bishops: 0b0010010000000000000000000000000000000000000000000000000000000000,
-            black_king: 0b0000100000000000000000000000000000000000000000000000000000000000,
-            black_queen: 0b0001000000000000000000000000000000000000000000000000000000000000,
+            black_king: 0b0001000000000000000000000000000000000000000000000000000000000000,
+            black_queen: 0b0000100000000000000000000000000000000000000000000000000000000000,
             black_rooks: 0b1000000100000000000000000000000000000000000000000000000000000000,
             castling_rights: 0b1111,
             en_passant: 0,
@@ -159,7 +159,7 @@ impl Chessboard {
     /// Otherwise, it prints a simple representation of the board with piece characters.
     pub fn print(&self, pretty: bool) {
         let ranks = [8, 7, 6, 5, 4, 3, 2, 1];
-        let files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        let files = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
         for rank in ranks.iter() {
             print!("{rank} ");
@@ -193,6 +193,138 @@ impl Chessboard {
             }
         }
         println!();
+    }
+
+    /// Converts a square index (0-63) to its corresponding chess rank and file.
+    ///
+    /// # Arguments
+    ///
+    /// * `square` - The square index (0-63) on the chessboard.
+    ///
+    /// # Returns
+    ///
+    /// A tuple containing the corresponding file and rank for the given square.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let (file, rank) = square_to_rank_file(35);
+    /// println!("File: {}, Rank: {}", file, rank);
+    /// // Output: File: 'D', Rank: 5
+    /// ```
+    pub fn square_to_rank_file(square: u8) -> (char, usize) {
+        let row = (square - 1) / 8 + 1;
+        let col = (square - 1) % 8;
+        let file = (b'A' + col) as char;
+        (file, row as usize)
+    }
+
+    /// Converts a chess rank and file to its corresponding square index (0-63).
+    ///
+    /// # Arguments
+    ///
+    /// * `rank` - The rank of the chessboard (1-8).
+    /// * `file` - The file of the chessboard (character 'A' to 'H').
+    ///
+    /// # Returns
+    ///
+    /// The square index (0-63) corresponding to the given rank and file.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let square = rank_file_to_square(5, 'D');
+    /// println!("Square: {}", square);
+    /// // Output: Square: 35
+    /// ```
+    pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
+        (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64
+    }
+
+    /// Moves a chess piece on the chessboard from the current position to the new position.
+    ///
+    /// # Arguments
+    ///
+    /// * `current_pos` - The current position of the piece in algebraic notation (e.g., "E2").
+    /// * `new_pos` - The new position to move the piece to in algebraic notation (e.g., "E4").
+    /// * `piece` - The type of chess piece to be moved (e.g., 'p' for pawn, 'R' for rook).
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mut chessboard = Chessboard::new();
+    /// chessboard.move_piece("E2", "E4", 'P');
+    /// ```
+    pub fn move_piece(&mut self, current_pos: &str, new_pos: &str, piece: char) {
+        let two: u64 = 2;
+        if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) = (
+            current_pos.chars().next(),
+            current_pos.chars().next_back(),
+            new_pos.chars().next(),
+            new_pos.chars().next_back(),
+        ) {
+            let old_square =
+                Self::rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
+            let new_square =
+                Self::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
+            let clear_old = !two.pow(old_square.try_into().unwrap());
+            let add_new = two.pow(new_square.try_into().unwrap());
+
+            // Delete the piece from the old square
+            match piece {
+                'p' => {
+                    self.black_pawns &= clear_old; // Clear old position
+                    self.black_pawns |= add_new; // Set new position
+                }
+                'r' => {
+                    self.black_rooks &= clear_old;
+                    self.black_rooks |= add_new;
+                }
+                'b' => {
+                    self.black_bishops &= clear_old;
+                    self.black_bishops |= add_new;
+                }
+                'k' => {
+                    self.black_king &= clear_old;
+                    self.black_king |= add_new;
+                }
+                'q' => {
+                    self.black_queen &= clear_old;
+                    self.black_queen |= add_new;
+                }
+                'n' => {
+                    self.black_knights &= clear_old;
+                    self.black_knights |= add_new;
+                }
+                'P' => {
+                    self.white_pawns &= clear_old;
+                    self.white_pawns |= add_new;
+                }
+                'R' => {
+                    self.white_rooks &= clear_old;
+                    self.white_rooks |= add_new;
+                }
+                'B' => {
+                    self.white_bishops &= clear_old;
+                    self.white_bishops |= add_new;
+                }
+                'K' => {
+                    self.white_king &= clear_old;
+                    self.white_king |= add_new;
+                }
+                'Q' => {
+                    self.white_queen &= clear_old;
+                    self.white_queen |= add_new;
+                }
+                'N' => {
+                    self.white_knights &= clear_old;
+                    self.white_knights |= add_new;
+                }
+                _ => {}
+            }
+        } else {
+            panic!("Invalid input position or piece");
+        }
     }
 
     /// Retrieves the chess piece at a specific position on the chessboard.
@@ -350,8 +482,8 @@ impl Chessboard {
     fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
         let lght = Color::Rgb { r: 190, g: 140, b: 170 };
         let dark = Color::Rgb { r: 255, g: 206, b: 158 };
-        if (rank + file) % 2 == 0 { lght }
-        else                      { dark }
+        if (rank + file) % 2 == 0 { dark }
+        else                      { lght }
     }
 }
 

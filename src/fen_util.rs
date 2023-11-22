@@ -51,7 +51,7 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// A boolean indicating whether the FEN string is valid.
 #[allow(unused_variables)]
 pub fn valid_fen(fen: &str) -> bool {
-    let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
+    let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s(-|[K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
     let captures = regex.captures(fen);
     if captures.is_none() {
         return false;

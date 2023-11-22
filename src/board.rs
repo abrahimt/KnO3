@@ -8,6 +8,7 @@ use std::{io::stdout, u8};
 /// Struct representing a chessboard with piece positions and game state
 /// Each `piece` is a uint64 bitboard. Each byte represents a rank and a 1 indicates a presence in
 /// that position.
+#[derive(Copy, Clone)]
 pub struct Chessboard {
     pub(crate) black_pawns: u64,
     pub(crate) black_rooks: u64,

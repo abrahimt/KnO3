@@ -6,9 +6,11 @@ fn main() {
     let mut cb = Chessboard::new();
     cb.print(true);
 
+    println!("{}",fen_util::rank_file_to_square(1, 'H'));
+    println!("{}",fen_util::rank_file_to_square(2, 'A'));
     // cb = Chessboard::from_string("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
     //     .unwrap();
-    Chessboard::move_piece(cb.white_pawns, "E4".to_owned(), "E6".to_owned());
+    Chessboard::move_piece(cb.white_pawns, "E2", "E4");
 
     cb.print(true);
     println!("E4 only {:?}", cb.to_string());

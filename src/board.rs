@@ -148,27 +148,27 @@ impl Chessboard {
     ///
     /// A vector of legal moves represented as strings. Each string should follow the
     /// algebraic notation for chess moves.
-    pub fn legal_moves(&mut self) -> Vec<String> {
-        let mut legal_moves = Vec::new();
+    // pub fn legal_moves(&mut self) -> Vec<String> {
+    //     let mut legal_moves = Vec::new();
 
-        // Iterate through each piece type on the board
-        for (piece, positions) in self.get_pieces() {
-            // Iterate through each square on the board
-            for rank in 1..=8 {
-                for file in 0..8 {
-                    // Check if the current piece exists on the current square
-                    let rank_byte = positions >> ((rank - 1) * 8);
-                    if (rank_byte & (1 << file)) != 0 {
-                        // Generate legal moves for the piece on this square
-                        let moves = self.generate_moves(piece, rank, file);
-                        legal_moves.extend(moves);
-                    }
-                }
-            }
-        }
+    //     // Iterate through each piece type on the board
+    //     for (piece, positions) in self.get_pieces() {
+    //         // Iterate through each square on the board
+    //         for rank in 1..=8 {
+    //             for file in 0..8 {
+    //                 // Check if the current piece exists on the current square
+    //                 let rank_byte = positions >> ((rank - 1) * 8);
+    //                 if (rank_byte & (1 << file)) != 0 {
+    //                     // Generate legal moves for the piece on this square
+    //                     let moves = self.generate_moves(piece, rank, file);
+    //                     legal_moves.extend(moves);
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        legal_moves
-    }
+    //     legal_moves
+    // }
 
     /// Generates legal moves for a piece at a specific position.
     ///
@@ -181,107 +181,115 @@ impl Chessboard {
     /// # Returns
     ///
     /// A vector of legal moves represented as strings in algebraic notation.
-    pub fn generate_moves(&mut self, piece: char, rank: usize, file: usize) -> Vec<String> {
-        // Implement logic to generate legal moves for each piece type
-        // Use the current state of the board to determine legal moves
-        let file_char = (b'A' + file as u8) as char;
-        let new_board = Chessboard::new();
-        // Example: Generate legal moves for a pawn
-        // Contains all white pieces
-        if self.white_turn {
-            if piece == 'P' {
-                // TODO: If last rank before promotion (move with promotion)
+    // pub fn generate_moves(&mut self, piece: char, rank: usize, file: usize) -> Vec<String> {
+    //     // Implement logic to generate legal moves for each piece type
+    //     // Use the current state of the board to determine legal moves
+    //     let file_char = (b'A' + file as u8) as char;
+    //     let new_board = Chessboard::new();
+    //     // Example: Generate legal moves for a pawn
+    //     // Contains all white pieces
+    //     if self.white_turn {
+    //         if piece == 'P' {
+    //             // TODO: If last rank before promotion (move with promotion)
 
-                //If starting square, then can go 1 or 2 moves
-                //no en passant
-                if new_board.piece_at_position(rank, file) == self.piece_at_position(rank, file) {
-                    //check for capture
-                    if self
-                        .piece_at_position(
-                            if rank + 1 > 8 { 7 } else { rank + 1 },
-                            if file + 1 > 8 { 7 } else { file + 1 },
-                        )
-                        .is_lowercase()
-                    {
-                        //can capture
-                    } else if self
-                        .piece_at_position(
-                            if rank - 1 < 0 { 1 } else { rank - 1 },
-                            if file - 1 < 0 { 1 } else { file - 1 },
-                        )
-                        .is_lowercase()
-                    {
-                        //can capture
-                    }
-                    if self.piece_at_position(rank + 1, file) == '.' {
-                        //can move 1 forward
-                    }
-                    if self.piece_at_position(rank + 1, file) == '.'
-                        && self.piece_at_position(rank + 2, file) == '.'
-                    {
-                        //can move 2 forward
-                        //set en passant
-                        self.en_passant = rank_file_to_square(rank + 1, file_char);
-                    }
-                } else {
-                    //check for capture
-                    if self
-                        .piece_at_position(
-                            if rank + 1 > 8 { 7 } else { rank + 1 },
-                            if file + 1 > 8 { 7 } else { file + 1 },
-                        )
-                        .is_lowercase()
-                    {
-                        //can capture
-                    } else if self
-                        .piece_at_position(
-                            if rank - 1 < 0 { 1 } else { rank - 1 },
-                            if file - 1 < 0 { 1 } else { file - 1 },
-                        )
-                        .is_lowercase()
-                    {
-                        //can capture
-                    }
-                    //check for en passant
-                    if self.en_passant != 0 {
-                        if rank_file_to_square(rank, file_char) == self.en_passant {
-                            //can en passant
-                        }
-                    }
-                    if self.piece_at_position(rank + 1, file) == '.' {
-                        //move 1
-                    }
-                }
-            }
+    //             //If starting square, then can go 1 or 2 moves
+    //             //no en passant
+    //             if new_board.piece_at_position(rank, file) == self.piece_at_position(rank, file) {
+    //                 //check for capture
+    //                 if self
+    //                     .piece_at_position(
+    //                         if rank + 1 > 8 { 7 } else { rank + 1 },
+    //                         if file + 1 > 8 { 7 } else { file + 1 },
+    //                     )
+    //                     .is_lowercase()
+    //                 {
+    //                     //can capture
+    //                 } else if self
+    //                     .piece_at_position(
+    //                         if rank - 1 < 0 { 1 } else { rank - 1 },
+    //                         if file - 1 < 0 { 1 } else { file - 1 },
+    //                     )
+    //                     .is_lowercase()
+    //                 {
+    //                     //can capture
+    //                 }
+    //                 if self.piece_at_position(rank + 1, file) == '.' {
+    //                     //can move 1 forward
+    //                 }
+    //                 if self.piece_at_position(rank + 1, file) == '.'
+    //                     && self.piece_at_position(rank + 2, file) == '.'
+    //                 {
+    //                     //can move 2 forward
+    //                     //set en passant
+    //                     self.en_passant = rank_file_to_square(rank + 1, file_char) as u8;
+    //                 }
+    //             } else {
+    //                 //check for capture
+    //                 if self
+    //                     .piece_at_position(
+    //                         if rank + 1 > 8 { 7 } else { rank + 1 },
+    //                         if file + 1 > 8 { 7 } else { file + 1 },
+    //                     )
+    //                     .is_lowercase()
+    //                 {
+    //                     //can capture
+    //                 } else if self
+    //                     .piece_at_position(
+    //                         if rank - 1 < 0 { 1 } else { rank - 1 },
+    //                         if file - 1 < 0 { 1 } else { file - 1 },
+    //                     )
+    //                     .is_lowercase()
+    //                 {
+    //                     //can capture
+    //                 }
+    //                 //check for en passant
+    //                 if self.en_passant != 0 {
+    //                     if rank_file_to_square(rank, file_char) == self.en_passant {
+    //                         //can en passant
+    //                     }
+    //                 }
+    //                 if self.piece_at_position(rank + 1, file) == '.' {
+    //                     //move 1
+    //                 }
+    //             }
+    //         }
+    //     } else {
+    //         if piece == 'p' {
+    //             //can only move if black turn
+    //             //If starting square, then can go 1 or 2 moves
+    //             //else if not starting square can go one move
+    //             //if en passant square is diagonal from it then it can move to that square
+    //             //if other color piece is diagonal from it then it can move to that square and capture
+    //             //if it reaches other side of board it can promote to same color of any piece type
+    //         }
+    //         //handle random pieces that are wrong
+    //     }
+
+    //     Vec::new() // Placeholder, replace with actual legal moves
+    // }
+
+    pub fn move_piece(mut piece_bitboard: u64, current_pos: &str, new_pos: &str) {
+        let two:u64 = 2;
+
+        if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) =
+            (current_pos.chars().next(), current_pos.chars().next_back(), new_pos.chars().next(), new_pos.chars().next_back())
+        {
+            let old_square = rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
+            let new_square = rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
+                println!("before {:064b}", piece_bitboard);
+                // Delete the piece from the old square
+                piece_bitboard = piece_bitboard - two.pow(old_square.try_into().unwrap());
+                println!("during {:064b}", piece_bitboard);
+                // Add the piece to the new square
+                piece_bitboard = two.pow(new_square.try_into().unwrap()) & piece_bitboard;
+                println!("after  {:064b}", piece_bitboard);
+                        //delete the piece from old square
         } else {
-            if piece == 'p' {
-                //can only move if black turn
-                //If starting square, then can go 1 or 2 moves
-                //else if not starting square can go one move
-                //if en passant square is diagonal from it then it can move to that square
-                //if other color piece is diagonal from it then it can move to that square and capture
-                //if it reaches other side of board it can promote to same color of any piece type
-            }
-            //handle random pieces that are wrong
+            // Handle the case when unwrapping fails (e.g., invalid input)
+            println!("Invalid input positions");
         }
-
-        Vec::new() // Placeholder, replace with actual legal moves
     }
-
-    pub fn move_piece(mut piece_bitboard:u64, current_pos: String, new_pos: String) {
-        let old_file = current_pos.chars().next();
-        let old_rank = current_pos.chars().next_back();
-        let new_file = new_pos.chars().next();
-        let new_rank = new_pos.chars().next_back();
-
-        let old_square:u64 = rank_file_to_square(old_rank.unwrap() as usize, old_file.unwrap()).into(); //1-64
-        let new_square:u64 = rank_file_to_square(new_rank.unwrap() as usize, new_file.unwrap()).into(); //1-64
-
-        //delete the piece from old square
-        piece_bitboard = piece_bitboard - old_square.pow(2);
-        //add piece to new square
-        piece_bitboard = new_square.pow(2) & piece_bitboard;
-    }
+    
     
     /* *************** */
     /* PRIVATE FUNCTIONS */

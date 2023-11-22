@@ -164,10 +164,8 @@ pub fn square_to_rank_file(square: u8) -> (char, usize) {
     (file, row as usize)
 }
 
-pub fn rank_file_to_square(rank: usize, file: char) -> u8 {
-    let col = file as u8 - b'A';
-    let row = rank as u8;
-    row * 8 + col + 1
+pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
+    (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64 + 1
 }
 
 /// Parse the piece placement part of the FEN string.

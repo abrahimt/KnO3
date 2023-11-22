@@ -29,7 +29,7 @@ pub struct Chessboard {
 
 impl Chessboard {
     /* *********** */
-    /* Constructos */
+    /* Constructors */
 
     /// Create a new instance of a chessboard, setup to start a new game.
     pub fn new() -> Chessboard {
@@ -377,8 +377,8 @@ impl Chessboard {
     fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
         let lght = Color::Rgb { r: 190, g: 140, b: 170 };
         let dark = Color::Rgb { r: 255, g: 206, b: 158 };
-        if (rank + file) % 2 == 0 { lght }
-        else                      { dark }
+        if (rank + file) % 2 == 0 { dark }
+        else                      { lght }
     }
 
     /// Retrieve the chess piece at a specific position on the chessboard.

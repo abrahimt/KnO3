@@ -212,8 +212,8 @@ pub fn parse_whose_turn(chessboard: &mut Chessboard, whose_turn: &str) {
 ///
 /// - `chessboard`: A mutable reference to the `Chessboard` struct to update castling rights.
 /// - `castle_rights`: A string representing the castling rights part of the FEN string.
-pub fn parse_castling_rights(chessboard: &mut Chessboard, mut castle_rights: &str) {
-    castle_rights = "";
+pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
+    chessboard.castling_rights = 0;
     for c in castle_rights.chars() {
         let v = match c {
             'K' => 0b1000,

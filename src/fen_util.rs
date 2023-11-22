@@ -253,5 +253,7 @@ pub fn parse_en_passant(chessboard: &mut Chessboard, en_passant: &str) {
                 chessboard.en_passant = col_value + 8 * (row as u8 - 1);
             }
         }
+    } else if en_passant == "-" {
+        chessboard.en_passant = 0;
     }
 }

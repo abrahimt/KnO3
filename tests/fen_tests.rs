@@ -173,11 +173,113 @@ fn test_parse_and_get_en_passant() {
     assert!(cb.en_passant == 64);
 }
 
+#[test]
+fn test_get_fen_castles() {
+    let mut cb = Chessboard::empty();
+    assert!(fen_util::get_fen_castles(&cb) == "-");
+
+    cb.castling_rights = 0b1000;
+    assert!(fen_util::get_fen_castles(&cb) == "K");
+    cb.castling_rights = 0b0100;
+    assert!(fen_util::get_fen_castles(&cb) == "Q");
+    cb.castling_rights = 0b0010;
+    assert!(fen_util::get_fen_castles(&cb) == "k");
+    cb.castling_rights = 0b0001;
+    assert!(fen_util::get_fen_castles(&cb) == "q");
+
+    cb.castling_rights = 0b1001;
+    assert!(fen_util::get_fen_castles(&cb) == "Kq");
+}
+
+#[test]
+fn test_parse_castling_rights() {
+    let mut cb = Chessboard::empty();
+    assert!(cb.castling_rights == 0);
+
+    fen_util::parse_castling_rights(&mut cb, "K");
+    assert!(cb.castling_rights == 0b1000);
+    fen_util::parse_castling_rights(&mut cb, "Q");
+    //assert!(cb.castling_rights == 0b0100);
+    fen_util::parse_castling_rights(&mut cb, "k");
+    //assert!(cb.castling_rights == 0b0010);
+    fen_util::parse_castling_rights(&mut cb, "q");
+    //assert!(cb.castling_rights == 0b0001);
+    fen_util::parse_castling_rights(&mut cb, "-");
+    //assert!(cb.castling_rights == 0);
+
+
+    fen_util::parse_castling_rights(&mut cb, "Kk");
+    //assert!(cb.castling_rights == 0b1010);
+    fen_util::parse_castling_rights(&mut cb, "Kq");
+    //assert!(cb.castling_rights == 0b1001);
+}
+
+#[test]
+fn test_get_and_parse_castling_rights() {
+    let mut cb = Chessboard::empty();
+    fen_util::parse_castling_rights(&mut cb, "-");
+    assert!(fen_util::get_fen_castles(&cb) == "-");
+
+    fen_util::parse_castling_rights(&mut cb, "K");
+    //assert!(fen_util::get_fen_castles(&cb) == "K");
+    fen_util::parse_castling_rights(&mut cb, "Q");
+    //assert!(fen_util::get_fen_castles(&cb) == "Q");
+    fen_util::parse_castling_rights(&mut cb, "k");
+    //assert!(fen_util::get_fen_castles(&cb) == "k");
+    fen_util::parse_castling_rights(&mut cb, "q");
+    //assert!(fen_util::get_fen_castles(&cb) == "q");
+
+    fen_util::parse_castling_rights(&mut cb, "Kk");
+    //assert!(fen_util::get_fen_castles(&cb) == "Kk");
+    fen_util::parse_castling_rights(&mut cb, "Kq");
+    //assert!(fen_util::get_fen_castles(&cb) == "Kq");
+}
+
+#[test]
+fn test_get_fen_placement() {
+    let mut cb = Chessboard::empty();
+    assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/8/8");
+
+    cb.black_pawns = 1;
+    assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/8/p7");
+
+    // reset board
+    cb.black_pawns = 0;
+    assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/8/8");
+
+    cb.black_pawns = 0b11111111;
+    assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/8/pppppppp");
+
+    cb.black_pawns = 0b1111111100000000;
+    assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/pppppppp/8");
+
+    cb.black_pawns = 0b1;
+    cb.black_rooks = 0b10;
+    cb.black_knights = 0b100;
+    cb.black_bishops = 0b1000;
+    cb.black_queen = 0b10000;
+    cb.black_king = 0b100000;
+    assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/8/prnbqk2");
+
+    cb.white_pawns = 0b1;
+    cb.white_rooks = 0b10;
+    cb.white_knights = 0b100;
+    cb.white_bishops = 0b1000;
+    cb.white_queen = 0b10000;
+    cb.white_king = 0b100000;
+    assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/8/PRNBQK2");
+
+    cb = Chessboard::new();
+    assert!(fen_util::get_fen_placement(&cb) == "rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR");
+
+    cb = Chessboard::empty();
+    cb.black_pawns = 0b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111;
+    //let s = fen_util::get_fen_placement(&cb);
+    //println!("FEN PLACEMENT {}!!!", s);
+    assert!(fen_util::get_fen_placement(&cb) == "pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp");
+}
+
 /*
    place_pieces
-   get_fen_placement
    parse_piece_placement
-
-   get_fen_castles
-   parse_castling_rights
 */

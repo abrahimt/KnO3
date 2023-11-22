@@ -5,11 +5,11 @@ use board::Chessboard;
 fn main() {
     let mut cb = Chessboard::new();
     cb.print(true);
-    
+
     // cb = Chessboard::from_string("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
     //     .unwrap();
     // Move a white pawn from E2 to E3
-    cb.move_piece("E2", "E3", 'P');
+    cb.move_piece("E2", "E3", 'p');
     println!("{}", cb.to_string());
     cb.print(true);
     // Move a black knight from G8 to F6

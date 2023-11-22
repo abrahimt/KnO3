@@ -1,5 +1,3 @@
-use std::vec;
-
 use regex::Regex;
 
 use crate::board::Chessboard;

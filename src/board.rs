@@ -485,52 +485,6 @@ impl Chessboard {
         if (rank + file) % 2 == 0 { dark }
         else                      { lght }
     }
-
-    /// Retrieve the chess piece at a specific position on the chessboard.
-    /// * `rank` - The rank of the square (1-indexed).
-    /// * `file` - The file (A=0) of the square (0-indexed).
-    /// # Return:
-    /// The character representation of the piece at this position.
-    /// If there is no piece here, it will return a period.
-    pub fn piece_at_position(&self, rank: usize, file: usize) -> char {
-        for (p_type, positions) in self.get_pieces() {
-            let rank_byte = positions >> ((rank - 1) * 8);
-            if (rank_byte & (1 << file)) != 0 {
-                return p_type;
-            }
-        }
-        '.'
-    }
-
-    /// Forsyth–Edwards Notation Serializer
-    /// * `chessboard` - The chessboard position to be converted to a FEN.
-    /// # Return: FEN string representing the board's position.
-    #[allow(clippy::all)]
-    pub fn to_string(&self) -> String {
-        let mut string_array: [&str; 6] = ["", "", "", "", "", ""];
-
-        // Piece placement
-        let pieces = &fen_util::get_fen_placement(&self);
-        string_array[0] = pieces;
-
-        // Whose turn
-        string_array[1] = if self.white_turn { "w" } else { "b" };
-
-        // Castling rights
-        let castle = &fen_util::get_fen_castles(&self);
-        string_array[2] = castle;
-
-        // En passant
-        let passant = &fen_util::get_fen_passant(&self);
-        string_array[3] = passant;
-
-        // Set the rest to default values
-        string_array[4] = "0";
-        string_array[5] = "1";
-
-        // Return the FEN string
-        string_array.join(" ")
-    }
 }
 
 //MINIMAX Function Pseudo-code

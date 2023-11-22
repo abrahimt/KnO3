@@ -142,17 +142,64 @@ impl Chessboard {
         println!();
     }
 
+    /// Converts a square index (0-63) to its corresponding chess rank and file.
+    ///
+    /// # Arguments
+    ///
+    /// * `square` - The square index (0-63) on the chessboard.
+    ///
+    /// # Returns
+    ///
+    /// A tuple containing the corresponding file (character) and rank (usize) for the given square.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let (file, rank) = square_to_rank_file(35);
+    /// println!("File: {}, Rank: {}", file, rank);
+    /// // Output: File: 'D', Rank: 5
+    /// ```
     pub fn square_to_rank_file(square: u8) -> (char, usize) {
         let row = (square - 1) / 8 + 1;
         let col = (square - 1) % 8;
         let file = (b'A' + col) as char;
         (file, row as usize)
     }
-
+    /// Converts a chess rank and file to its corresponding square index (0-63).
+    ///
+    /// # Arguments
+    ///
+    /// * `rank` - The rank of the chessboard (1-8).
+    /// * `file` - The file of the chessboard (character 'A' to 'H').
+    ///
+    /// # Returns
+    ///
+    /// The square index (0-63) corresponding to the given rank and file.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let square = rank_file_to_square(5, 'D');
+    /// println!("Square: {}", square);
+    /// // Output: Square: 35
+    /// ```
     pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
         (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64
     }
-
+    /// Moves a chess piece on the chessboard from the current position to the new position.
+    ///
+    /// # Arguments
+    ///
+    /// * `current_pos` - The current position of the piece in algebraic notation (e.g., "E2").
+    /// * `new_pos` - The new position to move the piece to in algebraic notation (e.g., "E4").
+    /// * `piece` - The type of chess piece to be moved (e.g., 'p' for pawn, 'R' for rook).
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mut chessboard = Chessboard::new();
+    /// chessboard.move_piece("E2", "E4", 'P');
+    /// ```
     pub fn move_piece(&mut self, current_pos: &str, new_pos: &str, piece: char) {
         let two: u64 = 2;
         if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) = (

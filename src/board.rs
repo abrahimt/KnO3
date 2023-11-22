@@ -268,8 +268,7 @@ impl Chessboard {
                 _ => {}
             }
         } else {
-            // Handle the case when unwrapping fails (e.g., invalid input)
-            println!("Invalid input positions");
+            println!("Invalid input position or piece");
         }
     }
 

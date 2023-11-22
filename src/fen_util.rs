@@ -155,17 +155,6 @@ pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     format!("{}{}", chr, row)
 }
 
-pub fn square_to_rank_file(square: u8) -> (char, usize) {
-    let row = (square - 1) / 8 + 1;
-    let col = (square - 1) % 8;
-    let file = (b'A' + col) as char;
-    (file, row as usize)
-}
-
-pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
-    (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64
-}
-
 /// Parse the piece placement part of the FEN string.
 pub fn parse_piece_placement(
     chessboard: &mut Chessboard,

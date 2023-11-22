@@ -142,6 +142,17 @@ impl Chessboard {
         println!();
     }
 
+    pub fn square_to_rank_file(square: u8) -> (char, usize) {
+        let row = (square - 1) / 8 + 1;
+        let col = (square - 1) % 8;
+        let file = (b'A' + col) as char;
+        (file, row as usize)
+    }
+
+    pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
+        (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64
+    }
+
     /// Generates a list of legal moves for the current position.
     ///
     /// # Returns
@@ -277,9 +288,9 @@ impl Chessboard {
             new_pos.chars().next_back(),
         ) {
             let old_square =
-                fen_util::rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
+                Self::rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
             let new_square =
-                fen_util::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
+                Self::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
             let clear_old = !two.pow(old_square.try_into().unwrap());
             let add_new = two.pow(new_square.try_into().unwrap());
 

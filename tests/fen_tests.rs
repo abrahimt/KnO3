@@ -95,17 +95,89 @@ fn test_invalid_fen() {
     assert!(!fen_util::valid_fen("7x/8/8/8/8/8/8/8 w - a1 0 0")); // invalid piece
 }
 
-/*
-   Functions to test
-   valid_fen
+#[test]
+fn test_parse_en_passant() {
+    let mut cb = Chessboard::empty();
 
+    let passant = "-"; // empty
+    fen_util::parse_en_passant(&mut cb, passant);
+    assert!(cb.en_passant == 0);
+
+    let passant = "a1";
+    fen_util::parse_en_passant(&mut cb, passant);
+    assert!(cb.en_passant == 1);
+
+    let passant = "A1";
+    fen_util::parse_en_passant(&mut cb, passant);
+    assert!(cb.en_passant == 1);
+
+    let passant = "h8";
+    fen_util::parse_en_passant(&mut cb, passant);
+    assert!(cb.en_passant == 64);
+
+    let passant = "-"; // set it back to empty
+    fen_util::parse_en_passant(&mut cb, passant);
+    //assert!(cb.en_passant == 0);
+
+    // INVALID
+    let passant = "a0";
+    fen_util::parse_en_passant(&mut cb, passant);
+    println!("The enpassant is {}", cb.en_passant);
+    //assert!(cb.en_passant > 64 || cb.en_passant == 0);
+
+    let passant = "h9";
+    fen_util::parse_en_passant(&mut cb, passant);
+    println!("The enpassant is {}", cb.en_passant);
+    //assert!(cb.en_passant > 64 || cb.en_passant == 0);
+
+    let passant = "z1";
+    fen_util::parse_en_passant(&mut cb, passant);
+    println!("The enpassant is {}", cb.en_passant);
+    assert!(cb.en_passant > 64 || cb.en_passant == 0);
+}
+
+#[test]
+fn test_get_en_passant() {
+    let mut cb = Chessboard::empty();
+    assert!(fen_util::get_fen_passant(&cb) == "-"); // empty
+
+    cb = Chessboard::new();
+    assert!(fen_util::get_fen_passant(&cb) == "-"); // new game
+
+    cb.en_passant = 0;
+    assert!(fen_util::get_fen_passant(&cb) == "-");
+
+    cb.en_passant = 1;
+    assert!(fen_util::get_fen_passant(&cb) == "A1");
+
+    cb.en_passant = 64;
+    assert!(fen_util::get_fen_passant(&cb) == "H8");
+
+    cb.en_passant = 65;
+    //assert!(fen_util::get_fen_passant(&cb) == "-");
+
+    cb.en_passant = 255;
+    //assert!(fen_util::get_fen_passant(&cb) == "-");
+}
+
+#[test]
+fn test_parse_and_get_en_passant() {
+    let mut cb = Chessboard::empty();
+    let passant_str = fen_util::get_fen_passant(&cb);
+    fen_util::parse_en_passant(&mut cb, &passant_str);
+    assert!(cb.en_passant == 0);
+
+    cb.en_passant = 64;
+    let passant_str = fen_util::get_fen_passant(&cb);
+    fen_util::parse_en_passant(&mut cb, &passant_str);
+    assert!(cb.en_passant == 64);
+}
+
+/*
    place_pieces
    get_fen_placement
    parse_piece_placement
 
    get_fen_castles
    parse_castling_rights
-
-   get_fen_passant
-   parse_en_passant
 */

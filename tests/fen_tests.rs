@@ -270,7 +270,7 @@ fn test_get_fen_placement() {
     assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/8/PRNBQK2");
 
     cb = Chessboard::new();
-    assert!(fen_util::get_fen_placement(&cb) == "rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR");
+    assert!(fen_util::get_fen_placement(&cb) == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 
     cb = Chessboard::empty();
     cb.black_pawns = 0b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111;

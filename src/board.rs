@@ -269,17 +269,70 @@ impl Chessboard {
     //     Vec::new() // Placeholder, replace with actual legal moves
     // }
 
-    pub fn move_piece(mut piece_bitboard: u64, current_pos: &str, new_pos: &str) {
+    pub fn move_piece(&mut self, current_pos: &str, new_pos: &str, piece:char) {
         let two:u64 = 2;
-
         if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) =
             (current_pos.chars().next(), current_pos.chars().next_back(), new_pos.chars().next(), new_pos.chars().next_back())
         {
             let old_square = rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
             let new_square = rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
+            println!("{old_square}");
+            println!("{new_square}");
+            
                 // Delete the piece from the old square
-                piece_bitboard = piece_bitboard - two.pow(old_square.try_into().unwrap());
-                piece_bitboard = two.pow(new_square.try_into().unwrap()) | piece_bitboard;
+                match piece {
+                    'p' => {
+                        self.black_pawns &= !two.pow(old_square.try_into().unwrap()); // Clear old position
+                        self.black_pawns |= two.pow(new_square.try_into().unwrap()); // Set new position
+                    }
+                    'r' => {
+                        self.black_rooks &= !two.pow(old_square.try_into().unwrap());
+                        self.black_rooks |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'b' => {
+                        self.black_bishops &= !two.pow(old_square.try_into().unwrap());
+                        self.black_bishops |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'k' => {
+                        self.black_king &= !two.pow(old_square.try_into().unwrap());
+                        self.black_king |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'q' => {
+                        self.black_queen &= !two.pow(old_square.try_into().unwrap());
+                        self.black_queen |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'n' => {
+                        self.black_knights &= !two.pow(old_square.try_into().unwrap());
+                        self.black_knights |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'P' => {
+                        self.white_pawns &= !two.pow(old_square.try_into().unwrap());
+                        self.white_pawns |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'R' => {
+                        self.white_rooks &= !two.pow(old_square.try_into().unwrap());
+                        self.white_rooks |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'B' => {
+                        self.white_bishops &= !two.pow(old_square.try_into().unwrap());
+                        self.white_bishops |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'K' => {
+                        self.white_king &= !two.pow(old_square.try_into().unwrap());
+                        self.white_king |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'Q' => {
+                        self.white_queen &= !two.pow(old_square.try_into().unwrap());
+                        self.white_queen |= two.pow(new_square.try_into().unwrap());
+                    }
+                    'N' => {
+                        self.white_knights &= !two.pow(old_square.try_into().unwrap());
+                        self.white_knights |= two.pow(new_square.try_into().unwrap());
+                    }
+                    //_ => { return Err("Invalid piece in FEN string".to_string()); }
+                    _ => {}
+                }
+                
         } else {
             // Handle the case when unwrapping fails (e.g., invalid input)
             println!("Invalid input positions");

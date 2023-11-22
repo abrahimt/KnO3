@@ -8,7 +8,7 @@ fn main() {
     
     // cb = Chessboard::from_string("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
     //     .unwrap();
-    Chessboard::move_piece(cb.white_pawns, "E2", "E4");
+    cb.move_piece( "E2", "E3", 'P');
     println!("{}", cb.to_string());
     cb.print(true);
     // println!("E4 only {:?}", cb.to_string());

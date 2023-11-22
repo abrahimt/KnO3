@@ -165,7 +165,7 @@ pub fn square_to_rank_file(square: u8) -> (char, usize) {
 }
 
 pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
-    (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64 + 1
+    (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64
 }
 
 /// Parse the piece placement part of the FEN string.

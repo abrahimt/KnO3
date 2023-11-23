@@ -38,7 +38,6 @@ impl Chessboard {
     /* *********** */
     /* Constructorrs */
 
-
     /// Creates a new instance of a chessboard, set up to start a new game.
     ///
     /// # Returns

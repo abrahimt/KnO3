@@ -30,7 +30,7 @@ pub struct Chessboard {
     pub white_king: u64,
     pub white_turn: bool,    // True if it's white's turn
     pub castling_rights: u8, // KQkq will be represented by 4 bits
-    pub en_passant: u8,      //a square that has en passant ability (1-64)
+    pub en_passant: u8,      // a square that has en passant ability (1-64)
 }
 
 impl Chessboard {

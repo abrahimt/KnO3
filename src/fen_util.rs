@@ -186,11 +186,14 @@ pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let passant = chessboard.en_passant;
     if passant == 0 {
         return "-".to_string();
+    } else if passant <= 64 && passant > 0 {
+        let row = (passant - 1) / 8 + 1;
+        let col = (passant - 1) % 8;
+        let chr = (b'A' + col) as char;
+        format!("{}{}", chr, row)
+    } else {
+        panic!("En_passant index out of bounds!");
     }
-    let row = (passant - 1) / 8 + 1;
-    let col = (passant - 1) % 8;
-    let chr = (b'A' + col) as char;
-    format!("{}{}", chr, row)
 }
 
 /// Parses the piece placement part of the Forsyth–Edwards Notation (FEN) string and updates the chessboard.
@@ -247,27 +250,27 @@ pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
 ///
 /// - `chessboard`: A mutable reference to the `Chessboard` struct to update the en passant square.
 /// - `en_passant`: A string representing the en passant square in algebraic notation (e.g., "e3").
-///   If the en passant square is "-" (no en passant square), it is ignored.
+///   If the en passant square is "-" (no en passant square), it is set to 0.
 pub fn parse_en_passant(chessboard: &mut Chessboard, en_passant: &str) {
-    if en_passant != "-" {
-        if let (Some(col), Some(row)) = (
-            en_passant.chars().next().map(|c| c.to_ascii_uppercase()),
-            en_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
-        ) {
-            if (1..=8).contains(&row) {
-                let col_value: u8 = match col {
-                    'A' => 1,
-                    'B' => 2,
-                    'C' => 3,
-                    'D' => 4,
-                    'E' => 5,
-                    'F' => 6,
-                    'G' => 7,
-                    'H' => 8,
-                    _ => 0,
-                };
-                chessboard.en_passant = col_value + 8 * (row as u8 - 1);
-            }
+    if let (Some(col), Some(row)) = (
+        en_passant.chars().next().map(|c| c.to_ascii_uppercase()),
+        en_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
+    ) {
+        if (1..=8).contains(&row) {
+            let col_value: u8 = match col {
+                'A' => 1,
+                'B' => 2,
+                'C' => 3,
+                'D' => 4,
+                'E' => 5,
+                'F' => 6,
+                'G' => 7,
+                'H' => 8,
+                _ => 0,
+            };
+            chessboard.en_passant = col_value + 8 * (row as u8 - 1);
         }
+    } else {
+        chessboard.en_passant = 0;
     }
 }

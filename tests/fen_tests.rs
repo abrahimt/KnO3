@@ -120,23 +120,22 @@ fn test_parse_en_passant() {
 
     let passant = "-"; // set it back to empty
     fen_util::parse_en_passant(&mut cb, passant);
-    //assert!(cb.en_passant == 0);
+    assert!(cb.en_passant == 0);
 
     // INVALID
     let passant = "a0";
     fen_util::parse_en_passant(&mut cb, passant);
     println!("The enpassant is {}", cb.en_passant);
-    //assert!(cb.en_passant > 64 || cb.en_passant == 0);
+    assert!(cb.en_passant == 0);
 
     let passant = "h9";
     fen_util::parse_en_passant(&mut cb, passant);
-    println!("The enpassant is {}", cb.en_passant);
-    //assert!(cb.en_passant > 64 || cb.en_passant == 0);
+    assert!(cb.en_passant == 0);
 
     let passant = "z1";
     fen_util::parse_en_passant(&mut cb, passant);
     println!("The enpassant is {}", cb.en_passant);
-    assert!(cb.en_passant > 64 || cb.en_passant == 0);
+    assert!(cb.en_passant == 0);
 }
 
 #[test]

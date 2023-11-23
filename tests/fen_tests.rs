@@ -324,8 +324,3 @@ fn test_place_pieces() {
     assert!(cb.white_queen   == 0b00001000);
     assert!(cb.white_knights == 0b01000010);
 }
-
-/*
-   place_pieces
-   parse_piece_placement
-*/

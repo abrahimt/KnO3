@@ -94,7 +94,9 @@ pub fn valid_fen(fen: &str) -> bool {
     }
 
     let castles = fen.split_whitespace().nth(2).unwrap();
-    if !unique_chars(castles) { return false; }
+    if !unique_chars(castles) {
+        return false;
+    }
     true
 }
 

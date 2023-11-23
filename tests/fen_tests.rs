@@ -13,7 +13,6 @@ use kn_o3::fen_util;
   fullmove number += 1 on black turn
 */
 
-
 #[test]
 fn test_whose_turn() {
     let mut cb = Chessboard::empty();
@@ -30,7 +29,9 @@ fn test_valid_fen() {
     // Empty
     assert!(fen_util::valid_fen("8/8/8/8/8/8/8/8 w - - 0 0"));
     // Start of a new game
-    assert!(fen_util::valid_fen("rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w KQkq - 0 0"));
+    assert!(fen_util::valid_fen(
+        "rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w KQkq - 0 0"
+    ));
 
     // en passant
     assert!(fen_util::valid_fen("8/8/8/8/8/8/8/8 w - a1 0 0"));
@@ -66,7 +67,9 @@ fn test_valid_fen() {
 #[test]
 fn test_invalid_fen() {
     // Only positions
-    assert!(!fen_util::valid_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"));
+    assert!(!fen_util::valid_fen(
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+    ));
     assert!(!fen_util::valid_fen("8/8/8/8/8/8/8/8"));
     assert!(!fen_util::valid_fen("8/7k/8/8/8/8/8/8"));
 
@@ -207,7 +210,6 @@ fn test_parse_castling_rights() {
     fen_util::parse_castling_rights(&mut cb, "-");
     assert!(cb.castling_rights == 0);
 
-
     fen_util::parse_castling_rights(&mut cb, "Kk");
     assert!(cb.castling_rights == 0b1010);
     fen_util::parse_castling_rights(&mut cb, "Kq");
@@ -276,7 +278,10 @@ fn test_get_fen_placement() {
     cb.black_pawns = 0b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111;
     //let s = fen_util::get_fen_placement(&cb);
     //println!("FEN PLACEMENT {}!!!", s);
-    assert!(fen_util::get_fen_placement(&cb) == "pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp");
+    assert_eq!(
+        fen_util::get_fen_placement(&cb),
+        "pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp"
+    );
 }
 
 #[test]
@@ -311,16 +316,34 @@ fn test_place_pieces() {
 
     cb = Chessboard::empty();
     fen_util::place_pieces(&mut cb, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-    assert!(cb.black_pawns   == 0b00000000_11111111_00000000_00000000_00000000_00000000_00000000_00000000);
-    assert!(cb.black_rooks   == 0b10000001_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
-    assert!(cb.black_bishops == 0b00100100_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
-    assert!(cb.black_king    == 0b00010000_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
-    assert!(cb.black_queen   == 0b00001000_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
-    assert!(cb.black_knights == 0b01000010_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
-    assert!(cb.white_pawns   == 0b11111111_00000000);
-    assert!(cb.white_rooks   == 0b10000001);
+    assert_eq!(
+        cb.black_pawns,
+        0b00000000_11111111_00000000_00000000_00000000_00000000_00000000_00000000
+    );
+    assert_eq!(
+        cb.black_rooks,
+        0b10000001_00000000_00000000_00000000_00000000_00000000_00000000_00000000
+    );
+    assert_eq!(
+        cb.black_bishops,
+        0b00100100_00000000_00000000_00000000_00000000_00000000_00000000_00000000
+    );
+    assert_eq!(
+        cb.black_king,
+        0b00010000_00000000_00000000_00000000_00000000_00000000_00000000_00000000
+    );
+    assert_eq!(
+        cb.black_queen,
+        0b00001000_00000000_00000000_00000000_00000000_00000000_00000000_00000000
+    );
+    assert_eq!(
+        cb.black_knights,
+        0b01000010_00000000_00000000_00000000_00000000_00000000_00000000_00000000
+    );
+    assert!(cb.white_pawns == 0b11111111_00000000);
+    assert!(cb.white_rooks == 0b10000001);
     assert!(cb.white_bishops == 0b00100100);
-    assert!(cb.white_king    == 0b00010000);
-    assert!(cb.white_queen   == 0b00001000);
+    assert!(cb.white_king == 0b00010000);
+    assert!(cb.white_queen == 0b00001000);
     assert!(cb.white_knights == 0b01000010);
 }

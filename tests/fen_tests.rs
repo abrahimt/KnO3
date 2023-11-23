@@ -279,6 +279,66 @@ fn test_get_fen_placement() {
     assert!(fen_util::get_fen_placement(&cb) == "pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp/pppppppp");
 }
 
+#[test]
+fn test_place_pieces() {
+    let mut cb = Chessboard::empty();
+    assert!(cb.black_pawns == 0);
+
+    fen_util::place_pieces(&mut cb, "8/8/8/8/8/8/8/pppppppp");
+    assert!(cb.black_pawns == 255);
+
+    cb = Chessboard::empty();
+    fen_util::place_pieces(&mut cb, "8/8/8/8/8/8/8/7p");
+    assert!(cb.black_pawns == 0b10000000);
+
+    cb = Chessboard::empty();
+    fen_util::place_pieces(&mut cb, "8/8/8/8/8/8/8/prbkqn2");
+    assert!(cb.black_pawns == 1);
+    assert!(cb.black_rooks == 2);
+    assert!(cb.black_bishops == 4);
+    assert!(cb.black_king == 8);
+    assert!(cb.black_queen == 16);
+    assert!(cb.black_knights == 32);
+
+    cb = Chessboard::empty();
+    fen_util::place_pieces(&mut cb, "8/8/8/8/8/8/8/PRBKQN2");
+    assert!(cb.white_pawns == 1);
+    assert!(cb.white_rooks == 2);
+    assert!(cb.white_bishops == 4);
+    assert!(cb.white_king == 8);
+    assert!(cb.white_queen == 16);
+    assert!(cb.white_knights == 32);
+
+    cb = Chessboard::empty();
+    fen_util::place_pieces(&mut cb, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+
+    println!("p {}", cb.black_pawns);
+    println!("r {}", cb.black_rooks);
+    println!("b {}", cb.black_bishops);
+    println!("k {}", cb.black_king);
+    println!("q {}", cb.black_queen);
+    println!("n {}", cb.black_knights);
+    println!("P {}", cb.white_pawns);
+    println!("R {}", cb.white_rooks);
+    println!("B {}", cb.white_bishops);
+    println!("K {}", cb.white_king);
+    println!("Q {}", cb.white_queen);
+    println!("N {}", cb.white_knights);
+    assert!(cb.black_pawns   == 0b00000000_11111111_00000000_00000000_00000000_00000000_00000000_00000000);
+    assert!(cb.black_rooks   == 0b10000001_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
+    assert!(cb.black_bishops == 0b00100100_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
+    assert!(cb.black_king    == 0b00010000_00000000_00000000_00000000_00000000_00000000_00000000_00000000); // THIS IS BACKWARDS
+    assert!(cb.black_queen   == 0b00001000_00000000_00000000_00000000_00000000_00000000_00000000_00000000); // THIS IS BACKWARDS
+    assert!(cb.black_knights == 0b01000010_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
+    assert!(cb.white_pawns   == 0b11111111_00000000);
+    assert!(cb.white_rooks   == 0b10000001);
+    assert!(cb.white_bishops == 0b00100100);
+    assert!(cb.white_king    == 0b00001000);
+    assert!(cb.white_queen   == 0b00010000);
+    assert!(cb.white_knights == 0b00001000);
+    //assert!(cb.black_pawns == 0b10000000);
+}
+
 /*
    place_pieces
    parse_piece_placement

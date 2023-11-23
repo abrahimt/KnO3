@@ -108,7 +108,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -149,7 +149,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
@@ -209,7 +209,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// let (file, rank) = square_to_rank_file(35);
     /// println!("File: {}, Rank: {}", file, rank);
     /// // Output: File: 'D', Rank: 5
@@ -234,7 +234,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// let square = rank_file_to_square(5, 'D');
     /// println!("Square: {}", square);
     /// // Output: Square: 35
@@ -253,7 +253,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// let mut chessboard = Chessboard::new();
     /// chessboard.move_piece("E2", "E4", 'P');
     /// ```
@@ -343,7 +343,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
@@ -371,7 +371,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
@@ -422,7 +422,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();

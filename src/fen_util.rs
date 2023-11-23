@@ -50,7 +50,8 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// A boolean indicating whether the FEN string is valid.
 #[allow(unused_variables)]
 pub fn valid_fen(fen: &str) -> bool {
-    let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
+    let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s(-|[K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
+
     let captures = regex.captures(fen);
     if captures.is_none() {
         return false;
@@ -88,6 +89,20 @@ pub fn valid_fen(fen: &str) -> bool {
             }
         }
         if piece_count != 8 {
+            return false;
+        }
+    }
+
+    let castles = fen.split_whitespace().nth(2).unwrap();
+    if !unique_chars(castles) { return false; }
+    true
+}
+
+// TODO: Move this somewhere it makes more sense
+fn unique_chars(s: &str) -> bool {
+    let mut chars = std::collections::HashSet::new();
+    for c in s.chars() {
+        if !chars.insert(c) {
             return false;
         }
     }
@@ -216,6 +231,7 @@ pub fn parse_whose_turn(chessboard: &mut Chessboard, whose_turn: &str) {
 /// - `chessboard`: A mutable reference to the `Chessboard` struct to update castling rights.
 /// - `castle_rights`: A string representing the castling rights part of the FEN string.
 pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
+    chessboard.castling_rights = 0;
     for c in castle_rights.chars() {
         let v = match c {
             'K' => 0b1000,

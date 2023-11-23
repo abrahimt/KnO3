@@ -1,13 +1,12 @@
+use crate::board::Chessboard;
 use regex::Regex;
 
-use crate::board::Chessboard;
-
-/// Places pieces on the chessboard based on the FEN (Forsyth-Edwards Notation) rows provided.
+/// Places pieces on the chessboard based on the Forsyth-Edwards Notation (FEN) rows provided.
 /// 
 /// # Arguments
 /// 
-/// * `chessboard` - A mutable reference to the chessboard.
-/// * `fen_rows` - FEN string representing the piece placement on the board.
+/// - `chessboard`: A mutable reference to the `Chessboard` struct to update with the piece placement.
+/// - `fen_rows`: A string representing the piece placement part of the FEN string.
 #[rustfmt::skip]
 pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
     for (row_index, row_string) in fen_rows.split('/').rev().enumerate() {
@@ -40,11 +39,11 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
     }
 }
 
-/// Function to check if a given FEN (Forsyth-Edwards Notation) string is valid
+/// Validates a Forsyth-Edwards Notation (FEN) string to check if it conforms to the standard format.
 ///
 /// # Arguments
 ///
-/// * `fen` - A FEN string to be validated.
+/// - `fen`: A FEN string to be validated.
 ///
 /// # Returns
 ///
@@ -110,7 +109,15 @@ fn unique_chars(s: &str) -> bool {
     true
 }
 
-/// Generates a FEN (Forsyth-Edwards Notation) string representing the current state of the chessboard.
+/// Generates a Forsyth-Edwards Notation (FEN) string representing the current state of the chessboard.
+///
+/// # Arguments
+///
+/// - `chessboard`: A reference to the `Chessboard` struct containing the current game state.
+///
+/// # Returns
+///
+/// A string representing the FEN string for the current chessboard position. Example: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 pub fn get_fen_placement(chessboard: &Chessboard) -> String {
     let mut result: String = "".to_string();
     for rank in (1..=8).rev() {
@@ -138,10 +145,15 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
     c.as_str().to_string()
 }
 
-/// Get the castling right substring of a FEN
-/// * `chessboard` - The chessboard containing the current game state
+/// Retrieves the castling rights from the chessboard and returns them in Forsyth–Edwards Notation (FEN) format.
+/// 
+/// # Arguments
+/// 
+/// - `chessboard`: A reference to the `Chessboard` struct containing the current game state.
+/// 
 /// # Returns
-/// A string representing the caslting rights in FEN format
+/// 
+/// A string representing the castling rights in FEN format ("- " if no castling rights).
 #[rustfmt::skip]
 pub fn get_fen_castles(chessboard: &Chessboard) -> String {
     let state = chessboard.castling_rights;
@@ -159,6 +171,17 @@ pub fn get_fen_castles(chessboard: &Chessboard) -> String {
     if rights.is_empty() { "-".to_string() } else { rights }
 }
 
+/// Retrieves the en passant square from the chessboard and returns it in algebraic notation.
+///
+/// # Arguments
+///
+/// - `chessboard`: A reference to the `Chessboard` struct to get the en passant square from.
+///
+/// # Returns
+///
+/// A string representing the en passant square in algebraic notation ("-" if no en passant square).
+///
+/// If there is no en passant square (0), it returns "-".
 pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let passant = chessboard.en_passant;
     if passant == 0 {
@@ -170,7 +193,16 @@ pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     format!("{}{}", chr, row)
 }
 
-/// Parse the piece placement part of the FEN string.
+/// Parses the piece placement part of the Forsyth–Edwards Notation (FEN) string and updates the chessboard.
+///
+/// # Arguments
+///
+/// - `chessboard`: A mutable reference to the `Chessboard` struct to update the piece placement.
+/// - `piece_placement`: A string representing the piece placement part of the FEN string.
+///
+/// # Returns
+///
+/// A `Result` indicating success or an error message if the piece placement is invalid.
 pub fn parse_piece_placement(
     chessboard: &mut Chessboard,
     piece_placement: &str,
@@ -179,13 +211,24 @@ pub fn parse_piece_placement(
     Ok(())
 }
 
-/// Parse whose turn it is.
+/// Parses whose turn it is and updates the chessboard.
+///
+/// # Arguments
+///
+/// - `chessboard`: A mutable reference to the `Chessboard` struct to update whose turn it is.
+/// - `whose_turn`: A string representing whose turn it is ("w" for white, "b" for black).
 pub fn parse_whose_turn(chessboard: &mut Chessboard, whose_turn: &str) {
     chessboard.white_turn = whose_turn == "w";
 }
 
-/// Parse castling rights.
+/// Parses castling rights and updates the chessboard.
+///
+/// # Arguments
+///
+/// - `chessboard`: A mutable reference to the `Chessboard` struct to update castling rights.
+/// - `castle_rights`: A string representing the castling rights part of the FEN string.
 pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
+    chessboard.castling_rights = 0;
     for c in castle_rights.chars() {
         let v = match c {
             'K' => 0b1000,
@@ -198,7 +241,13 @@ pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
     }
 }
 
-/// Parse en passant square.
+/// Parses the en passant square and updates the chessboard accordingly.
+///
+/// # Arguments
+///
+/// - `chessboard`: A mutable reference to the `Chessboard` struct to update the en passant square.
+/// - `en_passant`: A string representing the en passant square in algebraic notation (e.g., "e3").
+///   If the en passant square is "-" (no en passant square), it is ignored.
 pub fn parse_en_passant(chessboard: &mut Chessboard, en_passant: &str) {
     if en_passant != "-" {
         if let (Some(col), Some(row)) = (

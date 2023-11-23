@@ -199,19 +199,19 @@ fn test_parse_castling_rights() {
     fen_util::parse_castling_rights(&mut cb, "K");
     assert!(cb.castling_rights == 0b1000);
     fen_util::parse_castling_rights(&mut cb, "Q");
-    //assert!(cb.castling_rights == 0b0100);
+    assert!(cb.castling_rights == 0b0100);
     fen_util::parse_castling_rights(&mut cb, "k");
-    //assert!(cb.castling_rights == 0b0010);
+    assert!(cb.castling_rights == 0b0010);
     fen_util::parse_castling_rights(&mut cb, "q");
-    //assert!(cb.castling_rights == 0b0001);
+    assert!(cb.castling_rights == 0b0001);
     fen_util::parse_castling_rights(&mut cb, "-");
-    //assert!(cb.castling_rights == 0);
+    assert!(cb.castling_rights == 0);
 
 
     fen_util::parse_castling_rights(&mut cb, "Kk");
-    //assert!(cb.castling_rights == 0b1010);
+    assert!(cb.castling_rights == 0b1010);
     fen_util::parse_castling_rights(&mut cb, "Kq");
-    //assert!(cb.castling_rights == 0b1001);
+    assert!(cb.castling_rights == 0b1001);
 }
 
 #[test]
@@ -221,18 +221,18 @@ fn test_get_and_parse_castling_rights() {
     assert!(fen_util::get_fen_castles(&cb) == "-");
 
     fen_util::parse_castling_rights(&mut cb, "K");
-    //assert!(fen_util::get_fen_castles(&cb) == "K");
+    assert!(fen_util::get_fen_castles(&cb) == "K");
     fen_util::parse_castling_rights(&mut cb, "Q");
-    //assert!(fen_util::get_fen_castles(&cb) == "Q");
+    assert!(fen_util::get_fen_castles(&cb) == "Q");
     fen_util::parse_castling_rights(&mut cb, "k");
-    //assert!(fen_util::get_fen_castles(&cb) == "k");
+    assert!(fen_util::get_fen_castles(&cb) == "k");
     fen_util::parse_castling_rights(&mut cb, "q");
-    //assert!(fen_util::get_fen_castles(&cb) == "q");
+    assert!(fen_util::get_fen_castles(&cb) == "q");
 
     fen_util::parse_castling_rights(&mut cb, "Kk");
-    //assert!(fen_util::get_fen_castles(&cb) == "Kk");
+    assert!(fen_util::get_fen_castles(&cb) == "Kk");
     fen_util::parse_castling_rights(&mut cb, "Kq");
-    //assert!(fen_util::get_fen_castles(&cb) == "Kq");
+    assert!(fen_util::get_fen_castles(&cb) == "Kq");
 }
 
 #[test]
@@ -270,7 +270,7 @@ fn test_get_fen_placement() {
     assert!(fen_util::get_fen_placement(&cb) == "8/8/8/8/8/8/8/PRNBQK2");
 
     cb = Chessboard::new();
-    assert!(fen_util::get_fen_placement(&cb) == "rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR");
+    assert!(fen_util::get_fen_placement(&cb) == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 
     cb = Chessboard::empty();
     cb.black_pawns = 0b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111;

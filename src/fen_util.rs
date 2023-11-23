@@ -187,7 +187,7 @@ pub fn get_fen_castles(chessboard: &Chessboard) -> String {
 pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let passant = chessboard.en_passant;
     if passant == 0 {
-        return "-".to_string();
+        "-".to_string()
     } else if passant <= 64 && passant > 0 {
         let row = (passant - 1) / 8 + 1;
         let col = (passant - 1) % 8;

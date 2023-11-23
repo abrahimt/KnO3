@@ -38,6 +38,7 @@ impl Chessboard {
     /* *********** */
     /* Constructorrs */
 
+
     /// Creates a new instance of a chessboard, set up to start a new game.
     ///
     /// # Returns
@@ -512,3 +513,12 @@ impl Chessboard {
 //             break
 //     return min_eval
 // }
+
+/// I've never used this before, but the linter wants it
+/// I'm not sure what it does, I'm guessing it's the default constructor
+/// --Cooper
+impl Default for Chessboard {
+    fn default() -> Self {
+        Self::new()
+    }
+}

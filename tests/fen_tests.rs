@@ -311,32 +311,18 @@ fn test_place_pieces() {
 
     cb = Chessboard::empty();
     fen_util::place_pieces(&mut cb, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-
-    println!("p {}", cb.black_pawns);
-    println!("r {}", cb.black_rooks);
-    println!("b {}", cb.black_bishops);
-    println!("k {}", cb.black_king);
-    println!("q {}", cb.black_queen);
-    println!("n {}", cb.black_knights);
-    println!("P {}", cb.white_pawns);
-    println!("R {}", cb.white_rooks);
-    println!("B {}", cb.white_bishops);
-    println!("K {}", cb.white_king);
-    println!("Q {}", cb.white_queen);
-    println!("N {}", cb.white_knights);
     assert!(cb.black_pawns   == 0b00000000_11111111_00000000_00000000_00000000_00000000_00000000_00000000);
     assert!(cb.black_rooks   == 0b10000001_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
     assert!(cb.black_bishops == 0b00100100_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
-    assert!(cb.black_king    == 0b00010000_00000000_00000000_00000000_00000000_00000000_00000000_00000000); // THIS IS BACKWARDS
-    assert!(cb.black_queen   == 0b00001000_00000000_00000000_00000000_00000000_00000000_00000000_00000000); // THIS IS BACKWARDS
+    assert!(cb.black_king    == 0b00010000_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
+    assert!(cb.black_queen   == 0b00001000_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
     assert!(cb.black_knights == 0b01000010_00000000_00000000_00000000_00000000_00000000_00000000_00000000);
     assert!(cb.white_pawns   == 0b11111111_00000000);
     assert!(cb.white_rooks   == 0b10000001);
     assert!(cb.white_bishops == 0b00100100);
-    assert!(cb.white_king    == 0b00001000);
-    assert!(cb.white_queen   == 0b00010000);
-    assert!(cb.white_knights == 0b00001000);
-    //assert!(cb.black_pawns == 0b10000000);
+    assert!(cb.white_king    == 0b00010000);
+    assert!(cb.white_queen   == 0b00001000);
+    assert!(cb.white_knights == 0b01000010);
 }
 
 /*

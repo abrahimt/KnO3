@@ -155,11 +155,13 @@ fn test_get_en_passant() {
     cb.en_passant = 64;
     assert!(fen_util::get_fen_passant(&cb) == "H8");
 
+    // Invalid En passants
     cb.en_passant = 65;
-    //assert!(fen_util::get_fen_passant(&cb) == "-");
-
+    let result = std::panic::catch_unwind(|| fen_util::get_fen_passant(&cb));
+    assert!(result.is_err());
     cb.en_passant = 255;
-    //assert!(fen_util::get_fen_passant(&cb) == "-");
+    let result = std::panic::catch_unwind(|| fen_util::get_fen_passant(&cb));
+    assert!(result.is_err());
 }
 
 #[test]

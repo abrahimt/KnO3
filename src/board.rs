@@ -93,6 +93,29 @@ impl Chessboard {
         }
     }
 
+        /// Creates a new instance of a chessboard with no pieces on it.
+    ///
+    /// # Returns
+    ///
+    /// A `Chessboard` struct initialized with empty positions for all pieces.
+    pub fn clear(mut self) {
+            self.white_pawns = 0;
+            self.white_knights= 0;
+            self.white_bishops = 0;
+            self.white_king = 0;
+            self.white_queen = 0;
+            self.white_rooks = 0;
+            self.black_pawns = 0;
+            self.black_knights = 0;
+            self.black_bishops = 0;
+            self.black_king = 0;
+            self.black_queen = 0;
+            self.black_rooks = 0;
+            self.castling_rights = 0;
+            self.en_passant = 0;
+            self.white_turn = true;
+    }
+
     /// Creates a new instance of a chessboard based on a Forsyth–Edwards Notation (FEN) string.
     ///
     /// # Arguments

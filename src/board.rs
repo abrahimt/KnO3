@@ -98,7 +98,7 @@ impl Chessboard {
     /// # Returns
     ///
     /// A `Chessboard` struct initialized with empty positions for all pieces.
-    pub fn clear(mut self) {
+    pub fn clear(&mut self) {
             self.white_pawns = 0;
             self.white_knights= 0;
             self.white_bishops = 0;

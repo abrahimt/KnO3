@@ -93,11 +93,8 @@ impl Chessboard {
         }
     }
 
-        /// Creates a new instance of a chessboard with no pieces on it.
+    /// Clears an instance of a chessboard.
     ///
-    /// # Returns
-    ///
-    /// A `Chessboard` struct initialized with empty positions for all pieces.
     pub fn clear(&mut self) {
             self.white_pawns = 0;
             self.white_knights= 0;

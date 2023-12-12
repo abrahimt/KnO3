@@ -50,7 +50,8 @@ pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
 /// A boolean indicating whether the FEN string is valid.
 #[allow(unused_variables)]
 pub fn valid_fen(fen: &str) -> bool {
-    let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s([K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
+    let regex = Regex::new(r"^\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s(-|[K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$").unwrap();
+
     let captures = regex.captures(fen);
     if captures.is_none() {
         return false;
@@ -88,6 +89,22 @@ pub fn valid_fen(fen: &str) -> bool {
             }
         }
         if piece_count != 8 {
+            return false;
+        }
+    }
+
+    let castles = fen.split_whitespace().nth(2).unwrap();
+    if !unique_chars(castles) {
+        return false;
+    }
+    true
+}
+
+// TODO: Move this somewhere it makes more sense
+fn unique_chars(s: &str) -> bool {
+    let mut chars = std::collections::HashSet::new();
+    for c in s.chars() {
+        if !chars.insert(c) {
             return false;
         }
     }
@@ -170,12 +187,15 @@ pub fn get_fen_castles(chessboard: &Chessboard) -> String {
 pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     let passant = chessboard.en_passant;
     if passant == 0 {
-        return "-".to_string();
+        "-".to_string()
+    } else if passant <= 64 && passant > 0 {
+        let row = (passant - 1) / 8 + 1;
+        let col = (passant - 1) % 8;
+        let chr = (b'A' + col) as char;
+        format!("{}{}", chr, row)
+    } else {
+        panic!("En_passant index out of bounds!");
     }
-    let row = (passant - 1) / 8 + 1;
-    let col = (passant - 1) % 8;
-    let chr = (b'A' + col) as char;
-    format!("{}{}", chr, row)
 }
 
 /// Parses the piece placement part of the Forsyth–Edwards Notation (FEN) string and updates the chessboard.
@@ -213,6 +233,7 @@ pub fn parse_whose_turn(chessboard: &mut Chessboard, whose_turn: &str) {
 /// - `chessboard`: A mutable reference to the `Chessboard` struct to update castling rights.
 /// - `castle_rights`: A string representing the castling rights part of the FEN string.
 pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
+    chessboard.castling_rights = 0;
     for c in castle_rights.chars() {
         let v = match c {
             'K' => 0b1000,
@@ -231,27 +252,27 @@ pub fn parse_castling_rights(chessboard: &mut Chessboard, castle_rights: &str) {
 ///
 /// - `chessboard`: A mutable reference to the `Chessboard` struct to update the en passant square.
 /// - `en_passant`: A string representing the en passant square in algebraic notation (e.g., "e3").
-///   If the en passant square is "-" (no en passant square), it is ignored.
+///   If the en passant square is "-" (no en passant square), it is set to 0.
 pub fn parse_en_passant(chessboard: &mut Chessboard, en_passant: &str) {
-    if en_passant != "-" {
-        if let (Some(col), Some(row)) = (
-            en_passant.chars().next().map(|c| c.to_ascii_uppercase()),
-            en_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
-        ) {
-            if (1..=8).contains(&row) {
-                let col_value: u8 = match col {
-                    'A' => 1,
-                    'B' => 2,
-                    'C' => 3,
-                    'D' => 4,
-                    'E' => 5,
-                    'F' => 6,
-                    'G' => 7,
-                    'H' => 8,
-                    _ => 0,
-                };
-                chessboard.en_passant = col_value + 8 * (row as u8 - 1);
-            }
+    if let (Some(col), Some(row)) = (
+        en_passant.chars().next().map(|c| c.to_ascii_uppercase()),
+        en_passant.chars().nth(1).and_then(|c| c.to_digit(10)),
+    ) {
+        if (1..=8).contains(&row) {
+            let col_value: u8 = match col {
+                'A' => 1,
+                'B' => 2,
+                'C' => 3,
+                'D' => 4,
+                'E' => 5,
+                'F' => 6,
+                'G' => 7,
+                'H' => 8,
+                _ => 0,
+            };
+            chessboard.en_passant = col_value + 8 * (row as u8 - 1);
         }
+    } else {
+        chessboard.en_passant = 0;
     }
 }

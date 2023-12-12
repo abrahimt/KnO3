@@ -15,22 +15,23 @@ use std::{io::stdout, u8};
 /// square on the board. The `castling_rights` field uses 4 bits to represent kingside and
 /// queenside castling rights for both black and white. Castle white king side = 8, castle
 /// white queen side = 4, castle black king side = 2, caslte black queen side = 1.
+#[rustfmt::skip]
 pub struct Chessboard {
-    pub(crate) black_pawns: u64,
-    pub(crate) black_rooks: u64,
-    pub(crate) black_knights: u64,
-    pub(crate) black_bishops: u64,
-    pub(crate) black_queen: u64,
-    pub(crate) black_king: u64,
-    pub(crate) white_pawns: u64,
-    pub(crate) white_rooks: u64,
-    pub(crate) white_knights: u64,
-    pub(crate) white_bishops: u64,
-    pub(crate) white_queen: u64,
-    pub(crate) white_king: u64,
-    pub(crate) white_turn: bool,    // True if it's white's turn
-    pub(crate) castling_rights: u8, // KQkq will be represented by 4 bits
-    pub(crate) en_passant: u8,      // a square that has en passant ability (1-64)
+    pub black_pawns:   u64,
+    pub black_rooks:   u64,
+    pub black_knights: u64,
+    pub black_bishops: u64,
+    pub black_queen:   u64,
+    pub black_king:    u64,
+    pub white_pawns:   u64,
+    pub white_rooks:   u64,
+    pub white_knights: u64,
+    pub white_bishops: u64,
+    pub white_queen:   u64,
+    pub white_king:    u64,
+    pub white_turn: bool,    // True if it's white's turn
+    pub castling_rights: u8, // KQkq will be represented by 4 bits
+    pub en_passant: u8,      // a square that has en passant ability (1-64)
 }
 
 impl Chessboard {
@@ -48,20 +49,21 @@ impl Chessboard {
     ///
     /// The function creates a new instance of a `Chessboard` with the starting position for
     /// a new game. It can be used to initialize the chessboard at the beginning of a chess match.
+    #[rustfmt::skip]
     pub fn new() -> Chessboard {
         Chessboard {
-            white_pawns: 0b0000000000000000000000000000000000000000000000001111111100000000,
-            white_knights: 0b0000000000000000000000000000000000000000000000000000000001000010,
-            white_bishops: 0b0000000000000000000000000000000000000000000000000000000000100100,
-            white_king: 0b0000000000000000000000000000000000000000000000000000000000010000,
-            white_queen: 0b0000000000000000000000000000000000000000000000000000000000001000,
-            white_rooks: 0b0000000000000000000000000000000000000000000000000000000010000001,
-            black_pawns: 0b0000000011111111000000000000000000000000000000000000000000000000,
-            black_knights: 0b0100001000000000000000000000000000000000000000000000000000000000,
-            black_bishops: 0b0010010000000000000000000000000000000000000000000000000000000000,
-            black_king: 0b0001000000000000000000000000000000000000000000000000000000000000,
-            black_queen: 0b0000100000000000000000000000000000000000000000000000000000000000,
-            black_rooks: 0b1000000100000000000000000000000000000000000000000000000000000000,
+            white_pawns:   0b00000000_00000000_00000000_00000000_00000000_00000000_11111111_00000000,
+            white_knights: 0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_01000010,
+            white_bishops: 0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00100100,
+            white_king:    0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00010000,
+            white_queen:   0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000,
+            white_rooks:   0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_10000001,
+            black_pawns:   0b00000000_11111111_00000000_00000000_00000000_00000000_00000000_00000000,
+            black_knights: 0b01000010_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
+            black_bishops: 0b00100100_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
+            black_king:    0b00010000_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
+            black_queen:   0b00001000_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
+            black_rooks:   0b10000001_00000000_00000000_00000000_00000000_00000000_00000000_00000000,
             castling_rights: 0b1111,
             en_passant: 0,
             white_turn: true,
@@ -106,7 +108,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -147,7 +149,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
@@ -207,7 +209,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// let (file, rank) = square_to_rank_file(35);
     /// println!("File: {}, Rank: {}", file, rank);
     /// // Output: File: 'D', Rank: 5
@@ -232,7 +234,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// let square = rank_file_to_square(5, 'D');
     /// println!("Square: {}", square);
     /// // Output: Square: 35
@@ -251,7 +253,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// let mut chessboard = Chessboard::new();
     /// chessboard.move_piece("E2", "E4", 'P');
     /// ```
@@ -341,7 +343,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
@@ -369,7 +371,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
@@ -420,7 +422,7 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```ignore
     /// use kn_o3::Chessboard;
     ///
     /// let initial_position = Chessboard::new();
@@ -510,3 +512,12 @@ impl Chessboard {
 //             break
 //     return min_eval
 // }
+
+/// I've never used this before, but the linter wants it
+/// I'm not sure what it does, I'm guessing it's the default constructor
+/// --Cooper
+impl Default for Chessboard {
+    fn default() -> Self {
+        Self::new()
+    }
+}

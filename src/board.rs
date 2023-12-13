@@ -487,6 +487,107 @@ impl Chessboard {
         if (rank + file) % 2 == 0 { dark }
         else                      { lght }
     }
+
+    //LEGAL MOVES CODE BELOW
+
+    pub fn legal_move(cb: Chessboard, piece: char, current_pos: &str, new_pos: &str) -> bool {
+        let mut is_legal = false;
+        //make sure it's actually moving and not same square and the right color is moving
+        if current_pos == new_pos
+            || cb.white_turn & piece.is_lowercase()
+            || !cb.white_turn & piece.is_uppercase()
+        {
+            return false;
+        }
+        // Extract old and new square coordinates
+        if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) = (
+            current_pos.chars().next(),
+            current_pos.chars().next_back(),
+            new_pos.chars().next(),
+            new_pos.chars().next_back(),
+        ) {
+            let old_square =
+                Chessboard::rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
+            let new_square =
+                Chessboard::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
+
+            //check if new square is out of bounds (can't be less than 0 because u64)
+            if old_square > 64 || new_square > 64 {
+                return false;
+            }
+
+            if cb.piece_at_position(
+                old_rank.to_digit(10).unwrap() as usize,
+                (old_file as u8 - b'A') as usize,
+            ) != piece
+                || (piece.is_lowercase()
+                    & cb.piece_at_position(
+                        new_rank.to_digit(10).unwrap() as usize,
+                        (new_file as u8 - b'A') as usize,
+                    )
+                    .is_lowercase())
+                || (piece.is_uppercase()
+                    & cb.piece_at_position(
+                        new_rank.to_digit(10).unwrap() as usize,
+                        (new_file as u8 - b'A') as usize,
+                    )
+                    .is_uppercase())
+            {
+                return false;
+            }
+
+            match piece {
+                'p' => is_legal = Chessboard::legal_pawn(cb, old_square, new_square),
+                'r' => is_legal = Chessboard::legal_rook(cb, old_square, new_square),
+                'b' => is_legal = Chessboard::legal_bishop(cb, old_square, new_square),
+                'k' => is_legal = Chessboard::legal_king(cb, old_square, new_square),
+                'q' => is_legal = Chessboard::legal_queen(cb, old_square, new_square),
+                'n' => is_legal = Chessboard::legal_knight(cb, old_square, new_square),
+                'P' => is_legal = Chessboard::legal_pawn(cb, old_square, new_square),
+                'R' => is_legal = Chessboard::legal_rook(cb, old_square, new_square),
+                'B' => is_legal = Chessboard::legal_bishop(cb, old_square, new_square),
+                'K' => is_legal = Chessboard::legal_king(cb, old_square, new_square),
+                'Q' => is_legal = Chessboard::legal_queen(cb, old_square, new_square),
+                'N' => is_legal = Chessboard::legal_knight(cb, old_square, new_square),
+                _ => return false,
+            }
+        }
+        is_legal
+    }
+
+    pub fn legal_pawn(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+        println!("here");
+        //move 1 or 2 if on start square (and nothing in front of it)
+        //move 1 otherwise (and nothing in front of it)
+        //if opposing piece is diagonal to it
+        //if en passant is diagonal to it
+        //promote if at end
+        true
+    }
+    fn legal_knight(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+        //move in L shape
+        true
+    }
+    fn legal_bishop(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+        //move diagonal
+        //can't eat same color piece
+        true
+    }
+    fn legal_rook(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+        //can move up, down, left, right
+        //can't eat same color piece
+        true
+    }
+    fn legal_king(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+        //any direction but only one square
+        //can't go into a checked square
+        true
+    }
+    fn legal_queen(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+        //any direction
+        //can't eat same color piece
+        true
+    }
 }
 
 //MINIMAX Function Pseudo-code

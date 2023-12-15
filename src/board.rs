@@ -94,7 +94,6 @@ impl Chessboard {
     }
 
     /// Clears an instance of a chessboard.
-    ///
     pub fn clear(&mut self) {
         self.white_pawns = 0;
         self.white_knights = 0;

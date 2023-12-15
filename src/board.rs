@@ -108,18 +108,10 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
+    /// ```
+    /// use kn_o3::board::Chessboard;
     /// let fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    /// match Chessboard::from_string(fen_string) {
-    ///     Ok(chessboard) => {
-    ///         println!("Chessboard created from FEN:\n{:#?}", chessboard);
-    ///     },
-    ///     Err(error) => {
-    ///         println!("Error creating chessboard: {}", error);
-    ///     },
-    /// }
+    /// let cb = Chessboard::from_string(fen_string);
     /// ```
     pub fn from_string(fen: &str) -> Result<Chessboard, String> {
         if !fen_util::valid_fen(fen) {

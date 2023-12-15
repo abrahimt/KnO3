@@ -241,18 +241,26 @@ impl Chessboard {
     ///
     /// # Returns
     ///
-    /// The square index (0-63) corresponding to the given rank and file.
+    /// The result of the square index (0-63) corresponding to the given rank and file.
     ///
     /// # Example
     ///
     /// ```
     /// use kn_o3::board::Chessboard;
-    /// let square = Chessboard::rank_file_to_square(5, 'D');
-    /// println!("Square: {}", square);
+    /// let square = Chessboard::rank_file_to_square(5, 'D').unwrap();
+    /// println!("Square: {square}");
     /// // Output: Square: 35
     /// ```
-    pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
-        (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64
+    pub fn rank_file_to_square(rank: u8, file: char) -> Result<u64, String> {
+        if rank < 1 || rank > 8 {
+            return Err("Invalid rank".to_string());
+        }
+        if file < 'A' || file > 'H' {
+            return Err("Invalid file".to_string());
+        }
+        Ok((rank - 1) as u64 * 8 + (file as u8 - b'A') as u64)
+    }
+
     }
 
     /// Moves a chess piece on the chessboard from the current position to the new position.

@@ -233,8 +233,9 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// let square = rank_file_to_square(5, 'D');
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// let square = Chessboard::rank_file_to_square(5, 'D');
     /// println!("Square: {}", square);
     /// // Output: Square: 35
     /// ```

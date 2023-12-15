@@ -27,7 +27,7 @@ fn main() {
         .unwrap();
     cb.print(true);
 
-    let mut legal: bool = false;
+    let mut legal: bool;
     legal = Chessboard::legal_move(&cb, 'P', "E4", "E4");
     println!("{}", legal);
     legal = Chessboard::legal_move(&cb, 'K', "E1", "E1");

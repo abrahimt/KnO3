@@ -505,31 +505,66 @@ impl Chessboard {
         else                      { lght }
     }
 
-    //LEGAL MOVES CODE BELOW
+    /*
+       Here is my proposition. We have two functions
 
-    pub fn legal_move(cb: &Chessboard, piece: char, current_pos: &str, new_pos: &str) -> bool {
+        is_valid_move_for_piece(piece, old_square, new_square)
+        just looks at the logic for how this piece moves (pawns can only move forward, etc)
+
+        is_legal_move(board, piece, old_sq, new_sq)
+        handles special cases that are specific to the game state (en passant, eating, etc.)
+   */
+
+    pub fn legal_move(piece: char, current_pos: &str, new_pos: &str) -> bool {
         let mut is_legal = false;
-        //make sure it's actually moving and not same square and the right color is moving
+
+        // Cannot move piece ontop of itself
+        // White cannot move black and vice-versa
         if current_pos == new_pos
-            || cb.white_turn & piece.is_lowercase()
-            || !cb.white_turn & piece.is_uppercase()
+            //|| cb.white_turn & piece.is_lowercase() -- new function
+            //|| !cb.white_turn & piece.is_uppercase()
         {
             return false;
         }
+
+        // Make sure square is valid
+        let cur_square = match Chessboard::string_to_square(current_pos) {
+            Ok(square) => square,
+            _ => return false
+        };
+        let new_square = match Chessboard::string_to_square(new_pos) {
+            Ok (square) => square,
+            _ => return false
+        };
+
+        println!("{cur_square}, {new_square}");
+
+        /*
         // Extract old and new square coordinates
+        // We can safely unwrap these because we know they are of length = 2
+        let old_file = current_pos.chars().next().unwrap();
+        let old_rank = current_pos.chars().next_back().unwrap().to_digit(10).unwrap_or(99);
+        let new_file = new_pos.chars().next().unwrap();
+        let new_rank = new_pos.chars().next_back().unwrap().to_digit(10).unwrap_or(99);
+
+
+
         if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) = (
             current_pos.chars().next(),
             current_pos.chars().next_back(),
             new_pos.chars().next(),
             new_pos.chars().next_back(),
         ) {
+            //println!("old_file: {old_file}\nold_rank: {old_rank}\nnew_file: {new_file}\nnew_rank: {new_rank}");
             let old_square =
                 Chessboard::rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
             let new_square =
                 Chessboard::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
+            //println!("old_square: {old_square}\nnew_square: {new_square}");
 
             //check if new square is out of bounds (can't be less than 0 because u64)
             if old_square > 63 || new_square > 63 {
+                println!("Out of bounds");
                 return false;
             }
 
@@ -552,7 +587,9 @@ impl Chessboard {
             {
                 return false;
             }
+            */
 
+            /*
             match piece {
                 'p' => is_legal = Chessboard::legal_pawn(cb, old_square, new_square),
                 'r' => is_legal = Chessboard::legal_rook(old_square, new_square),
@@ -568,7 +605,8 @@ impl Chessboard {
                 'N' => is_legal = Chessboard::legal_knight(old_square, new_square),
                 _ => return false,
             }
-        }
+            */
+        //}
         is_legal
     }
 

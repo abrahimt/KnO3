@@ -9,6 +9,7 @@ use regex::Regex;
 /// - `fen_rows`: A string representing the piece placement part of the FEN string.
 #[rustfmt::skip]
 pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
+    chessboard.clear();
     for (row_index, row_string) in fen_rows.split('/').rev().enumerate() {
         let mut file_ndx: usize = 0;
         for piece in row_string.chars() {
@@ -196,24 +197,6 @@ pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     } else {
         panic!("En_passant index out of bounds!");
     }
-}
-
-/// Parses the piece placement part of the Forsyth–Edwards Notation (FEN) string and updates the chessboard.
-///
-/// # Arguments
-///
-/// - `chessboard`: A mutable reference to the `Chessboard` struct to update the piece placement.
-/// - `piece_placement`: A string representing the piece placement part of the FEN string.
-///
-/// # Returns
-///
-/// A `Result` indicating success or an error message if the piece placement is invalid.
-pub fn parse_piece_placement(
-    chessboard: &mut Chessboard,
-    piece_placement: &str,
-) -> Result<(), String> {
-    self::place_pieces(chessboard, piece_placement);
-    Ok(())
 }
 
 /// Parses whose turn it is and updates the chessboard.

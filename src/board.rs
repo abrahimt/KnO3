@@ -95,6 +95,25 @@ impl Chessboard {
         }
     }
 
+    /// Clears an instance of a chessboard.
+    pub fn clear(&mut self) {
+        self.white_pawns = 0;
+        self.white_knights = 0;
+        self.white_bishops = 0;
+        self.white_king = 0;
+        self.white_queen = 0;
+        self.white_rooks = 0;
+        self.black_pawns = 0;
+        self.black_knights = 0;
+        self.black_bishops = 0;
+        self.black_king = 0;
+        self.black_queen = 0;
+        self.black_rooks = 0;
+        self.castling_rights = 0;
+        self.en_passant = 0;
+        self.white_turn = true;
+    }
+
     /// Creates a new instance of a chessboard based on a Forsyth–Edwards Notation (FEN) string.
     ///
     /// # Arguments
@@ -103,39 +122,32 @@ impl Chessboard {
     ///
     /// # Returns
     ///
-    /// A `Result` containing the resulting `Chessboard` with the game state from the FEN string.
-    /// If the FEN string is invalid, an `Err` variant with an error message is returned.
+    /// An `Option` containing the resulting `Chessboard` with the game state from the FEN string.
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
-    /// let fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    /// match Chessboard::from_string(fen_string) {
-    ///     Ok(chessboard) => {
-    ///         println!("Chessboard created from FEN:\n{:#?}", chessboard);
-    ///     },
-    ///     Err(error) => {
-    ///         println!("Error creating chessboard: {}", error);
-    ///     },
-    /// }
     /// ```
-    pub fn from_string(fen: &str) -> Result<Chessboard, String> {
+    /// use kn_o3::board::Chessboard;
+    /// let fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    /// let cb = match Chessboard::from_string(fen_string) {
+    ///   Some(cb) => cb,
+    ///   None => panic!("Failed to create chessboard")
+    /// };
+    /// ```
+    pub fn from_string(fen: &str) -> Option<Chessboard> {
         if !fen_util::valid_fen(fen) {
-            return Err("Invalid FEN".to_string());
+            return None;
         }
 
         let mut chessboard = Chessboard::empty();
-
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 
-        fen_util::parse_piece_placement(&mut chessboard, fen_parts[0])?;
+        fen_util::place_pieces(&mut chessboard, fen_parts[0]);
         fen_util::parse_whose_turn(&mut chessboard, fen_parts[1]);
         fen_util::parse_castling_rights(&mut chessboard, fen_parts[2]);
         fen_util::parse_en_passant(&mut chessboard, fen_parts[3]);
 
-        Ok(chessboard)
+        Some(chessboard)
     }
 
     /* **************** */
@@ -149,11 +161,9 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
-    /// let initial_position = Chessboard::new();
-    /// initial_position.print(true);
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// Chessboard::new().print(true);
     /// ```
     ///
     /// The function prints the current state of the chessboard to the console. If `pretty` is
@@ -209,8 +219,9 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// let (file, rank) = square_to_rank_file(35);
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// let (file, rank) = Chessboard::square_to_rank_file(35);
     /// println!("File: {}, Rank: {}", file, rank);
     /// // Output: File: 'D', Rank: 5
     /// ```
@@ -234,8 +245,9 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// let square = rank_file_to_square(5, 'D');
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// let square = Chessboard::rank_file_to_square(5, 'D');
     /// println!("Square: {}", square);
     /// // Output: Square: 35
     /// ```
@@ -253,7 +265,8 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
+    /// ```
+    /// use kn_o3::board::Chessboard;
     /// let mut chessboard = Chessboard::new();
     /// chessboard.move_piece("E2", "E4", 'P');
     /// ```
@@ -343,9 +356,8 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
+    /// ```
+    /// use kn_o3::board::Chessboard;
     /// let initial_position = Chessboard::new();
     /// let piece_at_a1 = initial_position.piece_at_position(1, 0);
     /// println!("Piece at a1: {}", piece_at_a1);
@@ -371,9 +383,8 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
+    /// ```
+    /// use kn_o3::board::Chessboard;
     /// let initial_position = Chessboard::new();
     /// let fen_string = initial_position.to_string();
     /// println!("FEN: {}", fen_string);
@@ -419,18 +430,6 @@ impl Chessboard {
     /// A vector of tuples, where each tuple consists of a chess piece character and its
     /// corresponding bitboard positions. The characters represent different chess pieces,
     /// and the bitboard positions indicate the squares occupied by those pieces on the board.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
-    /// let initial_position = Chessboard::new();
-    /// let pieces_mapping = initial_position.get_pieces();
-    /// for (piece_char, positions) in pieces_mapping {
-    ///     println!("Piece: {} | Bitboard Positions: {}", piece_char, positions);
-    /// }
-    /// ```
     ///
     /// The function returns a vector containing tuples, each associating a chess piece
     /// character ('P', 'N', 'B', 'K', 'Q', 'R', 'p', 'n', 'b', 'k', 'q', 'r') with its

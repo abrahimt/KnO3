@@ -567,24 +567,23 @@ impl Chessboard {
     }
     fn legal_knight(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         // maybe just use if statements
-        //move in L shape
+
         true
     }
     fn legal_bishop(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         //add and subtract multiples of 7 and 9 (max 8 long diagonal)
 
-        //move diagonal
         true
     }
     fn legal_rook(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         //if rank didn't change or if file didn't change not both
 
-        //can move up, down, left, right
         true
     }
     fn legal_king(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         //any direction but only one square
-        //can't go into a checked square
+        //TODO: can't go into a checked square
+        //TODO: implement castling
         true
     }
     fn legal_queen(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {

@@ -490,7 +490,7 @@ impl Chessboard {
 
     //LEGAL MOVES CODE BELOW
 
-    pub fn legal_move(cb: Chessboard, piece: char, current_pos: &str, new_pos: &str) -> bool {
+    pub fn legal_move(cb: &Chessboard, piece: char, current_pos: &str, new_pos: &str) -> bool {
         let mut is_legal = false;
         //make sure it's actually moving and not same square and the right color is moving
         if current_pos == new_pos
@@ -556,35 +556,64 @@ impl Chessboard {
     }
 
     fn legal_pawn(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
-        // use powers of 2 to determine
+        //if there is a piece diagonal
+
+        //if en passant
+
+        // if white turn and first position
+        if cb.white_turn && old_square < 15 && old_square > 7 {
+            return new_square == old_square + 8 || new_square == old_square + 16;
+        // if black turn and first position
+        } else if !cb.white_turn && old_square < 56 && old_square > 47 {
+            return new_square == old_square - 8 || new_square == old_square - 16;
+        //if white turn and not first position
+        } else if cb.white_turn {
+            return new_square == old_square + 8;
+        //if black turn and not first position
+        } else {
+            return new_square == old_square - 8;
+        }
 
         //move 1 or 2 if on start square (and nothing in front of it)
         //move 1 otherwise (and nothing in front of it)
         //if opposing piece is diagonal to it
         //if en passant is diagonal to it
         //promote if at end
-        true
     }
     fn legal_knight(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
-        // maybe just use if statements
-
-        true
+        return new_square == (old_square + 17)
+            || new_square == (old_square + 15)
+            || new_square == (old_square + 10)
+            || new_square == (old_square - 10)
+            || new_square == (old_square - 6)
+            || new_square == (old_square + 6)
+            || new_square == (old_square - 17)
+            || new_square == (old_square - 15);
     }
     fn legal_bishop(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         //add and subtract multiples of 7 and 9 (max 8 long diagonal)
-
-        true
+        if new_square > old_square {
+            return new_square - old_square % 7 == 0 || new_square - old_square % 9 == 0;
+        } else {
+            return old_square - new_square % 7 == 0 || old_square - new_square % 9 == 0;
+        }
     }
     fn legal_rook(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
-        //if rank didn't change or if file didn't change not both
-
-        true
+        if new_square % 8 == old_square % 8 && new_square / 8 == old_square / 8 {
+            return true;
+        }
+        false
     }
     fn legal_king(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
-        //any direction but only one square
         //TODO: can't go into a checked square
         //TODO: implement castling
-        true
+        return new_square == old_square + 1 //right
+            || new_square == old_square - 1 //left
+            || new_square == old_square + 8 //up
+            || new_square == old_square - 8 //down
+            || new_square == old_square + 9 //diag up right
+            || new_square == old_square - 9 //diag down left
+            || new_square == old_square - 7; //diag down right
     }
     fn legal_queen(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         if Chessboard::legal_bishop(cb, old_square, new_square)

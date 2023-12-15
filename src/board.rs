@@ -122,31 +122,32 @@ impl Chessboard {
     ///
     /// # Returns
     ///
-    /// A `Result` containing the resulting `Chessboard` with the game state from the FEN string.
-    /// If the FEN string is invalid, an `Err` variant with an error message is returned.
+    /// An `Option` containing the resulting `Chessboard` with the game state from the FEN string.
     ///
     /// # Example
     ///
     /// ```
     /// use kn_o3::board::Chessboard;
     /// let fen_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    /// let cb = Chessboard::from_string(fen_string);
+    /// let cb = match Chessboard::from_string(fen_string) {
+    ///   Some(cb) => cb,
+    ///   None => panic!("Failed to create chessboard")
+    /// };
     /// ```
-    pub fn from_string(fen: &str) -> Result<Chessboard, String> {
+    pub fn from_string(fen: &str) -> Option<Chessboard> {
         if !fen_util::valid_fen(fen) {
-            return Err("Invalid FEN".to_string());
+            return None;
         }
 
         let mut chessboard = Chessboard::empty();
-
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 
-        fen_util::parse_piece_placement(&mut chessboard, fen_parts[0])?;
+        fen_util::place_pieces(&mut chessboard, fen_parts[0]);
         fen_util::parse_whose_turn(&mut chessboard, fen_parts[1]);
         fen_util::parse_castling_rights(&mut chessboard, fen_parts[2]);
         fen_util::parse_en_passant(&mut chessboard, fen_parts[3]);
 
-        Ok(chessboard)
+        Some(chessboard)
     }
 
     /* **************** */

@@ -149,11 +149,9 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
-    /// let initial_position = Chessboard::new();
-    /// initial_position.print(true);
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// Chessboard::new().print(true);
     /// ```
     ///
     /// The function prints the current state of the chessboard to the console. If `pretty` is

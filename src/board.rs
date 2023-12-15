@@ -142,7 +142,7 @@ impl Chessboard {
         let mut chessboard = Chessboard::empty();
         let fen_parts: Vec<&str> = fen.split_whitespace().collect();
 
-        if let Err(_) = fen_util::parse_piece_placement(&mut chessboard, fen_parts[0]) { return None; }
+        fen_util::place_pieces(&mut chessboard, fen_parts[0]);
         fen_util::parse_whose_turn(&mut chessboard, fen_parts[1]);
         fen_util::parse_castling_rights(&mut chessboard, fen_parts[2]);
         fen_util::parse_en_passant(&mut chessboard, fen_parts[3]);

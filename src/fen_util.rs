@@ -199,24 +199,6 @@ pub fn get_fen_passant(chessboard: &Chessboard) -> String {
     }
 }
 
-/// Parses the piece placement part of the Forsyth–Edwards Notation (FEN) string and updates the chessboard.
-///
-/// # Arguments
-///
-/// - `chessboard`: A mutable reference to the `Chessboard` struct to update the piece placement.
-/// - `piece_placement`: A string representing the piece placement part of the FEN string.
-///
-/// # Returns
-///
-/// A `Result` indicating success or an error message if the piece placement is invalid.
-pub fn parse_piece_placement(
-    chessboard: &mut Chessboard,
-    piece_placement: &str,
-) -> Result<(), String> {
-    self::place_pieces(chessboard, piece_placement);
-    Ok(())
-}
-
 /// Parses whose turn it is and updates the chessboard.
 ///
 /// # Arguments

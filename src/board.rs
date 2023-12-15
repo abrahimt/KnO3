@@ -422,8 +422,7 @@ impl Chessboard {
     /// # Example
     ///
     /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
+    /// use kn_o3::board::Chessboard;
     /// let initial_position = Chessboard::new();
     /// let pieces_mapping = initial_position.get_pieces();
     /// for (piece_char, positions) in pieces_mapping {

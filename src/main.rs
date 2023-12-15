@@ -27,17 +27,28 @@ fn main() {
         .unwrap();
     cb.print(true);
 
-    let mut legal: bool;
-    legal = Chessboard::legal_move(&cb, 'P', "E4", "E4");
-    println!("{}", legal);
-    legal = Chessboard::legal_move(&cb, 'K', "E1", "E1");
-    println!("{}", legal);
-    legal = Chessboard::legal_move(&cb, 'N', "F3", "G4");
-    println!("{}", legal);
-    legal = Chessboard::legal_move(&cb, 'B', "F1", "B4");
-    println!("{}", legal);
-    legal = Chessboard::legal_move(&cb, 'R', "H1", "G2");
-    println!("{}", legal);
+    test_valid_move_for_piece('P', "E4", "E4");
+    test_valid_move_for_piece('K', "E1", "E1");
+    test_valid_move_for_piece('N', "F3", "G4");
+    test_valid_move_for_piece('B', "F1", "B4");
+    test_valid_move_for_piece('R', "I1", "G2");
+}
+
+fn test_valid_move_for_piece(p: char, cur_coord: &str, new_coord: &str) {
+    println!("Attempting to move {p} from {cur_coord} to {new_coord}");
+    let cur_square = match Chessboard::string_to_square(cur_coord) {
+        Ok(square) => square,
+        Err(e) => { println!("{e}"); return; }
+    };
+
+
+    let new_square = match Chessboard::string_to_square(new_coord) {
+        Ok(square) => square,
+        Err(e) => { println!("{e}"); return; }
+    };
+
+    let legal = Chessboard::is_valid_move_for_piece(p, cur_square, new_square);
+    println!("legal? {legal}");
 }
 
 // //min function

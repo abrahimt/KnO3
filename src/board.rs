@@ -411,17 +411,6 @@ impl Chessboard {
     /// corresponding bitboard positions. The characters represent different chess pieces,
     /// and the bitboard positions indicate the squares occupied by those pieces on the board.
     ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// use kn_o3::board::Chessboard;
-    /// let initial_position = Chessboard::new();
-    /// let pieces_mapping = initial_position.get_pieces();
-    /// for (piece_char, positions) in pieces_mapping {
-    ///     println!("Piece: {} | Bitboard Positions: {}", piece_char, positions);
-    /// }
-    /// ```
-    ///
     /// The function returns a vector containing tuples, each associating a chess piece
     /// character ('P', 'N', 'B', 'K', 'Q', 'R', 'p', 'n', 'b', 'k', 'q', 'r') with its
     /// corresponding bitboard positions on the chessboard.

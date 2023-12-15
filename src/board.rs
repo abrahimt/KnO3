@@ -537,26 +537,26 @@ impl Chessboard {
             }
 
             match piece {
-                'p' => is_legal = Chessboard::legal_pawn(cb, old_square, new_square),
-                'r' => is_legal = Chessboard::legal_rook(cb, old_square, new_square),
-                'b' => is_legal = Chessboard::legal_bishop(cb, old_square, new_square),
-                'k' => is_legal = Chessboard::legal_king(cb, old_square, new_square),
-                'q' => is_legal = Chessboard::legal_queen(cb, old_square, new_square),
-                'n' => is_legal = Chessboard::legal_knight(cb, old_square, new_square),
-                'P' => is_legal = Chessboard::legal_pawn(cb, old_square, new_square),
-                'R' => is_legal = Chessboard::legal_rook(cb, old_square, new_square),
-                'B' => is_legal = Chessboard::legal_bishop(cb, old_square, new_square),
-                'K' => is_legal = Chessboard::legal_king(cb, old_square, new_square),
-                'Q' => is_legal = Chessboard::legal_queen(cb, old_square, new_square),
-                'N' => is_legal = Chessboard::legal_knight(cb, old_square, new_square),
+                'p' => is_legal = Chessboard::legal_pawn(&cb, old_square, new_square),
+                'r' => is_legal = Chessboard::legal_rook(&cb, old_square, new_square),
+                'b' => is_legal = Chessboard::legal_bishop(&cb, old_square, new_square),
+                'k' => is_legal = Chessboard::legal_king(&cb, old_square, new_square),
+                'q' => is_legal = Chessboard::legal_queen(&cb, old_square, new_square),
+                'n' => is_legal = Chessboard::legal_knight(&cb, old_square, new_square),
+                'P' => is_legal = Chessboard::legal_pawn(&cb, old_square, new_square),
+                'R' => is_legal = Chessboard::legal_rook(&cb, old_square, new_square),
+                'B' => is_legal = Chessboard::legal_bishop(&cb, old_square, new_square),
+                'K' => is_legal = Chessboard::legal_king(&cb, old_square, new_square),
+                'Q' => is_legal = Chessboard::legal_queen(&cb, old_square, new_square),
+                'N' => is_legal = Chessboard::legal_knight(&cb, old_square, new_square),
                 _ => return false,
             }
         }
         is_legal
     }
 
-    pub fn legal_pawn(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
-// use powers of 2 to determine
+    fn legal_pawn(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
+        // use powers of 2 to determine
 
         //move 1 or 2 if on start square (and nothing in front of it)
         //move 1 otherwise (and nothing in front of it)
@@ -565,33 +565,37 @@ impl Chessboard {
         //promote if at end
         true
     }
-    fn legal_knight(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+    fn legal_knight(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         // maybe just use if statements
         //move in L shape
         true
     }
-    fn legal_bishop(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
-//add and subtract multiples of 7 and 9 (max 8 long diagonal)
+    fn legal_bishop(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
+        //add and subtract multiples of 7 and 9 (max 8 long diagonal)
 
         //move diagonal
         true
     }
-    fn legal_rook(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
-//if rank didn't change or if file didn't change not both
+    fn legal_rook(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
+        //if rank didn't change or if file didn't change not both
 
         //can move up, down, left, right
         true
     }
-    fn legal_king(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+    fn legal_king(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         //any direction but only one square
         //can't go into a checked square
         true
     }
-    fn legal_queen(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+    fn legal_queen(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         //use legal rook and bishop
-        
-        //any direction
-        true
+        if Chessboard::legal_bishop(cb, old_square, new_square)
+            && Chessboard::legal_rook(cb, old_square, new_square)
+        {
+            true
+        } else {
+            false
+        }
     }
 }
 

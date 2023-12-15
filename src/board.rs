@@ -515,30 +515,12 @@ impl Chessboard {
         handles special cases that are specific to the game state (en passant, eating, etc.)
    */
 
-    pub fn legal_move(piece: char, current_pos: &str, new_pos: &str) -> bool {
-        let mut is_legal = false;
-
+    pub fn is_valid_move_for_piece(piece: char, cur_square: u64, new_square: u64) -> bool {
         // Cannot move piece ontop of itself
-        // White cannot move black and vice-versa
-        if current_pos == new_pos
-            //|| cb.white_turn & piece.is_lowercase() -- new function
-            //|| !cb.white_turn & piece.is_uppercase()
-        {
-            return false;
-        }
-
-        // Make sure square is valid
-        let cur_square = match Chessboard::string_to_square(current_pos) {
-            Ok(square) => square,
-            _ => return false
-        };
-        let new_square = match Chessboard::string_to_square(new_pos) {
-            Ok (square) => square,
-            _ => return false
-        };
-
-        println!("{cur_square}, {new_square}");
-
+        if cur_square == new_square { return false; } // cannot move onto itself
+        if cur_square > 63 || new_square > 63 { return false; } // bigger than the board
+        true
+    }
         /*
         // Extract old and new square coordinates
         // We can safely unwrap these because we know they are of length = 2
@@ -607,8 +589,6 @@ impl Chessboard {
             }
             */
         //}
-        is_legal
-    }
 
     fn legal_pawn(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         //if there is a piece diagonal

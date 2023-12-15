@@ -261,6 +261,19 @@ impl Chessboard {
         Ok((rank - 1) as u64 * 8 + (file as u8 - b'A') as u64)
     }
 
+    /// Converts a chess rank and file coordinate to its corresponding square index (0-63).
+    /// # Arguments
+    /// * `str` - The coordinate string (`A1` - `H8`)
+    /// # Returns
+    /// The result of the square index (0-63) corresponding to the given rank and file.
+    pub fn string_to_square(str: &str) -> Result<u64, String> {
+        let chars: Vec<char> = str.chars().collect();
+        if chars.len() != 2 { return Err("Invalid coordinate input".to_string()); }
+
+        let rank = chars[1].to_digit(10).unwrap_or(9) as u8;
+        let file = chars[0];
+
+        Chessboard::rank_file_to_square(rank, file)
     }
 
     /// Moves a chess piece on the chessboard from the current position to the new position.

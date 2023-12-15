@@ -588,7 +588,6 @@ impl Chessboard {
         true
     }
     fn legal_queen(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
-        //use legal rook and bishop
         if Chessboard::legal_bishop(cb, old_square, new_square)
             && Chessboard::legal_rook(cb, old_square, new_square)
         {

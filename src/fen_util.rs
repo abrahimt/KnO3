@@ -9,6 +9,7 @@ use regex::Regex;
 /// - `fen_rows`: A string representing the piece placement part of the FEN string.
 #[rustfmt::skip]
 pub fn place_pieces(chessboard: &mut Chessboard, fen_rows: &str) {
+    chessboard.clear();
     for (row_index, row_string) in fen_rows.split('/').rev().enumerate() {
         let mut file_ndx: usize = 0;
         for piece in row_string.chars() {

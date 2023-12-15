@@ -344,9 +344,8 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
-    /// use kn_o3::Chessboard;
-    ///
+    /// ```
+    /// use kn_o3::board::Chessboard;
     /// let initial_position = Chessboard::new();
     /// let piece_at_a1 = initial_position.piece_at_position(1, 0);
     /// println!("Piece at a1: {}", piece_at_a1);

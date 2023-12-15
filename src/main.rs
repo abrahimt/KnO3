@@ -23,7 +23,7 @@ fn main() {
     let x = Chessboard::square_to_rank_file(22);
     println!("{} {}", x.0, x.1);
 
-    cb = Chessboard::from_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2")
+    cb = Chessboard::from_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 1 2")
         .unwrap();
     cb.print(true);
 

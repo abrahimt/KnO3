@@ -292,74 +292,71 @@ impl Chessboard {
     /// chessboard.move_piece("E2", "E4", 'P');
     /// ```
     pub fn move_piece(&mut self, current_pos: &str, new_pos: &str, piece: char) {
-        let two: u64 = 2;
-        if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) = (
-            current_pos.chars().next(),
-            current_pos.chars().next_back(),
-            new_pos.chars().next(),
-            new_pos.chars().next_back(),
-        ) {
-            let old_square =
-                Self::rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
-            let new_square =
-                Self::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
-            let clear_old = !two.pow(old_square.try_into().unwrap());
-            let add_new = two.pow(new_square.try_into().unwrap());
+        let old_square = match Chessboard::string_to_square(current_pos) {
+            Ok(square) => square,
+            _ => return
+        };
+        let new_square = match Chessboard::string_to_square(new_pos) {
+            Ok(square) => square,
+            _ => return
+        };
 
-            // Delete the piece from the old square
-            match piece {
-                'p' => {
-                    self.black_pawns &= clear_old; // Clear old position
-                    self.black_pawns |= add_new; // Set new position
-                }
-                'r' => {
-                    self.black_rooks &= clear_old;
-                    self.black_rooks |= add_new;
-                }
-                'b' => {
-                    self.black_bishops &= clear_old;
-                    self.black_bishops |= add_new;
-                }
-                'k' => {
-                    self.black_king &= clear_old;
-                    self.black_king |= add_new;
-                }
-                'q' => {
-                    self.black_queen &= clear_old;
-                    self.black_queen |= add_new;
-                }
-                'n' => {
-                    self.black_knights &= clear_old;
-                    self.black_knights |= add_new;
-                }
-                'P' => {
-                    self.white_pawns &= clear_old;
-                    self.white_pawns |= add_new;
-                }
-                'R' => {
-                    self.white_rooks &= clear_old;
-                    self.white_rooks |= add_new;
-                }
-                'B' => {
-                    self.white_bishops &= clear_old;
-                    self.white_bishops |= add_new;
-                }
-                'K' => {
-                    self.white_king &= clear_old;
-                    self.white_king |= add_new;
-                }
-                'Q' => {
-                    self.white_queen &= clear_old;
-                    self.white_queen |= add_new;
-                }
-                'N' => {
-                    self.white_knights &= clear_old;
-                    self.white_knights |= add_new;
-                }
-                _ => {}
+
+        let two: u64 = 2;
+        let clear_old = !two.pow(old_square.try_into().unwrap());
+        let add_new = two.pow(new_square.try_into().unwrap());
+
+        // Delete the piece from the old square
+        match piece {
+            'p' => {
+                self.black_pawns &= clear_old; // Clear old position
+                self.black_pawns |= add_new; // Set new position
             }
-        } else {
-            panic!("Invalid input position or piece");
+            'r' => {
+                self.black_rooks &= clear_old;
+                self.black_rooks |= add_new;
+            }
+            'b' => {
+                self.black_bishops &= clear_old;
+                self.black_bishops |= add_new;
+            }
+            'k' => {
+                self.black_king &= clear_old;
+                self.black_king |= add_new;
+            }
+            'q' => {
+                self.black_queen &= clear_old;
+                self.black_queen |= add_new;
+            }
+            'n' => {
+                self.black_knights &= clear_old;
+                self.black_knights |= add_new;
+            }
+            'P' => {
+                self.white_pawns &= clear_old;
+                self.white_pawns |= add_new;
+            }
+            'R' => {
+                self.white_rooks &= clear_old;
+                self.white_rooks |= add_new;
+            }
+            'B' => {
+                self.white_bishops &= clear_old;
+                self.white_bishops |= add_new;
+            }
+            'K' => {
+                self.white_king &= clear_old;
+                self.white_king |= add_new;
+            }
+            'Q' => {
+                self.white_queen &= clear_old;
+                self.white_queen |= add_new;
+            }
+            'N' => {
+                self.white_knights &= clear_old;
+                self.white_knights |= add_new;
+            }
+            _ => {}
         }
     }
 

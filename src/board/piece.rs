@@ -1,24 +1,24 @@
-pub fn legal_pawn(white: bool, cur_square: u64, new_square: u64) -> bool {
+pub fn legal_pawn(white: bool, from: u64, to: u64) -> bool {
     false
 }
 
-pub fn legal_rook(cur_square: u64, new_square: u64) -> bool {
+pub fn legal_rook(from: u64, to: u64) -> bool {
     false
 }
 
-pub fn legal_bishop(cur_square: u64, new_square: u64) -> bool {
+pub fn legal_bishop(from: u64, to: u64) -> bool {
     false
 }
 
-pub fn legal_king(cur_square: u64, new_square: u64) -> bool {
+pub fn legal_king(from: u64, to: u64) -> bool {
     false
 }
 
-pub fn legal_queen(cur_square: u64, new_square: u64) -> bool {
+pub fn legal_queen(from: u64, to: u64) -> bool {
     false
 }
 
-pub fn legal_knight(cur_square: u64, new_square: u64) -> bool {
+pub fn legal_knight(from: u64, to: u64) -> bool {
     false
 }
 

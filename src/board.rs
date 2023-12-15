@@ -556,7 +556,6 @@ impl Chessboard {
     }
 
     fn legal_pawn(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
-        println!("Pawn");
         //if there is a piece diagonal
 
         //if en passant
@@ -594,17 +593,12 @@ impl Chessboard {
     fn legal_bishop(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
         //add and subtract multiples of 7 and 9 (max 8 long diagonal)
         if new_square > old_square {
-            return new_square - old_square % 7 == 0 || new_square - old_square % 9 == 0;
+            return (new_square - old_square) % 7 == 0 || (new_square - old_square) % 9 == 0;
         } else {
-            return old_square - new_square % 7 == 0 || old_square - new_square % 9 == 0;
+            return (old_square - new_square) % 7 == 0 || (old_square - new_square) % 9 == 0;
         }
     }
     fn legal_rook(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
-        println!("rook");
-        println!("{}", new_square%8);
-        println!("{}", new_square/8);
-        println!("{}", old_square/8);
-        println!("{}", old_square%8);
         if new_square % 8 == old_square % 8 || new_square / 8 == old_square / 8 {
             return true;
         }

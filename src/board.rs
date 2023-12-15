@@ -512,7 +512,7 @@ impl Chessboard {
                 Chessboard::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
 
             //check if new square is out of bounds (can't be less than 0 because u64)
-            if old_square > 64 || new_square > 64 {
+            if old_square > 63 || new_square > 63 {
                 return false;
             }
 
@@ -556,7 +556,8 @@ impl Chessboard {
     }
 
     pub fn legal_pawn(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
-        println!("here");
+// use powers of 2 to determine
+
         //move 1 or 2 if on start square (and nothing in front of it)
         //move 1 otherwise (and nothing in front of it)
         //if opposing piece is diagonal to it
@@ -565,17 +566,20 @@ impl Chessboard {
         true
     }
     fn legal_knight(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+        // maybe just use if statements
         //move in L shape
         true
     }
     fn legal_bishop(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+//add and subtract multiples of 7 and 9 (max 8 long diagonal)
+
         //move diagonal
-        //can't eat same color piece
         true
     }
     fn legal_rook(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+//if rank didn't change or if file didn't change not both
+
         //can move up, down, left, right
-        //can't eat same color piece
         true
     }
     fn legal_king(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
@@ -584,8 +588,9 @@ impl Chessboard {
         true
     }
     fn legal_queen(cb: Chessboard, old_square: u64, new_square: u64) -> bool {
+        //use legal rook and bishop
+        
         //any direction
-        //can't eat same color piece
         true
     }
 }

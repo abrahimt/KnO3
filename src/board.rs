@@ -4,6 +4,7 @@ use crossterm::{
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
 use std::{io::stdout, u8};
+mod piece;
 
 /// Struct representing a chessboard with piece positions and game state.
 ///
@@ -513,146 +514,28 @@ impl Chessboard {
 
         is_legal_move(board, piece, old_sq, new_sq)
         handles special cases that are specific to the game state (en passant, eating, etc.)
+        - is there already a piece at that position?
+        - is another piece blocking the path?
    */
 
     pub fn is_valid_move_for_piece(piece: char, cur_square: u64, new_square: u64) -> bool {
-        // Cannot move piece ontop of itself
         if cur_square == new_square { return false; } // cannot move onto itself
         if cur_square > 63 || new_square > 63 { return false; } // bigger than the board
-        true
-    }
-        /*
-        // Extract old and new square coordinates
-        // We can safely unwrap these because we know they are of length = 2
-        let old_file = current_pos.chars().next().unwrap();
-        let old_rank = current_pos.chars().next_back().unwrap().to_digit(10).unwrap_or(99);
-        let new_file = new_pos.chars().next().unwrap();
-        let new_rank = new_pos.chars().next_back().unwrap().to_digit(10).unwrap_or(99);
-
-
-
-        if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) = (
-            current_pos.chars().next(),
-            current_pos.chars().next_back(),
-            new_pos.chars().next(),
-            new_pos.chars().next_back(),
-        ) {
-            //println!("old_file: {old_file}\nold_rank: {old_rank}\nnew_file: {new_file}\nnew_rank: {new_rank}");
-            let old_square =
-                Chessboard::rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
-            let new_square =
-                Chessboard::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
-            //println!("old_square: {old_square}\nnew_square: {new_square}");
-
-            //check if new square is out of bounds (can't be less than 0 because u64)
-            if old_square > 63 || new_square > 63 {
-                println!("Out of bounds");
-                return false;
-            }
-
-            if cb.piece_at_position(
-                old_rank.to_digit(10).unwrap() as usize,
-                (old_file as u8 - b'A') as usize,
-            ) != piece
-                || (piece.is_lowercase()
-                    & cb.piece_at_position(
-                        new_rank.to_digit(10).unwrap() as usize,
-                        (new_file as u8 - b'A') as usize,
-                    )
-                    .is_lowercase())
-                || (piece.is_uppercase()
-                    & cb.piece_at_position(
-                        new_rank.to_digit(10).unwrap() as usize,
-                        (new_file as u8 - b'A') as usize,
-                    )
-                    .is_uppercase())
-            {
-                return false;
-            }
-            */
-
-            /*
-            match piece {
-                'p' => is_legal = Chessboard::legal_pawn(cb, old_square, new_square),
-                'r' => is_legal = Chessboard::legal_rook(old_square, new_square),
-                'b' => is_legal = Chessboard::legal_bishop(old_square, new_square),
-                'k' => is_legal = Chessboard::legal_king(old_square, new_square),
-                'q' => is_legal = Chessboard::legal_queen(old_square, new_square),
-                'n' => is_legal = Chessboard::legal_knight(old_square, new_square),
-                'P' => is_legal = Chessboard::legal_pawn(cb, old_square, new_square),
-                'R' => is_legal = Chessboard::legal_rook(old_square, new_square),
-                'B' => is_legal = Chessboard::legal_bishop(old_square, new_square),
-                'K' => is_legal = Chessboard::legal_king(old_square, new_square),
-                'Q' => is_legal = Chessboard::legal_queen(old_square, new_square),
-                'N' => is_legal = Chessboard::legal_knight(old_square, new_square),
-                _ => return false,
-            }
-            */
-        //}
-
-    fn legal_pawn(cb: &Chessboard, old_square: u64, new_square: u64) -> bool {
-        //if there is a piece diagonal
-
-        //if en passant
-
-        // if white turn and first position
-        if cb.white_turn && old_square < 15 && old_square > 7 {
-            new_square == old_square + 8 || new_square == old_square + 16
-        // if black turn and first position
-        } else if !cb.white_turn && old_square < 56 && old_square > 47 {
-            new_square == old_square - 8 || new_square == old_square - 16
-        //if white turn and not first position
-        } else if cb.white_turn {
-            new_square == old_square + 8
-        //if black turn and not first position
-        } else {
-            new_square == old_square - 8
+        match piece {
+            'p' => piece::legal_pawn(false, cur_square, new_square),
+            'P' => piece::legal_pawn(true, cur_square, new_square),
+            'r' => piece::legal_rook(false, cur_square, new_square),
+            'R' => piece::legal_rook(true, cur_square, new_square),
+            'b' => piece::legal_bishop(false, cur_square, new_square),
+            'B' => piece::legal_bishop(true, cur_square, new_square),
+            'k' => piece::legal_king(false, cur_square, new_square),
+            'K' => piece::legal_king(true, cur_square, new_square),
+            'q' => piece::legal_queen(false, cur_square, new_square),
+            'Q' => piece::legal_queen(true, cur_square, new_square),
+            'n' => piece::legal_knight(false, cur_square, new_square),
+            'N' => piece::legal_knight(true, cur_square, new_square),
+            _ => false,
         }
-
-        //move 1 or 2 if on start square (and nothing in front of it)
-        //move 1 otherwise (and nothing in front of it)
-        //if opposing piece is diagonal to it
-        //if en passant is diagonal to it
-        //promote if at end
-    }
-    fn legal_knight(old_square: u64, new_square: u64) -> bool {
-        new_square == (old_square + 17)
-            || new_square == (old_square + 15)
-            || new_square == (old_square + 10)
-            || new_square == (old_square - 10)
-            || new_square == (old_square - 6)
-            || new_square == (old_square + 6)
-            || new_square == (old_square - 17)
-            || new_square == (old_square - 15)
-    }
-    fn legal_bishop(old_square: u64, new_square: u64) -> bool {
-        //add and subtract multiples of 7 and 9 (max 8 long diagonal)
-        if new_square > old_square {
-            (new_square - old_square) % 7 == 0 || (new_square - old_square) % 9 == 0
-        } else {
-            (old_square - new_square) % 7 == 0 || (old_square - new_square) % 9 == 0
-        }
-    }
-    fn legal_rook(old_square: u64, new_square: u64) -> bool {
-        if new_square % 8 == old_square % 8 || new_square / 8 == old_square / 8 {
-            return true;
-        }
-        false
-    }
-    fn legal_king(old_square: u64, new_square: u64) -> bool {
-        //TODO: can't go into a checked square
-        //TODO: implement castling
-        new_square == old_square + 1 //right
-            || new_square == old_square - 1 //left
-            || new_square == old_square + 8 //up
-            || new_square == old_square - 8 //down
-            || new_square == old_square + 9 //diag up right
-            || new_square == old_square - 9 //diag down left
-            || new_square == old_square - 7 //diag down right
-    }
-    fn legal_queen(old_square: u64, new_square: u64) -> bool {
-        Chessboard::legal_bishop(old_square, new_square)
-            && Chessboard::legal_rook(old_square, new_square)
     }
 }
 

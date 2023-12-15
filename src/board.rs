@@ -253,7 +253,8 @@ impl Chessboard {
     ///
     /// # Example
     ///
-    /// ```ignore
+    /// ```
+    /// use kn_o3::board::Chessboard;
     /// let mut chessboard = Chessboard::new();
     /// chessboard.move_piece("E2", "E4", 'P');
     /// ```

@@ -7,7 +7,7 @@ fn main() {
     cb.print(true);
 
     // Move a white pawn from E2 to E3
-    cb.move_piece("E2", "E3", 'p');
+    cb.move_piece("E2", "E3", 'P');
     println!("{}", cb.to_string());
     cb.print(true);
     // Move a black knight from G8 to F6
@@ -38,13 +38,18 @@ fn test_valid_move_for_piece(p: char, cur_coord: &str, new_coord: &str) {
     println!("Attempting to move {p} from {cur_coord} to {new_coord}");
     let cur_square = match Chessboard::string_to_square(cur_coord) {
         Ok(square) => square,
-        Err(e) => { println!("{e}"); return; }
+        Err(e) => {
+            println!("{e}");
+            return;
+        }
     };
-
 
     let new_square = match Chessboard::string_to_square(new_coord) {
         Ok(square) => square,
-        Err(e) => { println!("{e}"); return; }
+        Err(e) => {
+            println!("{e}");
+            return;
+        }
     };
 
     let legal = Chessboard::is_valid_move_for_piece(p, cur_square, new_square);

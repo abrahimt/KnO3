@@ -494,6 +494,17 @@ impl Chessboard {
         else                      { lght }
     }
 
+    /// Determine if this piece is legally able to move from cur_square to new_square.
+    ///
+    /// # Arguments
+    ///
+    /// - `piece`: The character representation of the piece. Uppercase is white.
+    /// - `cur_square`: square number (0 is bottom left, 63 is top right) where the piece currently is.
+    /// - `new_square`: square number (0 is bottom left, 63 is top right) where the piece is trying to move to.
+    ///
+    /// # Returns.
+    ///
+    /// If the piece is legally allowed to move
     pub fn is_valid_move_for_piece(piece: char, cur_square: u64, new_square: u64) -> bool {
         if cur_square == new_square {
             return false;

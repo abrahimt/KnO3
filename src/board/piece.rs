@@ -107,3 +107,33 @@ fn legal_queen(old_square: u64, new_square: u64) -> bool {
         && Chessboard::legal_rook(old_square, new_square)
 }
 */
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_legal_pawn() {
+        assert!(legal_pawn(true, 0, 8)); // One square forward
+        assert!(legal_pawn(false, 8, 0));
+
+        assert!(!legal_pawn(true, 0, 16)); // Two squares forward
+        assert!(!legal_pawn(false, 16, 0));
+        assert!(legal_pawn(true, 8, 24));
+        assert!(legal_pawn(true, 15, 31));
+        assert!(legal_pawn(false, 48, 32));
+        assert!(legal_pawn(false, 55, 39));
+
+        assert!(!legal_pawn(true, 8, 0)); // One square backward
+        assert!(!legal_pawn(false, 0, 8));
+
+        assert!(!legal_pawn(true, 1, 8)); // Adjacent
+        assert!(!legal_pawn(true, 1, 0));
+        assert!(!legal_pawn(true, 1, 10));
+        assert!(!legal_pawn(true, 1, 2));
+        assert!(!legal_pawn(false, 57, 56));
+        assert!(!legal_pawn(false, 57, 48));
+        assert!(!legal_pawn(false, 57, 58));
+        assert!(!legal_pawn(false, 57, 50));
+    }
+}

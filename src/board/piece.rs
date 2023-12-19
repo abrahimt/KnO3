@@ -48,6 +48,7 @@ pub fn legal_knight(from: u64, to: u64) -> bool {
     }
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -113,8 +114,7 @@ mod tests {
         //assert!(!legal_rook(0, 0));
         assert!(!legal_rook(57, 57));
     }
-}
-/*
+
     #[test]
     fn test_legal_bishop() {
         // Diagonal

@@ -14,6 +14,7 @@ pub fn legal_pawn(white: bool, from: u64, to: u64) -> bool {
         if rank == 7 {
             from - 16 == to || from - 8 == to
         } else {
+            if from < 8 { return false; } // already on the back row, has been promoted
             from - 8 == to
         }
     }

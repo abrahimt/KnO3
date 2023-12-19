@@ -185,4 +185,17 @@ mod tests {
         assert!(!legal_king(35, 22));
 
     }
+
+    #[test]
+    fn test_legal_knight() {
+        assert!(legal_knight(0, 17));
+        assert!(legal_knight(0, 15));
+        assert!(legal_knight(0, 10));
+        assert!(legal_knight(0, 6));
+
+        assert!(!legal_knight(0, 16));
+        assert!(!legal_knight(0, 8));
+        assert!(!legal_knight(0, 9));
+        assert!(!legal_knight(0, 7));
+    }
 }

@@ -126,6 +126,7 @@ mod tests {
 
         assert!(!legal_pawn(true, 8, 0)); // One square backward
         assert!(!legal_pawn(false, 0, 8));
+        assert!(!legal_pawn(false, 8, 16));
 
         assert!(!legal_pawn(true, 1, 8)); // Adjacent
         assert!(!legal_pawn(true, 1, 0));

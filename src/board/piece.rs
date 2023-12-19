@@ -128,5 +128,34 @@ mod tests {
         assert!(!legal_rook(0,0));
         assert!(!legal_rook(57, 57));
     }
+
+    #[test]
+    fn test_legal_bishop() {
+        // Diagonal
+        assert!(legal_bishop(35, 26));
+        assert!(legal_bishop(35, 8));
+        assert!(legal_bishop(35, 42));
+        assert!(legal_bishop(35, 56));
+        assert!(legal_bishop(35, 44));
+        assert!(legal_bishop(35, 62));
+        assert!(legal_bishop(35, 28));
+        assert!(legal_bishop(35, 7));
+        assert!(legal_bishop(0, 63));
+        assert!(legal_bishop(63, 0));
+
+        // Horizontal
+        assert!(!legal_bishop(35, 34));
+        assert!(!legal_bishop(35, 32));
+        assert!(!legal_bishop(35, 36));
+        assert!(!legal_bishop(35, 39));
+
+        // Vertical
+        assert!(!legal_bishop(35, 27));
+        assert!(!legal_bishop(35, 3));
+        assert!(!legal_bishop(35, 43));
+        assert!(!legal_bishop(35, 59));
+
+        // Same square
+        assert!(!legal_bishop(35, 35));
     }
 }

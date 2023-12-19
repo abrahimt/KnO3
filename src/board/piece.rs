@@ -18,9 +18,10 @@ pub fn legal_rook(from: u64, to: u64) -> bool {
 }
 
 pub fn legal_bishop(from: u64, to: u64) -> bool {
-    if to > from && (from % 2 == 0 && to % 2 == 0 || from % 2 != 0 && to % 2 != 0) {
+    let same_color = from % 2 == 0 && to % 2 == 0 || from % 2 != 0 && to % 2 != 0;
+    if to > from && same_color {
         (to - from) % 7 == 0 || (to - from) % 9 == 0
-    } else if to < from && (from % 2 == 0 && to % 2 == 0 || from % 2 != 0 && to % 2 != 0) {
+    } else if to < from && same_color {
         (from - to) % 7 == 0 || (from - to) % 9 == 0
     } else {
         false
@@ -28,13 +29,9 @@ pub fn legal_bishop(from: u64, to: u64) -> bool {
 }
 
 pub fn legal_king(from: u64, to: u64) -> bool {
-    to == from + 1 //right
-    || to == from - 1 //left
-    || to == from + 8 //up
-    || to == from - 8 //down
-    || to == from + 9 //diag up right
-    || to == from - 9 //diag down left
-    || to == from - 7 //diag down right
+    rank_diff = (from / 8 - to / 8).abs();
+file_diff = (from % 8 - to % 8).abs();
+rank_diff <= 1 && file_diff <= 1 && to != from
 }
 
 pub fn legal_queen(from: u64, to: u64) -> bool {

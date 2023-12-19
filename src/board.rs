@@ -494,18 +494,6 @@ impl Chessboard {
         else                      { lght }
     }
 
-    /*
-        Here is my proposition. We have two functions
-
-         is_valid_move_for_piece(piece, old_square, new_square)
-         just looks at the logic for how this piece moves (pawns can only move forward, etc)
-
-         is_legal_move(board, piece, old_sq, new_sq)
-         handles special cases that are specific to the game state (en passant, eating, etc.)
-         - is there already a piece at that position?
-         - is another piece blocking the path?
-    */
-
     pub fn is_valid_move_for_piece(piece: char, cur_square: u64, new_square: u64) -> bool {
         if cur_square == new_square {
             return false;

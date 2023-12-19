@@ -29,9 +29,11 @@ pub fn legal_bishop(from: u64, to: u64) -> bool {
 }
 
 pub fn legal_king(from: u64, to: u64) -> bool {
-    rank_diff = (from / 8 - to / 8).abs();
-file_diff = (from % 8 - to % 8).abs();
-rank_diff <= 1 && file_diff <= 1 && to != from
+    if from < to {
+        to == from + 1 || to == from + 9 || to == from + 8 || to == from + 7
+    } else {
+        to == from - 1 || to == from - 8 || to == from - 9 || to == from - 7
+    }
 }
 
 pub fn legal_queen(from: u64, to: u64) -> bool {
@@ -39,14 +41,11 @@ pub fn legal_queen(from: u64, to: u64) -> bool {
 }
 
 pub fn legal_knight(from: u64, to: u64) -> bool {
-    to == (from + 17)
-        || to == (from + 15)
-        || to == (from + 10)
-        || to == (from - 10)
-        || to == (from - 6)
-        || to == (from + 6)
-        || to == (from - 17)
-        || to == (from - 15)
+    if from < to {
+        to == (from + 17) || to == (from + 15) || to == (from + 10) || to == (from + 6)
+    } else {
+        to == (from - 10) || to == (from - 6) || to == (from - 17) || to == (from - 15)
+    }
 }
 
 #[cfg(test)]

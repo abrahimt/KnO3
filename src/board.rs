@@ -4,7 +4,7 @@ use crossterm::{
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
 use std::{io::stdout, u8};
-mod piece;
+pub mod piece;
 
 /// Struct representing a chessboard with piece positions and game state.
 ///

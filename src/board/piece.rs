@@ -1,24 +1,17 @@
 use crate::board::Chessboard;
 
-// I would love to cutdown the nesting here --Cooper
 pub fn legal_pawn(white: bool, from: u64, to: u64) -> bool {
     let rank = Chessboard::square_to_rank(from);
+    let direction = if white { 1 } else { -1 };
+    let initial_rank = if white { 2 } else { 7 };
+    let diff = to as i64 - from as i64;
 
-    if white {
-        if rank == 2 {
-            from + 16 == to || from + 8 == to
-        } else {
-            from + 8 == to
-        }
-    } else if rank == 7 {
-        from - 16 == to || from - 8 == to
+    if diff == 8 * direction {
+        true
+    } else if rank == initial_rank && diff == 16 * direction {
+        true
     } else {
-        if rank == 7 {
-            from - 16 == to || from - 8 == to
-        } else {
-            if from < 8 { return false; } // already on the back row, has been promoted
-            from - 8 == to
-        }
+        false
     }
 }
 

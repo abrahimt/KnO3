@@ -136,5 +136,8 @@ mod tests {
         assert!(!legal_pawn(false, 57, 48));
         assert!(!legal_pawn(false, 57, 58));
         assert!(!legal_pawn(false, 57, 50));
+
+        assert!(!legal_pawn(true, 1, 1)); // Same spot
+        assert!(!legal_pawn(false, 1, 1));
     }
 }

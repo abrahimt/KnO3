@@ -30,7 +30,7 @@ fn main() {
     test_valid_move_for_piece('P', "E4", "E4");
     test_valid_move_for_piece('K', "E1", "E1");
     test_valid_move_for_piece('N', "F3", "G4");
-    test_valid_move_for_piece('B', "F1", "B4");
+    test_valid_move_for_piece('B', "F1", "G7");
     test_valid_move_for_piece('R', "I1", "G2");
 }
 

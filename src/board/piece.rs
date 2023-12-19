@@ -54,7 +54,6 @@ pub fn legal_knight(from: u64, to: u64) -> bool {
         || to == (from - 15)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -88,7 +87,6 @@ mod tests {
         assert!(!legal_pawn(false, 1, 1));
     }
 
-
     #[test]
     fn test_legal_rook() {
         // Same file
@@ -118,7 +116,7 @@ mod tests {
         assert!(!legal_rook(63, 0));
 
         // Same square
-        assert!(!legal_rook(0,0));
+        assert!(!legal_rook(0, 0));
         assert!(!legal_rook(57, 57));
     }
 
@@ -176,7 +174,6 @@ mod tests {
         assert!(!legal_king(35, 25));
         assert!(!legal_king(35, 19));
         assert!(!legal_king(35, 22));
-
     }
 
     #[test]

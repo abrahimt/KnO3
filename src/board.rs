@@ -37,7 +37,7 @@ pub struct Chessboard {
 
 impl Chessboard {
     /* *********** */
-    /* Constructorrs */
+    /* Constructors */
 
     /// Creates a new instance of a chessboard, set up to start a new game.
     ///
@@ -269,7 +269,9 @@ impl Chessboard {
     /// The result of the square index (0-63) corresponding to the given rank and file.
     pub fn string_to_square(str: &str) -> Result<u64, String> {
         let chars: Vec<char> = str.chars().collect();
-        if chars.len() != 2 { return Err("Invalid coordinate input".to_string()); }
+        if chars.len() != 2 {
+            return Err("Invalid coordinate input".to_string());
+        }
 
         let rank = chars[1].to_digit(10).unwrap_or(9) as u8;
         let file = chars[0];
@@ -304,13 +306,12 @@ impl Chessboard {
     pub fn move_piece(&mut self, current_pos: &str, new_pos: &str, piece: char) {
         let old_square = match Chessboard::string_to_square(current_pos) {
             Ok(square) => square,
-            _ => return
+            _ => return,
         };
         let new_square = match Chessboard::string_to_square(new_pos) {
             Ok(square) => square,
-            _ => return
+            _ => return,
         };
-
 
         let two: u64 = 2;
         let clear_old = !two.pow(old_square.try_into().unwrap());
@@ -516,20 +517,24 @@ impl Chessboard {
     }
 
     /*
-       Here is my proposition. We have two functions
+        Here is my proposition. We have two functions
 
-        is_valid_move_for_piece(piece, old_square, new_square)
-        just looks at the logic for how this piece moves (pawns can only move forward, etc)
+         is_valid_move_for_piece(piece, old_square, new_square)
+         just looks at the logic for how this piece moves (pawns can only move forward, etc)
 
-        is_legal_move(board, piece, old_sq, new_sq)
-        handles special cases that are specific to the game state (en passant, eating, etc.)
-        - is there already a piece at that position?
-        - is another piece blocking the path?
-   */
+         is_legal_move(board, piece, old_sq, new_sq)
+         handles special cases that are specific to the game state (en passant, eating, etc.)
+         - is there already a piece at that position?
+         - is another piece blocking the path?
+    */
 
     pub fn is_valid_move_for_piece(piece: char, cur_square: u64, new_square: u64) -> bool {
-        if cur_square == new_square { return false; } // cannot move onto itself
-        if cur_square > 63 || new_square > 63 { return false; } // bigger than the board
+        if cur_square == new_square {
+            return false;
+        } // cannot move onto itself
+        if cur_square > 63 || new_square > 63 {
+            return false;
+        } // bigger than the board
         match piece {
             'p' => piece::legal_pawn(false, cur_square, new_square),
             'P' => piece::legal_pawn(true, cur_square, new_square),

@@ -7,13 +7,13 @@ pub fn legal_pawn(white: bool, from: u64, to: u64) -> bool {
 
     if white {
         if rank == 2 {
-            from + 16 == to
+            from + 16 == to || from + 8 == to
         } else {
             from + 8 == to
         }
     } else {
         if rank == 7 {
-            from - 16 == to
+            from - 16 == to || from - 8 == to
         } else {
             from - 8 == to
         }

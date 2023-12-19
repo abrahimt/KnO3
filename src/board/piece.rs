@@ -26,7 +26,7 @@ pub fn legal_rook(from: u64, to: u64) -> bool {
 pub fn legal_bishop(from: u64, to: u64) -> bool {
     if to > from && (from % 2 == 0 && to % 2 == 0 || from % 2 != 0 && to % 2 != 0) {
         (to - from) % 7 == 0 || (to - from) % 9 == 0
-    } else if to > from && (from % 2 == 0 && to % 2 == 0 || from % 2 != 0 && to % 2 != 0) {
+    } else if to < from && (from % 2 == 0 && to % 2 == 0 || from % 2 != 0 && to % 2 != 0) {
         (from - to) % 7 == 0 || (from - to) % 9 == 0
     } else {
         false
@@ -44,17 +44,16 @@ pub fn legal_king(from: u64, to: u64) -> bool {
 }
 
 pub fn legal_queen(from: u64, to: u64) -> bool {
-    legal_bishop(from, to)
-    && legal_rook(from, to)
+    legal_bishop(from, to) && legal_rook(from, to)
 }
 
 pub fn legal_knight(from: u64, to: u64) -> bool {
     to == (from + 17)
-    || to == (from + 15)
-    || to == (from + 10)
-    || to == (from - 10)
-    || to == (from - 6)
-    || to == (from + 6)
-    || to == (from - 17)
-    || to == (from - 15)
+        || to == (from + 15)
+        || to == (from + 10)
+        || to == (from - 10)
+        || to == (from - 6)
+        || to == (from + 6)
+        || to == (from - 17)
+        || to == (from - 15)
 }

@@ -158,4 +158,31 @@ mod tests {
         // Same square
         assert!(!legal_bishop(35, 35));
     }
+
+    #[test]
+    fn test_legal_king() {
+        // Move 1 square
+        assert!(legal_king(35, 44)); // ne
+        assert!(legal_king(35, 43)); // up
+        assert!(legal_king(35, 42)); // nw
+        assert!(legal_king(35, 36)); // right
+        assert!(legal_king(35, 34)); // left
+        assert!(legal_king(35, 28)); // se
+        assert!(legal_king(35, 27)); // down
+        assert!(legal_king(35, 26)); // sw
+
+        // Same square
+        assert!(!legal_king(35, 35));
+
+        // Move more than 1 square
+        assert!(!legal_king(35, 47));
+        assert!(!legal_king(35, 51));
+        assert!(!legal_king(35, 45));
+        assert!(!legal_king(35, 37));
+        assert!(!legal_king(35, 33));
+        assert!(!legal_king(35, 25));
+        assert!(!legal_king(35, 19));
+        assert!(!legal_king(35, 22));
+
+    }
 }

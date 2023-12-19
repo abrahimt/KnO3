@@ -44,8 +44,8 @@ pub fn legal_king(from: u64, to: u64) -> bool {
 }
 
 pub fn legal_queen(from: u64, to: u64) -> bool {
-    Chessboard::legal_bishop(from, to)
-    && Chessboard::legal_rook(from, to)
+    legal_bishop(from, to)
+    && legal_rook(from, to)
 }
 
 pub fn legal_knight(from: u64, to: u64) -> bool {

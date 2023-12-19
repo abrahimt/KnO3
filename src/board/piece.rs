@@ -8,10 +8,8 @@ pub fn legal_pawn(white: bool, from: u64, to: u64) -> bool {
 
     if diff == 8 * direction {
         true
-    } else if rank == initial_rank && diff == 16 * direction {
-        true
     } else {
-        false
+        rank == initial_rank && diff == 16 * direction
     }
 }
 

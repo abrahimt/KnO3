@@ -7,7 +7,7 @@ fn main() {
     cb.print(true);
 
     // Move a white pawn from E2 to E3
-    cb.move_piece("E2", "E3", 'p');
+    cb.move_piece("E2", "E3", 'P');
     println!("{}", cb.to_string());
     cb.print(true);
     // Move a black knight from G8 to F6
@@ -23,9 +23,37 @@ fn main() {
     let x = Chessboard::square_to_rank_file(22);
     println!("{} {}", x.0, x.1);
 
-    cb = Chessboard::from_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2")
+    cb = Chessboard::from_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 1 2")
         .unwrap();
     cb.print(true);
+
+    test_valid_move_for_piece('P', "E4", "E4");
+    test_valid_move_for_piece('K', "E1", "E1");
+    test_valid_move_for_piece('N', "F3", "G4");
+    test_valid_move_for_piece('B', "F1", "G7");
+    test_valid_move_for_piece('R', "I1", "G2");
+}
+
+fn test_valid_move_for_piece(p: char, cur_coord: &str, new_coord: &str) {
+    println!("Attempting to move {p} from {cur_coord} to {new_coord}");
+    let cur_square = match Chessboard::string_to_square(cur_coord) {
+        Ok(square) => square,
+        Err(e) => {
+            println!("{e}");
+            return;
+        }
+    };
+
+    let new_square = match Chessboard::string_to_square(new_coord) {
+        Ok(square) => square,
+        Err(e) => {
+            println!("{e}");
+            return;
+        }
+    };
+
+    let legal = Chessboard::is_valid_move_for_piece(p, cur_square, new_square);
+    println!("legal? {legal}");
 }
 
 // //min function

@@ -4,6 +4,7 @@ use crossterm::{
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
 use std::{io::stdout, u8};
+pub mod piece;
 
 /// Struct representing a chessboard with piece positions and game state.
 ///
@@ -36,7 +37,7 @@ pub struct Chessboard {
 
 impl Chessboard {
     /* *********** */
-    /* Constructorrs */
+    /* Constructors */
 
     /// Creates a new instance of a chessboard, set up to start a new game.
     ///
@@ -232,28 +233,38 @@ impl Chessboard {
         (file, row as usize)
     }
 
-    /// Converts a chess rank and file to its corresponding square index (0-63).
-    ///
+    /// Converts a chess rank and file coordinate to its corresponding square index (0-63).
     /// # Arguments
-    ///
-    /// * `rank` - The rank of the chessboard (1-8).
-    /// * `file` - The file of the chessboard (character 'A' to 'H').
-    ///
+    /// * `str` - The coordinate string (`A1` - `H8`)
     /// # Returns
-    ///
-    /// The square index (0-63) corresponding to the given rank and file.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use kn_o3::board::Chessboard;
-    /// let square = Chessboard::rank_file_to_square(5, 'D');
-    /// println!("Square: {}", square);
-    /// // Output: Square: 35
-    /// ```
-    pub fn rank_file_to_square(rank: u8, file: char) -> u64 {
-        (rank - 1) as u64 * 8 + (file as u8 - b'A') as u64
+    /// The result of the square index (0-63) corresponding to the given rank and file.
+    pub fn string_to_square(str: &str) -> Result<u64, String> {
+        let chars: Vec<char> = str.chars().collect();
+        if chars.len() != 2 {
+            return Err("Invalid coordinate input".to_string());
+        }
+
+        let rank = chars[1].to_digit(10).unwrap_or(9) as u8;
+        let file = chars[0];
+
+        if !(1..=8).contains(&rank) {
+            return Err("Invalid rank".to_string());
+        }
+        if !('A'..='H').contains(&file) {
+            return Err("Invalid file".to_string());
+        }
+        Ok((rank - 1) as u64 * 8 + (file as u8 - b'A') as u64)
     }
+
+    // rank can be 1-8
+    pub fn square_to_rank(square: u64) -> u8 {
+        ((square / 8) + 1) as u8
+    }
+    /*
+        pub fn square_to_file(square: u64) -> char {
+            ((square % 8) as u8 + b'A') as char
+        }
+    */
 
     /// Moves a chess piece on the chessboard from the current position to the new position.
     ///
@@ -271,74 +282,70 @@ impl Chessboard {
     /// chessboard.move_piece("E2", "E4", 'P');
     /// ```
     pub fn move_piece(&mut self, current_pos: &str, new_pos: &str, piece: char) {
-        let two: u64 = 2;
-        if let (Some(old_file), Some(old_rank), Some(new_file), Some(new_rank)) = (
-            current_pos.chars().next(),
-            current_pos.chars().next_back(),
-            new_pos.chars().next(),
-            new_pos.chars().next_back(),
-        ) {
-            let old_square =
-                Self::rank_file_to_square(old_rank.to_digit(10).unwrap() as u8, old_file);
-            let new_square =
-                Self::rank_file_to_square(new_rank.to_digit(10).unwrap() as u8, new_file);
-            let clear_old = !two.pow(old_square.try_into().unwrap());
-            let add_new = two.pow(new_square.try_into().unwrap());
+        let old_square = match Chessboard::string_to_square(current_pos) {
+            Ok(square) => square,
+            _ => return,
+        };
+        let new_square = match Chessboard::string_to_square(new_pos) {
+            Ok(square) => square,
+            _ => return,
+        };
 
-            // Delete the piece from the old square
-            match piece {
-                'p' => {
-                    self.black_pawns &= clear_old; // Clear old position
-                    self.black_pawns |= add_new; // Set new position
-                }
-                'r' => {
-                    self.black_rooks &= clear_old;
-                    self.black_rooks |= add_new;
-                }
-                'b' => {
-                    self.black_bishops &= clear_old;
-                    self.black_bishops |= add_new;
-                }
-                'k' => {
-                    self.black_king &= clear_old;
-                    self.black_king |= add_new;
-                }
-                'q' => {
-                    self.black_queen &= clear_old;
-                    self.black_queen |= add_new;
-                }
-                'n' => {
-                    self.black_knights &= clear_old;
-                    self.black_knights |= add_new;
-                }
-                'P' => {
-                    self.white_pawns &= clear_old;
-                    self.white_pawns |= add_new;
-                }
-                'R' => {
-                    self.white_rooks &= clear_old;
-                    self.white_rooks |= add_new;
-                }
-                'B' => {
-                    self.white_bishops &= clear_old;
-                    self.white_bishops |= add_new;
-                }
-                'K' => {
-                    self.white_king &= clear_old;
-                    self.white_king |= add_new;
-                }
-                'Q' => {
-                    self.white_queen &= clear_old;
-                    self.white_queen |= add_new;
-                }
-                'N' => {
-                    self.white_knights &= clear_old;
-                    self.white_knights |= add_new;
-                }
-                _ => {}
+        let two: u64 = 2;
+        let clear_old = !two.pow(old_square.try_into().unwrap());
+        let add_new = two.pow(new_square.try_into().unwrap());
+
+        // Delete the piece from the old square
+        match piece {
+            'p' => {
+                self.black_pawns &= clear_old; // Clear old position
+                self.black_pawns |= add_new; // Set new position
             }
-        } else {
-            panic!("Invalid input position or piece");
+            'r' => {
+                self.black_rooks &= clear_old;
+                self.black_rooks |= add_new;
+            }
+            'b' => {
+                self.black_bishops &= clear_old;
+                self.black_bishops |= add_new;
+            }
+            'k' => {
+                self.black_king &= clear_old;
+                self.black_king |= add_new;
+            }
+            'q' => {
+                self.black_queen &= clear_old;
+                self.black_queen |= add_new;
+            }
+            'n' => {
+                self.black_knights &= clear_old;
+                self.black_knights |= add_new;
+            }
+            'P' => {
+                self.white_pawns &= clear_old;
+                self.white_pawns |= add_new;
+            }
+            'R' => {
+                self.white_rooks &= clear_old;
+                self.white_rooks |= add_new;
+            }
+            'B' => {
+                self.white_bishops &= clear_old;
+                self.white_bishops |= add_new;
+            }
+            'K' => {
+                self.white_king &= clear_old;
+                self.white_king |= add_new;
+            }
+            'Q' => {
+                self.white_queen &= clear_old;
+                self.white_queen |= add_new;
+            }
+            'N' => {
+                self.white_knights &= clear_old;
+                self.white_knights |= add_new;
+            }
+            _ => {}
         }
     }
 
@@ -485,6 +492,41 @@ impl Chessboard {
         let dark = Color::Rgb { r: 255, g: 206, b: 158 };
         if (rank + file) % 2 == 0 { dark }
         else                      { lght }
+    }
+
+    /// Determine if this piece is legally able to move from cur_square to new_square.
+    ///
+    /// # Arguments
+    ///
+    /// - `piece`: The character representation of the piece. Uppercase is white.
+    /// - `cur_square`: square number (0 is bottom left, 63 is top right) where the piece currently is.
+    /// - `new_square`: square number (0 is bottom left, 63 is top right) where the piece is trying to move to.
+    ///
+    /// # Returns.
+    ///
+    /// If the piece is legally allowed to move
+    pub fn is_valid_move_for_piece(piece: char, cur_square: u64, new_square: u64) -> bool {
+        if cur_square == new_square {
+            return false;
+        } // cannot move onto itself
+        if cur_square > 63 || new_square > 63 {
+            return false;
+        } // bigger than the board
+        match piece {
+            'p' => piece::legal_pawn(false, cur_square, new_square),
+            'P' => piece::legal_pawn(true, cur_square, new_square),
+            'r' => piece::legal_rook(cur_square, new_square),
+            'R' => piece::legal_rook(cur_square, new_square),
+            'b' => piece::legal_bishop(cur_square, new_square),
+            'B' => piece::legal_bishop(cur_square, new_square),
+            'k' => piece::legal_king(cur_square, new_square),
+            'K' => piece::legal_king(cur_square, new_square),
+            'q' => piece::legal_queen(cur_square, new_square),
+            'Q' => piece::legal_queen(cur_square, new_square),
+            'n' => piece::legal_knight(cur_square, new_square),
+            'N' => piece::legal_knight(cur_square, new_square),
+            _ => false,
+        }
     }
 }
 

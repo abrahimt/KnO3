@@ -94,4 +94,39 @@ mod tests {
         assert!(!legal_pawn(true, 1, 1)); // Same spot
         assert!(!legal_pawn(false, 1, 1));
     }
+
+
+    #[test]
+    fn test_legal_rook() {
+        // Same file
+        assert!(legal_rook(0, 8));
+        assert!(legal_rook(0, 16));
+        assert!(legal_rook(0, 56));
+        assert!(legal_rook(56, 0));
+        assert!(legal_rook(8, 15));
+
+        // Same rank
+        assert!(legal_rook(0, 1));
+        assert!(legal_rook(0, 2));
+        assert!(legal_rook(0, 7));
+        assert!(legal_rook(7, 0));
+        assert!(legal_rook(8, 48));
+
+        // Different file && rank
+        assert!(!legal_rook(0, 9));
+        assert!(!legal_rook(0, 17));
+        assert!(!legal_rook(0, 39));
+        assert!(!legal_rook(0, 57));
+        assert!(!legal_rook(0, 63));
+        assert!(!legal_rook(9, 0));
+        assert!(!legal_rook(17, 0));
+        assert!(!legal_rook(39, 0));
+        assert!(!legal_rook(57, 0));
+        assert!(!legal_rook(63, 0));
+
+        // Same square
+        assert!(!legal_rook(0,0));
+        assert!(!legal_rook(57, 57));
+    }
+    }
 }

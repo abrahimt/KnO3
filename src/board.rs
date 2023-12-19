@@ -253,10 +253,10 @@ impl Chessboard {
     /// // Output: Square: 35
     /// ```
     pub fn rank_file_to_square(rank: u8, file: char) -> Result<u64, String> {
-        if rank < 1 || rank > 8 {
+        if !(1..=8).contains(&rank) {
             return Err("Invalid rank".to_string());
         }
-        if file < 'A' || file > 'H' {
+        if !('A'..='H').contains(&file) {
             return Err("Invalid file".to_string());
         }
         Ok((rank - 1) as u64 * 8 + (file as u8 - b'A') as u64)
@@ -283,10 +283,11 @@ impl Chessboard {
     pub fn square_to_rank(square: u64) -> u8 {
         ((square / 8) + 1) as u8
     }
-
-    pub fn square_to_file(square: u64) -> char {
-        ((square % 8) as u8 + b'A') as char
-    }
+    /*
+        pub fn square_to_file(square: u64) -> char {
+            ((square % 8) as u8 + b'A') as char
+        }
+    */
 
     /// Moves a chess piece on the chessboard from the current position to the new position.
     ///

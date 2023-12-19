@@ -17,8 +17,12 @@ pub fn legal_rook(from: u64, to: u64) -> bool {
     to % 8 == from % 8 || to / 8 == from / 8
 }
 
-pub fn legal_bishop(from: u64, to: u64) -> bool {
-    let same_color = from % 2 == 0 && to % 2 == 0 || from % 2 != 0 && to % 2 != 0;
+pub fn legal_bishop(mut from: u64, mut to: u64) -> bool {
+    from += 1;
+    to += 1;
+    let same_color = ((from / 8) + from % 8) % 2 == 0 && ((to / 8) + to % 8) == 0
+        || ((from / 8) + from % 8) != 0 && ((to / 8) + to % 8) != 0;
+
     if to > from && same_color {
         (to - from) % 7 == 0 || (to - from) % 9 == 0
     } else if to < from && same_color {

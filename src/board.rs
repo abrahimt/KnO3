@@ -238,13 +238,13 @@ impl Chessboard {
     /// * `str` - The coordinate string (`A1` - `H8`)
     /// # Returns
     /// The result of the square index (0-63) corresponding to the given rank and file.
-    pub fn string_to_square(str: &str) -> Result<u64, String> {
+    pub fn string_to_square(str: &str) -> Result<i64, String> {
         let chars: Vec<char> = str.chars().collect();
         if chars.len() != 2 {
             return Err("Invalid coordinate input".to_string());
         }
 
-        let rank = chars[1].to_digit(10).unwrap_or(9) as u8;
+        let rank = chars[1].to_digit(10).unwrap_or(9);
         let file = chars[0];
 
         if !(1..=8).contains(&rank) {
@@ -253,15 +253,15 @@ impl Chessboard {
         if !('A'..='H').contains(&file) {
             return Err("Invalid file".to_string());
         }
-        Ok((rank - 1) as u64 * 8 + (file as u8 - b'A') as u64)
+        Ok((rank as i64 - 1) * 8 + (file as u8 - b'A') as i64)
     }
 
     // rank can be 1-8
-    pub fn square_to_rank(square: u64) -> u8 {
+    pub fn square_to_rank(square: i64) -> u8 {
         ((square / 8) + 1) as u8
     }
     /*
-        pub fn square_to_file(square: u64) -> char {
+        pub fn square_to_file(square: i64) -> char {
             ((square % 8) as u8 + b'A') as char
         }
     */
@@ -505,7 +505,7 @@ impl Chessboard {
     /// # Returns.
     ///
     /// If the piece is legally allowed to move
-    pub fn is_valid_move_for_piece(piece: char, cur_square: u64, new_square: u64) -> bool {
+    pub fn is_valid_move_for_piece(piece: char, cur_square: i64, new_square: i64) -> bool {
         if cur_square == new_square {
             return false;
         } // cannot move onto itself

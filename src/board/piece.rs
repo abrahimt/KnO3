@@ -1,10 +1,10 @@
 use crate::board::Chessboard;
 
-pub fn legal_pawn(white: bool, from: u64, to: u64) -> bool {
+pub fn legal_pawn(white: bool, from: i64, to: i64) -> bool {
     let rank = Chessboard::square_to_rank(from);
     let direction = if white { 1 } else { -1 };
     let initial_rank = if white { 2 } else { 7 };
-    let diff = to as i64 - from as i64;
+    let diff = to - from;
 
     if diff == 8 * direction {
         true
@@ -13,41 +13,32 @@ pub fn legal_pawn(white: bool, from: u64, to: u64) -> bool {
     }
 }
 
-pub fn legal_rook(from: u64, to: u64) -> bool {
+pub fn legal_rook(from: i64, to: i64) -> bool {
     to % 8 == from % 8 || to / 8 == from / 8
 }
 
-pub fn legal_bishop(mut from: u64, mut to: u64) -> bool {
-    from += 1;
-    to += 1;
-    let same_color = ((from / 8) + from % 8) % 2 == 0 && ((to / 8) + to % 8) == 0
-        || ((from / 8) + from % 8) != 0 && ((to / 8) + to % 8) != 0;
+pub fn legal_bishop(from: i64, to: i64) -> bool {
+    let from_color = (from / 8 + from % 8) % 2 == 0;
+    let to_color = (to / 8 + to % 8) % 2 == 0;
 
-    if to > from && same_color {
-        (to - from) % 7 == 0 || (to - from) % 9 == 0
-    } else if to < from && same_color {
-        (from - to) % 7 == 0 || (from - to) % 9 == 0
+    if from_color == to_color {
+        let diff = (to - from).abs();
+        diff % 7 == 0 || diff % 9 == 0
     } else {
         false
     }
 }
 
-pub fn legal_king(from: u64, to: u64) -> bool {
-    if from < to {
-        to == from + 1 || to == from + 9 || to == from + 8 || to == from + 7
-    } else {
-        to == from - 1 || to == from - 8 || to == from - 9 || to == from - 7
-    }
+pub fn legal_king(from: i64, to: i64) -> bool {
+    let rank_diff = (from / 8 - to / 8).abs();
+    let file_diff = (from % 8 - to % 8).abs();
+    rank_diff <= 1 && file_diff <= 1
 }
 
-pub fn legal_queen(from: u64, to: u64) -> bool {
+pub fn legal_queen(from: i64, to: i64) -> bool {
     legal_bishop(from, to) && legal_rook(from, to)
 }
 
-pub fn legal_knight(from: u64, to: u64) -> bool {
-    if from < to {
-        to == (from + 17) || to == (from + 15) || to == (from + 10) || to == (from + 6)
-    } else {
-        to == (from - 10) || to == (from - 6) || to == (from - 17) || to == (from - 15)
-    }
+pub fn legal_knight(from: i64, to: i64) -> bool {
+    matches!((to - from).abs(), 6 | 10 | 15 | 17)
 }

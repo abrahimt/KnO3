@@ -146,9 +146,8 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
         result.push('/');
     }
 
-    let mut c = result.chars();
-    c.next_back();
-    c.as_str().to_string()
+    result.pop();
+    result
 }
 
 /// Retrieves the castling rights from the chessboard and returns them in Forsyth–Edwards Notation (FEN) format.

@@ -43,6 +43,6 @@ pub fn legal_knight(from: i64, to: i64) -> bool {
     let spaces = (to - from).abs();
     match spaces {
         6 | 10 | 15 | 17 => true,
-        _ => false
+        _ => false,
     }
 }

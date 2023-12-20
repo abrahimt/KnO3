@@ -233,6 +233,35 @@ impl Chessboard {
         (file, row as usize)
     }
 
+    /// Converts a chess rank and file to its corresponding square index (0-63).
+    ///
+    /// # Arguments
+    ///
+    /// * `rank` - The rank of the chessboard (1-8).
+    /// * `file` - The file of the chessboard (character 'A' to 'H').
+    ///
+    /// # Returns
+    ///
+    /// The result of the square index (0-63) corresponding to the given rank and file.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// let square = Chessboard::rank_file_to_square(5, 'D').unwrap();
+    /// println!("Square: {square}");
+    /// // Output: Square: 35
+    /// ```
+    pub fn rank_file_to_square(rank: u8, file: char) -> Result<i64, String> {
+        if !(1..=8).contains(&rank) {
+            return Err("Invalid rank".to_string());
+        }
+        if !('A'..='H').contains(&file) {
+            return Err("Invalid file".to_string());
+        }
+        Ok((rank - 1) as i64 * 8 + (file as u8 - b'A') as i64)
+    }
+
     /// Converts a chess rank and file coordinate to its corresponding square index (0-63).
     /// # Arguments
     /// * `str` - The coordinate string (`A1` - `H8`)
@@ -247,13 +276,7 @@ impl Chessboard {
         let rank = chars[1].to_digit(10).unwrap_or(9);
         let file = chars[0];
 
-        if !(1..=8).contains(&rank) {
-            return Err("Invalid rank".to_string());
-        }
-        if !('A'..='H').contains(&file) {
-            return Err("Invalid file".to_string());
-        }
-        Ok((rank as i64 - 1) * 8 + (file as u8 - b'A') as i64)
+        Chessboard::rank_file_to_square(rank as u8, file)
     }
 
     // rank can be 1-8

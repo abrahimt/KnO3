@@ -127,7 +127,8 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
         let mut empty_squares = 0;
 
         for file in 0..=7 {
-            let square = Chessboard::rank_file_to_square(rank as u8, (file + b'A') as char).unwrap();
+            let square =
+                Chessboard::rank_file_to_square(rank as u8, (file + b'A') as char).unwrap();
 
             if let Some(p) = chessboard.piece_at_position(square) {
                 if empty_squares > 0 {

@@ -176,8 +176,9 @@ impl Chessboard {
 
         for rank in ranks.iter() {
             print!("{rank} ");
-            for file in 0..files.len() {
-                let piece = self.piece_at_position(*rank, file as u8);
+            for (f_index, file) in files.iter().enumerate() {
+                let square = Chessboard::rank_file_to_square(*rank, *file).unwrap();
+                let piece = self.piece_at_position(square).unwrap_or('.');
                 if !pretty {
                     print!("{piece} ");
                     continue;
@@ -185,7 +186,7 @@ impl Chessboard {
 
                 let fg = self.find_fg(piece);
                 let frmt_piece = format!("{:^3}", piece);
-                let bk = self.find_bkgnd(*rank, file as u8);
+                let bk = self.find_bkgnd(*rank, f_index as u8);
                 let _ = execute!(
                     stdout(),
                     SetForegroundColor(fg),
@@ -376,13 +377,11 @@ impl Chessboard {
     ///
     /// # Arguments
     ///
-    /// - `rank`: The rank of the square (1-indexed).
-    /// - `file`: The file (A=0) of the square (0-indexed).
+    /// - `square`: The square number (0 = bottom left, 63 = top right)
     ///
     /// # Returns
     ///
-    /// The character representation of the piece at the specified position. If there is no piece
-    /// at the given position, it returns a period ('.').
+    /// The character representation of the piece at the specified position.
     ///
     /// # Example
     ///
@@ -393,14 +392,14 @@ impl Chessboard {
     /// println!("Piece at a1: {}", piece_at_a1);
     /// ```
     /// Note: Uppercase pieces are white and lowercase pieces are black.
-    pub fn piece_at_position(&self, rank: u8, file: u8) -> char {
+    pub fn piece_at_position(&self, square: i64) -> Option<char> {
+        let btwise = 1 << square;
         for (p_type, positions) in self.get_pieces() {
-            let rank_byte = positions >> ((rank - 1) * 8);
-            if (rank_byte & (1 << file)) != 0 {
-                return p_type;
+            if btwise & positions != 0 {
+                return Some(p_type);
             }
         }
-        '.'
+        None
     }
 
     /// Serializes a chessboard position into Forsyth–Edwards Notation (FEN).

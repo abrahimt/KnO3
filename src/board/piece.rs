@@ -40,9 +40,9 @@ pub fn legal_queen(from: i64, to: i64) -> bool {
 }
 
 pub fn legal_knight(from: i64, to: i64) -> bool {
-    if from < to {
-        to == (from + 17) || to == (from + 15) || to == (from + 10) || to == (from + 6)
-    } else {
-        to == (from - 10) || to == (from - 6) || to == (from - 17) || to == (from - 15)
+    let spaces = (to - from).abs();
+    match spaces {
+        6 | 10 | 15 | 17 => true,
+        _ => false
     }
 }

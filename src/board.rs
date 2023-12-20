@@ -388,7 +388,8 @@ impl Chessboard {
     /// ```
     /// use kn_o3::board::Chessboard;
     /// let initial_position = Chessboard::new();
-    /// let piece_at_a1 = initial_position.piece_at_position(1, 0);
+    /// let square = Chessboard::rank_file_to_square(1, 'A').unwrap();
+    /// let piece_at_a1 = initial_position.piece_at_position(square).unwrap_or('.');
     /// println!("Piece at a1: {}", piece_at_a1);
     /// ```
     /// Note: Uppercase pieces are white and lowercase pieces are black.

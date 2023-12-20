@@ -30,11 +30,9 @@ pub fn legal_bishop(from: i64, to: i64) -> bool {
 }
 
 pub fn legal_king(from: i64, to: i64) -> bool {
-    if from < to {
-        to == from + 1 || to == from + 9 || to == from + 8 || to == from + 7
-    } else {
-        to == from - 1 || to == from - 8 || to == from - 9 || to == from - 7
-    }
+    let rank_diff = (from / 8 - to / 8).abs();
+    let file_diff = (from % 8 - to % 8).abs();
+    rank_diff <= 1 && file_diff <= 1
 }
 
 pub fn legal_queen(from: i64, to: i64) -> bool {

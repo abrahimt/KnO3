@@ -177,7 +177,7 @@ impl Chessboard {
         for rank in ranks.iter() {
             print!("{rank} ");
             for file in 0..files.len() {
-                let piece = self.piece_at_position(*rank, file);
+                let piece = self.piece_at_position(*rank, file as u8);
                 if !pretty {
                     print!("{piece} ");
                     continue;
@@ -185,7 +185,7 @@ impl Chessboard {
 
                 let fg = self.find_fg(piece);
                 let frmt_piece = format!("{:^3}", piece);
-                let bk = self.find_bkgnd(*rank, file);
+                let bk = self.find_bkgnd(*rank, file as u8);
                 let _ = execute!(
                     stdout(),
                     SetForegroundColor(fg),
@@ -370,7 +370,7 @@ impl Chessboard {
     /// println!("Piece at a1: {}", piece_at_a1);
     /// ```
     /// Note: Uppercase pieces are white and lowercase pieces are black.
-    pub fn piece_at_position(&self, rank: usize, file: usize) -> char {
+    pub fn piece_at_position(&self, rank: u8, file: u8) -> char {
         for (p_type, positions) in self.get_pieces() {
             let rank_byte = positions >> ((rank - 1) * 8);
             if (rank_byte & (1 << file)) != 0 {
@@ -487,7 +487,7 @@ impl Chessboard {
     /// value. Light squares are represented by (r: 190, g: 140, b: 170), and dark squares are
     /// represented by (r: 255, g: 206, b: 158).
     #[rustfmt::skip]
-    fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
+    fn find_bkgnd(&self, rank: u8, file: u8) -> Color {
         let lght = Color::Rgb { r: 190, g: 140, b: 170 };
         let dark = Color::Rgb { r: 255, g: 206, b: 158 };
         if (rank + file) % 2 == 0 { dark }

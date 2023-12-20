@@ -51,3 +51,36 @@ pub fn legal_knight(from: u64, to: u64) -> bool {
         to == (from - 10) || to == (from - 6) || to == (from - 17) || to == (from - 15)
     }
 }
+
+//Return bitboard
+pub fn pawn_vision() {
+//make a bitboard of the three spots the pawn could potentially move to
+//and them with opposing pieces
+//or them with the three squares bitboard 
+
+//check if moves are legal
+}
+
+pub fn knight_vision() {
+//make a bitboard of the spots the knight could potentially move to
+//and them with opposing pieces
+//or them with the three squares bitboard 
+
+//check if moves are legal
+}
+
+pub fn bishop_vision() {
+    
+}
+
+pub fn rook_vision() {
+    
+}
+
+pub fn king_vision() {
+    
+}
+
+pub fn queen_vision() {
+    
+}

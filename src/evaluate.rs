@@ -61,3 +61,30 @@
 //     return combined_score
 
 // Other helper functions for counting legal moves, calculating positional scores, etc.
+
+
+
+
+//MINIMAX Function Pseudo-code
+// fn minimax(position, depth, alpha, beta, maximizing_player) {
+//     if depth == 0 or game over in position
+//         return static evaluation of position
+//     if maximizing_player (white)
+//         max_eval = -infinity
+//         for each child of position
+//             eval = minimax(child, depth - 1, alpha, beta, false)
+//             max_eval = max(max_eval, eval)
+//             alpha = max(alpha, eval)
+//             if beta <= alpha
+//                 break
+//         return max_eval
+//     else
+//         min_eval = +infinity
+//         for each child of position
+//         eval = minimax(child, depth - 1, alpha, beta, true)
+//         min_eval = min(min_eval, eval)
+//         beta = min(beta, eval)
+//         if beta <= alpha
+//             break
+//     return min_eval
+// }

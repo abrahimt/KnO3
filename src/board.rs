@@ -528,31 +528,43 @@ impl Chessboard {
             _ => false,
         }
     }
-}
 
-//MINIMAX Function Pseudo-code
-// fn minimax(position, depth, alpha, beta, maximizing_player) {
-//     if depth == 0 or game over in position
-//         return static evaluation of position
-//     if maximizing_player (white)
-//         max_eval = -infinity
-//         for each child of position
-//             eval = minimax(child, depth - 1, alpha, beta, false)
-//             max_eval = max(max_eval, eval)
-//             alpha = max(alpha, eval)
-//             if beta <= alpha
-//                 break
-//         return max_eval
-//     else
-//         min_eval = +infinity
-//         for each child of position
-//         eval = minimax(child, depth - 1, alpha, beta, true)
-//         min_eval = min(min_eval, eval)
-//         beta = min(beta, eval)
-//         if beta <= alpha
-//             break
-//     return min_eval
-// }
+//returns a bitboard of what the piece can see
+    pub fn piece_vision(cb:Chessboard, square: u64) -> u64 {
+        //use piece_at_position to find the piece that needs to be looked at
+        //handle empty square or invalid square
+        let rank = 1;
+        let file = 1;
+        let piece = cb.piece_at_position(rank, file);
+
+        match piece {
+            'p' => piece::pawn_vision(),
+            'P' => piece::pawn_vision(),
+            'r' => piece::rook_vision(),
+            'R' => piece::rook_vision(),
+            'b' => piece::bishop_vision(),
+            'B' => piece::bishop_vision(),
+            'k' => piece::king_vision(),
+            'K' => piece::king_vision(),
+            'q' => piece::queen_vision(),
+            'Q' => piece::queen_vision(),
+            'n' => piece::knight_vision(),
+            'N' => piece::knight_vision(),
+            _ => 0,
+        }
+
+
+
+
+        0
+    }
+
+    pub fn fog_of_war(cb: Chessboard) -> u64 {
+        //loop through each piece and use piece_vision
+        //returns a bitboard of what the player can see
+        0
+    }
+}
 
 /// I've never used this before, but the linter wants it
 /// I'm not sure what it does, I'm guessing it's the default constructor

@@ -593,3 +593,18 @@ impl fmt::Display for Chessboard {
         write!(f, "FEN: {fen}")
     }
 }
+
+impl fmt::Debug for Chessboard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let fen = self.to_string();
+        for rank in 1..=8 {
+            for file in 'A'..='H' {
+                let square = Chessboard::rank_file_to_square(rank, file).expect("Square does not exist");
+                if let Some(piece) = self.piece_at_position(square) {
+                    write!(f, "{}{}: {}, ", file, rank, piece)?;
+                }
+            }
+        }
+        write!(f, "{fen}")
+    }
+}

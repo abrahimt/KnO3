@@ -4,6 +4,7 @@ use board::Chessboard;
 
 fn main() {
     let mut cb = Chessboard::new();
+    println!("{:?}", cb);
     println!("{cb}\n\n");
 
     // Move a white pawn from E2 to E3

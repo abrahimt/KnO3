@@ -284,11 +284,10 @@ impl Chessboard {
     pub fn square_to_rank(square: i64) -> u8 {
         ((square / 8) + 1) as u8
     }
-    /*
-        pub fn square_to_file(square: i64) -> char {
-            ((square % 8) as u8 + b'A') as char
+    pub fn square_to_file(square: i64) -> char {
+        ((square % 8) as u8 + b'A') as char
+    }
         }
-    */
 
     /// Moves a chess piece on the chessboard from the current position to the new position.
     ///

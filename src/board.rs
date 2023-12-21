@@ -227,11 +227,10 @@ impl Chessboard {
     /// println!("File: {}, Rank: {}", file, rank);
     /// // Output: File: 'D', Rank: 5
     /// ```
-    pub fn square_to_rank_file(square: u8) -> (char, usize) {
-        let row = (square - 1) / 8 + 1;
-        let col = (square - 1) % 8;
-        let file = (b'A' + col) as char;
-        (file, row as usize)
+    pub fn square_to_rank_file(square: i64) -> (char, usize) {
+        let rank = Chessboard::square_to_rank(square);
+        let file = Chessboard::square_to_file(square);
+        (file, rank as usize)
     }
 
     /// Converts a chess rank and file to its corresponding square index (0-63).

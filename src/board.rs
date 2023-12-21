@@ -176,8 +176,9 @@ impl Chessboard {
 
         for rank in ranks.iter() {
             print!("{rank} ");
-            for file in 0..files.len() {
-                let piece = self.piece_at_position(*rank, file);
+            for (f_index, file) in files.iter().enumerate() {
+                let square = Chessboard::rank_file_to_square(*rank, *file).unwrap();
+                let piece = self.piece_at_position(square).unwrap_or('.');
                 if !pretty {
                     print!("{piece} ");
                     continue;
@@ -185,7 +186,7 @@ impl Chessboard {
 
                 let fg = self.find_fg(piece);
                 let frmt_piece = format!("{:^3}", piece);
-                let bk = self.find_bkgnd(*rank, file);
+                let bk = self.find_bkgnd(*rank, f_index as u8);
                 let _ = execute!(
                     stdout(),
                     SetForegroundColor(fg),
@@ -233,6 +234,35 @@ impl Chessboard {
         (file, row as usize)
     }
 
+    /// Converts a chess rank and file to its corresponding square index (0-63).
+    ///
+    /// # Arguments
+    ///
+    /// * `rank` - The rank of the chessboard (1-8).
+    /// * `file` - The file of the chessboard (character 'A' to 'H').
+    ///
+    /// # Returns
+    ///
+    /// The result of the square index (0-63) corresponding to the given rank and file.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// let square = Chessboard::rank_file_to_square(5, 'D').unwrap();
+    /// println!("Square: {square}");
+    /// // Output: Square: 35
+    /// ```
+    pub fn rank_file_to_square(rank: u8, file: char) -> Result<i64, String> {
+        if !(1..=8).contains(&rank) {
+            return Err("Invalid rank".to_string());
+        }
+        if !('A'..='H').contains(&file) {
+            return Err("Invalid file".to_string());
+        }
+        Ok((rank - 1) as i64 * 8 + (file as u8 - b'A') as i64)
+    }
+
     /// Converts a chess rank and file coordinate to its corresponding square index (0-63).
     /// # Arguments
     /// * `str` - The coordinate string (`A1` - `H8`)
@@ -247,13 +277,7 @@ impl Chessboard {
         let rank = chars[1].to_digit(10).unwrap_or(9);
         let file = chars[0];
 
-        if !(1..=8).contains(&rank) {
-            return Err("Invalid rank".to_string());
-        }
-        if !('A'..='H').contains(&file) {
-            return Err("Invalid file".to_string());
-        }
-        Ok((rank as i64 - 1) * 8 + (file as u8 - b'A') as i64)
+        Chessboard::rank_file_to_square(rank as u8, file)
     }
 
     // rank can be 1-8
@@ -353,31 +377,30 @@ impl Chessboard {
     ///
     /// # Arguments
     ///
-    /// - `rank`: The rank of the square (1-indexed).
-    /// - `file`: The file (A=0) of the square (0-indexed).
+    /// - `square`: The square number (0 = bottom left, 63 = top right)
     ///
     /// # Returns
     ///
-    /// The character representation of the piece at the specified position. If there is no piece
-    /// at the given position, it returns a period ('.').
+    /// The character representation of the piece at the specified position.
     ///
     /// # Example
     ///
     /// ```
     /// use kn_o3::board::Chessboard;
     /// let initial_position = Chessboard::new();
-    /// let piece_at_a1 = initial_position.piece_at_position(1, 0);
+    /// let square = Chessboard::rank_file_to_square(1, 'A').unwrap();
+    /// let piece_at_a1 = initial_position.piece_at_position(square).unwrap_or('.');
     /// println!("Piece at a1: {}", piece_at_a1);
     /// ```
     /// Note: Uppercase pieces are white and lowercase pieces are black.
-    pub fn piece_at_position(&self, rank: usize, file: usize) -> char {
+    pub fn piece_at_position(&self, square: i64) -> Option<char> {
+        let btwise = 1 << square;
         for (p_type, positions) in self.get_pieces() {
-            let rank_byte = positions >> ((rank - 1) * 8);
-            if (rank_byte & (1 << file)) != 0 {
-                return p_type;
+            if btwise & positions != 0 {
+                return Some(p_type);
             }
         }
-        '.'
+        None
     }
 
     /// Serializes a chessboard position into Forsyth–Edwards Notation (FEN).
@@ -487,7 +510,7 @@ impl Chessboard {
     /// value. Light squares are represented by (r: 190, g: 140, b: 170), and dark squares are
     /// represented by (r: 255, g: 206, b: 158).
     #[rustfmt::skip]
-    fn find_bkgnd(&self, rank: usize, file: usize) -> Color {
+    fn find_bkgnd(&self, rank: u8, file: u8) -> Color {
         let lght = Color::Rgb { r: 190, g: 140, b: 170 };
         let dark = Color::Rgb { r: 255, g: 206, b: 158 };
         if (rank + file) % 2 == 0 { dark }

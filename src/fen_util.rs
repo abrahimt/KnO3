@@ -122,20 +122,23 @@ fn unique_chars(s: &str) -> bool {
 ///
 /// A string representing the FEN string for the current chessboard position. Example: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 pub fn get_fen_placement(chessboard: &Chessboard) -> String {
-    let mut result: String = "".to_string();
+    let mut result = String::new();
     for rank in (1..=8).rev() {
         let mut empty_squares = 0;
 
         for file in 0..=7 {
-            let p = chessboard.piece_at_position(rank, file);
-            if p == '.' {
+            let square =
+                Chessboard::rank_file_to_square(rank as u8, (file + b'A') as char).unwrap();
+
+            if let Some(p) = chessboard.piece_at_position(square) {
+                if empty_squares > 0 {
+                    result.push_str(&empty_squares.to_string());
+                    empty_squares = 0;
+                }
+                result.push(p);
+            } else {
                 empty_squares += 1;
-                continue;
-            } else if empty_squares > 0 {
-                result.push_str(&empty_squares.to_string());
-                empty_squares = 0;
             }
-            result.push_str(&p.to_string());
         }
         if empty_squares > 0 {
             result.push_str(&empty_squares.to_string());
@@ -143,9 +146,8 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
         result.push('/');
     }
 
-    let mut c = result.chars();
-    c.next_back();
-    c.as_str().to_string()
+    result.pop();
+    result
 }
 
 /// Retrieves the castling rights from the chessboard and returns them in Forsyth–Edwards Notation (FEN) format.

@@ -639,7 +639,10 @@ impl fmt::Debug for Chessboard {
             };
 
             let squares = Chessboard::bitboard_squares(positions);
-            let coords: Vec<(char, usize)> = squares.iter().map(|&square| Chessboard::square_to_rank_file(square)).collect();
+            let coords: Vec<String> = squares.iter()
+                .map(|&square| Chessboard::square_to_rank_file(square))
+                .map(|(file, rank)| format!("{file}{rank}"))
+                .collect();
 
             write!(f, "{:<5} {:<7}: {:?}\n", color, p_type, coords)?;
         }

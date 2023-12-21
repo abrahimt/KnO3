@@ -303,7 +303,7 @@ impl Chessboard {
     /// use kn_o3::board::Chessboard;
     /// let cb = Chessboard::new();
     /// let bitboard = cb.white_pawns;
-    /// let squares = Chessboard::bitboard_to_squares(bitboard);
+    /// let squares = Chessboard::bitboard_squares(bitboard);
     /// ```
     pub fn bitboard_squares(mut bitboard: u64) -> Vec<i64> {
         let mut squares = Vec::new();

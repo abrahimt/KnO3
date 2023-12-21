@@ -3,7 +3,7 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{io::stdout, u8, fmt};
+use std::{fmt, io::stdout, u8};
 pub mod piece;
 
 /// Struct representing a chessboard with piece positions and game state.

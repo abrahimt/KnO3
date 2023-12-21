@@ -286,7 +286,39 @@ impl Chessboard {
     pub fn square_to_file(square: i64) -> char {
         ((square % 8) as u8 + b'A') as char
     }
+
+    /// Find the squares turned on in this bitboard
+    ///
+    /// # Arguments
+    ///
+    /// * `bitboard` - The bitboard representing positions of a piece
+    ///
+    /// # Returns
+    ///
+    /// A vector containing the square indicies of where the bits are set
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// let cb = Chessboard::new();
+    /// let bitboard = cb.white_pawns;
+    /// let squares = Chessboard::bitboard_to_squares(bitboard);
+    /// ```
+    pub fn bitboard_squares(mut bitboard: u64) -> Vec<i64> {
+        let mut squares = Vec::new();
+        let mut index = 0;
+
+        while bitboard != 0 {
+            if bitboard & 1 != 0 {
+                squares.push(index);
+            }
+            index += 1;
+            bitboard >>= 1;
         }
+
+        squares
+    }
 
     /// Moves a chess piece on the chessboard from the current position to the new position.
     ///

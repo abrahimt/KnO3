@@ -52,35 +52,40 @@ pub fn legal_knight(from: u64, to: u64) -> bool {
     }
 }
 
-//Return bitboard
-pub fn pawn_vision() {
-//make a bitboard of the three spots the pawn could potentially move to
-//and them with opposing pieces
-//or them with the three squares bitboard 
+pub fn pawn_vision(white: bool, square: u64) -> u64 {
+    //make a bitboard of the three spots the pawn could potentially move to
+    //and them with opposing pieces
+    //or them with the three squares bitboard
+    if white {
+        
+    } else {
 
-//check if moves are legal
+    }
+    0
+    //check if moves are legal
 }
 
-pub fn knight_vision() {
-//make a bitboard of the spots the knight could potentially move to
-//and them with opposing pieces
-//or them with the three squares bitboard 
+pub fn knight_vision(white: bool, square: u64) -> u64 {
+    //make a bitboard of the spots the knight could potentially move to
+    //and them with opposing pieces
+    //or them with the three squares bitboard
 
-//check if moves are legal
+    //check if moves are legal
+    0
 }
 
-pub fn bishop_vision() {
-    
+pub fn bishop_vision(white: bool, square: u64) -> u64 {
+    0
 }
 
-pub fn rook_vision() {
-    
+pub fn rook_vision(white: bool, square: u64) -> u64 {
+    0
 }
 
-pub fn king_vision() {
-    
+pub fn king_vision(white: bool, square: u64) -> u64 {
+    0
 }
 
-pub fn queen_vision() {
-    
+pub fn queen_vision(white: bool, square: u64) -> u64 {
+    rook_vision(white, square) & bishop_vision(white, square)
 }

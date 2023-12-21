@@ -3,7 +3,7 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{io::stdout, u8};
+use std::{io::stdout, thread::current, u8};
 pub mod piece;
 
 /// Struct representing a chessboard with piece positions and game state.
@@ -113,6 +113,39 @@ impl Chessboard {
         self.castling_rights = 0;
         self.en_passant = 0;
         self.white_turn = true;
+    }
+
+    pub fn one_side_pieces(cb: Chessboard, white: bool) -> u64 {
+        if white {
+            cb.white_bishops
+                & cb.white_king
+                & cb.white_knights
+                & cb.white_pawns
+                & cb.black_rooks
+                & cb.white_queen
+        } else {
+            cb.black_bishops
+                & cb.black_king
+                & cb.black_knights
+                & cb.black_pawns
+                & cb.black_rooks
+                & cb.black_queen
+        }
+    }
+
+    pub fn both_side_pieces(cb: Chessboard) -> u64 {
+        cb.white_bishops
+            & cb.white_king
+            & cb.white_knights
+            & cb.white_pawns
+            & cb.black_rooks
+            & cb.white_queen
+            & cb.black_bishops
+            & cb.black_king
+            & cb.black_knights
+            & cb.black_pawns
+            & cb.black_rooks
+            & cb.black_queen
     }
 
     /// Creates a new instance of a chessboard based on a Forsyth–Edwards Notation (FEN) string.
@@ -529,8 +562,8 @@ impl Chessboard {
         }
     }
 
-//returns a bitboard of what the piece can see
-    pub fn piece_vision(cb:Chessboard, square: u64) -> u64 {
+    //returns a bitboard of what the piece can see
+    pub fn piece_vision(cb: Chessboard, square: u64) -> u64 {
         //use piece_at_position to find the piece that needs to be looked at
         //handle empty square or invalid square
         let rank = 1;
@@ -538,30 +571,27 @@ impl Chessboard {
         let piece = cb.piece_at_position(rank, file);
 
         match piece {
-            'p' => piece::pawn_vision(),
-            'P' => piece::pawn_vision(),
-            'r' => piece::rook_vision(),
-            'R' => piece::rook_vision(),
-            'b' => piece::bishop_vision(),
-            'B' => piece::bishop_vision(),
-            'k' => piece::king_vision(),
-            'K' => piece::king_vision(),
-            'q' => piece::queen_vision(),
-            'Q' => piece::queen_vision(),
-            'n' => piece::knight_vision(),
-            'N' => piece::knight_vision(),
+            'p' => piece::pawn_vision(false, square),
+            'P' => piece::pawn_vision(true, square),
+            'r' => piece::rook_vision(false, square),
+            'R' => piece::rook_vision(true, square),
+            'b' => piece::bishop_vision(false, square),
+            'B' => piece::bishop_vision(true, square),
+            'k' => piece::king_vision(false, square),
+            'K' => piece::king_vision(true, square),
+            'q' => piece::queen_vision(false, square),
+            'Q' => piece::queen_vision(true, square),
+            'n' => piece::knight_vision(false, square),
+            'N' => piece::knight_vision(true, square),
             _ => 0,
         }
-
-
-
-
-        0
     }
 
     pub fn fog_of_war(cb: Chessboard) -> u64 {
         //loop through each piece and use piece_vision
         //returns a bitboard of what the player can see
+
+        //for every bit in the one_side_pieces do piece at position and then do piece_vision
         0
     }
 }

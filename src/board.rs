@@ -627,7 +627,11 @@ impl fmt::Display for Chessboard {
 impl fmt::Debug for Chessboard {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (piece_char, positions) in self.get_pieces() {
-            let color = if piece_char.is_uppercase() { "White" } else { "Black" };
+            let color = if piece_char.is_uppercase() {
+                "White"
+            } else {
+                "Black"
+            };
             let p_type = match piece_char.to_ascii_lowercase() {
                 'p' => "Pawn",
                 'n' => "Knight",
@@ -635,16 +639,17 @@ impl fmt::Debug for Chessboard {
                 'k' => "King",
                 'q' => "Queen",
                 'r' => "Rook",
-                _ => "Unknown"
+                _ => "Unknown",
             };
 
             let squares = Chessboard::bitboard_squares(positions);
-            let coords: Vec<String> = squares.iter()
+            let coords: Vec<String> = squares
+                .iter()
                 .map(|&square| Chessboard::square_to_rank_file(square))
                 .map(|(file, rank)| format!("{file}{rank}"))
                 .collect();
 
-            write!(f, "{:<5} {:<7}: {:?}\n", color, p_type, coords)?;
+            writeln!(f, "{:<5} {:<7}: {:?}", color, p_type, coords)?;
         }
         write!(f, "{}", self.to_string())
     }

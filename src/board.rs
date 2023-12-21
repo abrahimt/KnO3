@@ -3,7 +3,7 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{io::stdout, u8};
+use std::{io::stdout, u8, fmt};
 pub mod piece;
 
 /// Struct representing a chessboard with piece positions and game state.
@@ -560,5 +560,13 @@ impl Chessboard {
 impl Default for Chessboard {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl fmt::Display for Chessboard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.print(true);
+        let fen = self.to_string();
+        write!(f, "FEN: {fen}")
     }
 }

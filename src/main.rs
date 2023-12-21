@@ -4,28 +4,26 @@ use board::Chessboard;
 
 fn main() {
     let mut cb = Chessboard::new();
-    cb.print(true);
+    println!("{cb}\n\n");
 
     // Move a white pawn from E2 to E3
     cb.move_piece("E2", "E3", 'P');
-    println!("{}", cb.to_string());
-    cb.print(true);
+    println!("{cb}\n\n");
+
     // Move a black knight from G8 to F6
     cb.move_piece("G8", "F6", 'n');
-    println!("{}", cb.to_string());
-    cb.print(true);
+    println!("{cb}\n\n");
+
     // Move a white queen from D1 to H5
     cb.move_piece("D1", "H5", 'Q');
-    println!("{}", cb.to_string());
-    cb.print(true);
-    // println!("E4 only {:?}", cb.to_string());
+    println!("{cb}\n\n");
 
     let x = Chessboard::square_to_rank_file(22);
     println!("{} {}", x.0, x.1);
 
     cb = Chessboard::from_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 1 2")
         .unwrap();
-    cb.print(true);
+    println!("{cb}");
 
     test_valid_move_for_piece('P', "E4", "E4");
     test_valid_move_for_piece('K', "E1", "E1");

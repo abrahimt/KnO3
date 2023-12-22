@@ -1,6 +1,6 @@
 mod board;
 mod fen_util;
-use crate::board::{Chessboard, position};
+use crate::board::{position, Chessboard};
 
 fn main() {
     let mut cb = Chessboard::new();

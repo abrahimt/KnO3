@@ -1,4 +1,4 @@
-use super::{Chessboard, piece, position};
+use super::{piece, position, Chessboard};
 
 impl Chessboard {
     /// Maps the pieces on the chessboard to their character representations in the console.

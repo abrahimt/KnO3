@@ -1,9 +1,9 @@
-use super::{Chessboard, position};
+use super::{position, Chessboard};
 use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{io::stdout, fmt};
+use std::{fmt, io::stdout};
 
 impl Chessboard {
     /// Prints the chessboard to the console.

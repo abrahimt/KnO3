@@ -1,4 +1,4 @@
-use crate::board::Chessboard;
+use crate::board::{Chessboard, position};
 use regex::Regex;
 
 /// Places pieces on the chessboard based on the Forsyth-Edwards Notation (FEN) rows provided.
@@ -128,7 +128,7 @@ pub fn get_fen_placement(chessboard: &Chessboard) -> String {
 
         for file in 0..=7 {
             let square =
-                Chessboard::rank_file_to_square(rank as u8, (file + b'A') as char).unwrap();
+                position::rank_file_to_square(rank as u8, (file + b'A') as char).unwrap();
 
             if let Some(p) = chessboard.piece_at_position(square) {
                 if empty_squares > 0 {

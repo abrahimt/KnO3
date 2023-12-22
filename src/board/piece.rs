@@ -1,7 +1,7 @@
-use crate::board::Chessboard;
+use super::position;
 
 pub fn legal_pawn(white: bool, from: i64, to: i64) -> bool {
-    let rank = Chessboard::square_to_rank(from);
+    let rank = position::square_to_rank(from);
     let direction = if white { 1 } else { -1 };
     let initial_rank = if white { 2 } else { 7 };
     let diff = to - from;

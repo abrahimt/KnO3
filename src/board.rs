@@ -3,7 +3,7 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{io::stdout, u8};
+use std::{fmt, io::stdout, u8};
 pub mod piece;
 
 /// Struct representing a chessboard with piece positions and game state.
@@ -227,11 +227,10 @@ impl Chessboard {
     /// println!("File: {}, Rank: {}", file, rank);
     /// // Output: File: 'D', Rank: 5
     /// ```
-    pub fn square_to_rank_file(square: u8) -> (char, usize) {
-        let row = (square - 1) / 8 + 1;
-        let col = (square - 1) % 8;
-        let file = (b'A' + col) as char;
-        (file, row as usize)
+    pub fn square_to_rank_file(square: i64) -> (char, usize) {
+        let rank = Chessboard::square_to_rank(square);
+        let file = Chessboard::square_to_file(square);
+        (file, rank as usize)
     }
 
     /// Converts a chess rank and file to its corresponding square index (0-63).
@@ -284,11 +283,42 @@ impl Chessboard {
     pub fn square_to_rank(square: i64) -> u8 {
         ((square / 8) + 1) as u8
     }
-    /*
-        pub fn square_to_file(square: i64) -> char {
-            ((square % 8) as u8 + b'A') as char
+    pub fn square_to_file(square: i64) -> char {
+        ((square % 8) as u8 + b'A') as char
+    }
+
+    /// Find the squares turned on in this bitboard
+    ///
+    /// # Arguments
+    ///
+    /// * `bitboard` - The bitboard representing positions of a piece
+    ///
+    /// # Returns
+    ///
+    /// A vector containing the square indicies of where the bits are set
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use kn_o3::board::Chessboard;
+    /// let cb = Chessboard::new();
+    /// let bitboard = cb.white_pawns;
+    /// let squares = Chessboard::bitboard_squares(bitboard);
+    /// ```
+    pub fn bitboard_squares(mut bitboard: u64) -> Vec<i64> {
+        let mut squares = Vec::new();
+        let mut index = 0;
+
+        while bitboard != 0 {
+            if bitboard & 1 != 0 {
+                squares.push(index);
+            }
+            index += 1;
+            bitboard >>= 1;
         }
-    */
+
+        squares
+    }
 
     /// Moves a chess piece on the chessboard from the current position to the new position.
     ///
@@ -583,5 +613,44 @@ impl Chessboard {
 impl Default for Chessboard {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl fmt::Display for Chessboard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.print(true);
+        let fen = self.to_string();
+        write!(f, "FEN: {fen}")
+    }
+}
+
+impl fmt::Debug for Chessboard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for (piece_char, positions) in self.get_pieces() {
+            let color = if piece_char.is_uppercase() {
+                "White"
+            } else {
+                "Black"
+            };
+            let p_type = match piece_char.to_ascii_lowercase() {
+                'p' => "Pawn",
+                'n' => "Knight",
+                'b' => "Bishop",
+                'k' => "King",
+                'q' => "Queen",
+                'r' => "Rook",
+                _ => "Unknown",
+            };
+
+            let squares = Chessboard::bitboard_squares(positions);
+            let coords: Vec<String> = squares
+                .iter()
+                .map(|&square| Chessboard::square_to_rank_file(square))
+                .map(|(file, rank)| format!("{file}{rank}"))
+                .collect();
+
+            writeln!(f, "{:<5} {:<7}: {:?}", color, p_type, coords)?;
+        }
+        write!(f, "{}", self.to_string())
     }
 }

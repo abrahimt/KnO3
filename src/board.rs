@@ -487,15 +487,16 @@ impl Chessboard {
     ///
     /// # Returns
     ///
-    /// A vector of tuples, where each tuple consists of a chess piece character and its
+    /// An array of tuples, where each tuple consists of a chess piece character and its
     /// corresponding bitboard positions. The characters represent different chess pieces,
     /// and the bitboard positions indicate the squares occupied by those pieces on the board.
     ///
     /// The function returns a vector containing tuples, each associating a chess piece
     /// character ('P', 'N', 'B', 'K', 'Q', 'R', 'p', 'n', 'b', 'k', 'q', 'r') with its
     /// corresponding bitboard positions on the chessboard.
-    fn get_pieces(&self) -> Vec<(char, u64)> {
-        vec![
+    //fn get_pieces(&self) -> Vec<(char, u64)> {
+    fn get_pieces(&self) -> [(char, u64); 12] {
+        [
             ('P', self.white_pawns),
             ('N', self.white_knights),
             ('B', self.white_bishops),

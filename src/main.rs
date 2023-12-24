@@ -1,6 +1,6 @@
 mod board;
 mod fen_util;
-use board::Chessboard;
+use crate::board::{position, Chessboard};
 
 fn main() {
     let mut cb = Chessboard::new();
@@ -19,7 +19,7 @@ fn main() {
     cb.move_piece("D1", "H5", 'Q');
     println!("{cb}\n\n");
 
-    let x = Chessboard::square_to_rank_file(22);
+    let x = position::square_to_rank_file(22);
     println!("{} {}", x.0, x.1);
 
     cb = Chessboard::from_string("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 1 2")
@@ -35,7 +35,7 @@ fn main() {
 
 fn test_valid_move_for_piece(p: char, cur_coord: &str, new_coord: &str) {
     println!("Attempting to move {p} from {cur_coord} to {new_coord}");
-    let cur_square = match Chessboard::string_to_square(cur_coord) {
+    let cur_square = match position::string_to_square(cur_coord) {
         Ok(square) => square,
         Err(e) => {
             println!("{e}");
@@ -43,7 +43,7 @@ fn test_valid_move_for_piece(p: char, cur_coord: &str, new_coord: &str) {
         }
     };
 
-    let new_square = match Chessboard::string_to_square(new_coord) {
+    let new_square = match position::string_to_square(new_coord) {
         Ok(square) => square,
         Err(e) => {
             println!("{e}");

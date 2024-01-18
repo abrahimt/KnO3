@@ -1,8 +1,6 @@
 # KnO3 - A Rusty Knight Chess Engine
 
-We plan on building a chess engine in Rust using basic chess ideas. Some of our targets are to make it possible to play a full 
-game against a user and to be able to calculate the best move given a certain situation. A long-term goal would be to build 
-a Python GUI to make things more user-friendly.
+This project is a chess engine built in rust. It provides an engine for playing chess, and can be attached to any GUI.
 
 ## Primary Contributors
 - [Cooper Hanson](https://github.com/chanson02/)

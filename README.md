@@ -13,8 +13,8 @@ This project is a chess engine built in rust. It provides an engine for playing 
 - **FEN Notation**: Support for [Forsyth-Edwards Notation](https://www.chess.com/terms/fen-chess) for describing chessboards. A FEN string can be passed from engine to GUI and vice-versa.
 
 ## Resources
-- https://www.chessprogramming.org/Main_Page
-- https://www.chess.com/terms/fen-chess
+- [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page)
+- [Forsyth-Edwards Notation](https://www.chess.com/terms/fen-chess)
 
 ## Coordinates
 

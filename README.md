@@ -16,7 +16,9 @@ This project is a chess engine built in rust. It provides an engine for playing 
 - [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page)
 - [Forsyth-Edwards Notation](https://www.chess.com/terms/fen-chess)
 
-## Coordinates
+## Board Representation
+
+Each rank-file position can be represented as a 0-63 decimal number. The positions are shown in the table below. A 64bit bitmap can be used to represent an entire board. If a piece is at position H7 (63), the first bit (64) will be enabled.
 
 | R | A | B | C | D | E | F | G | H |
 |---|---|---|---|---|---|---|---|---|

@@ -3,7 +3,7 @@ use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::{io::stdout, thread::current, u8};
+use std::{io::stdout, u8};
 pub mod piece;
 
 /// Struct representing a chessboard with piece positions and game state.
@@ -115,7 +115,7 @@ impl Chessboard {
         self.white_turn = true;
     }
 
-    pub fn one_side_pieces(cb: Chessboard, white: bool) -> u64 {
+    pub fn one_side_pieces(cb: &Chessboard, white: bool) -> u64 {
         if white {
             cb.white_bishops
                 & cb.white_king
@@ -133,7 +133,7 @@ impl Chessboard {
         }
     }
 
-    pub fn both_side_pieces(cb: Chessboard) -> u64 {
+    pub fn both_side_pieces(cb: &Chessboard) -> u64 {
         cb.white_bishops
             & cb.white_king
             & cb.white_knights

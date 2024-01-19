@@ -115,7 +115,7 @@ impl Chessboard {
         self.white_turn = true;
     }
 
-    pub fn one_side_pieces(cb: &Chessboard, white: bool) -> u64 {
+    pub fn one_side_pieces(cb: &Self, white: bool) -> u64 {
         if white {
             cb.white_bishops
                 & cb.white_king
@@ -133,7 +133,7 @@ impl Chessboard {
         }
     }
 
-    pub fn both_side_pieces(cb: &Chessboard) -> u64 {
+    pub fn both_side_pieces(cb: &Self) -> u64 {
         Chessboard::one_side_pieces(cb, false) | Chessboard::one_side_pieces(cb, true)
     }
 

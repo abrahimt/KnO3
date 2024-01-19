@@ -12,10 +12,12 @@ impl Chessboard {
         score += 5 * (self.white_rooks.count_ones() as i32 - self.black_rooks.count_ones() as i32);
         score += 9 * (self.white_queen.count_ones() as i32 - self.black_queen.count_ones() as i32);
 
+        // TODO: Take into account amount of legal moves per piece
         score
     }
 
     // I would like to clean up the nesting in here --Cooper
+    /// This function does not validate that there is a pawn at this position
     pub fn get_legal_pawn_moves(&self, from: i64, white: bool) -> Vec<i64> {
         let rank = position::square_to_rank(from);
         let direction = if white { 1 } else { -1 };

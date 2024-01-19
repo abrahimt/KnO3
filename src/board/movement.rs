@@ -104,6 +104,28 @@ impl Chessboard {
         }
     }
 
+    /// Get all legal moves this piece is legally able to make
+    ///
+    /// # Arguments
+    ///
+    /// - `square`: The square number where the piece looking to move is
+    ///
+    /// # Returns
+    ///
+    /// A vector of square positions
+    ///
+    /// # Panics
+    ///
+    /// Panics if provided a square out of bounds or does not contain a piece
+    pub fn get_legal_moves(&self, square: i64) -> Vec<i64> {
+        let piece = self.piece_at_position(square).expect("No piece at this position");
+        match piece {
+            'p' => self.get_legal_pawn_moves(square, false),
+            'P' => self.get_legal_pawn_moves(square, true),
+            _ => Vec::new()
+        }
+    }
+
     /// Moves a chess piece on the chessboard from the current position to the new position.
     ///
     /// # Arguments

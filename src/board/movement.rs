@@ -60,6 +60,15 @@ impl Chessboard {
         None
     }
 
+    /// Checks to see if there is a white piece at this position
+    ///
+    /// # Returns
+    ///
+    /// true if white, black is false, none if nothing
+    pub fn white_at_position(&self, square: i64) -> Option<bool> {
+        Some(self.piece_at_position(square)?.is_ascii_uppercase())
+    }
+
     /// Determine if this piece is legally able to move from cur_square to new_square.
     ///
     /// # Arguments

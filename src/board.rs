@@ -134,18 +134,7 @@ impl Chessboard {
     }
 
     pub fn both_side_pieces(cb: &Chessboard) -> u64 {
-        cb.white_bishops
-            & cb.white_king
-            & cb.white_knights
-            & cb.white_pawns
-            & cb.black_rooks
-            & cb.white_queen
-            & cb.black_bishops
-            & cb.black_king
-            & cb.black_knights
-            & cb.black_pawns
-            & cb.black_rooks
-            & cb.black_queen
+        Chessboard::one_side_pieces(cb, false) | Chessboard::one_side_pieces(cb, true)
     }
 
     /// Creates a new instance of a chessboard based on a Forsyth–Edwards Notation (FEN) string.

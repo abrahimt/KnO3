@@ -122,8 +122,8 @@ impl Chessboard {
             .piece_at_position(square)
             .expect("No piece at this position");
         match piece {
-            'p' => self.get_legal_pawn_moves(square, false),
-            'P' => self.get_legal_pawn_moves(square, true),
+            'p' => self.get_pawn_moves(square, false),
+            'P' => self.get_pawn_moves(square, true),
             _ => Vec::new(),
         }
     }

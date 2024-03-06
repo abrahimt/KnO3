@@ -20,7 +20,7 @@ impl Chessboard {
 
     // I would like to clean up the nesting in here --Cooper
     /// This function does not validate that there is a pawn at this position
-    pub fn get_legal_pawn_moves(&self, from: i64, white: bool) -> Vec<i64> {
+    pub fn get_pawn_moves(&self, from: i64, white: bool) -> Vec<i64> {
         let rank = position::square_to_rank(from);
         let direction = if white { 1 } else { -1 };
         let initial_rank = if white { 2 } else { 7 };

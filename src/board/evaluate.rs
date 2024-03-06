@@ -6,7 +6,7 @@ impl Chessboard {
         let mut score = 0;
 
         // Material balance
-        score += 1 * (self.white_pawns.count_ones() as i32 - self.black_pawns.count_ones() as i32);
+        score += self.white_pawns.count_ones() as i32 - self.black_pawns.count_ones() as i32;
         score +=
             3 * (self.white_knights.count_ones() as i32 - self.black_knights.count_ones() as i32);
         score +=
@@ -52,7 +52,7 @@ impl Chessboard {
             }
         }
 
-        result.retain(|&square| square >= 0 && square <= 63); // stay within bounds
+        result.retain(|&square| (0..=63).contains(&square)); // stay within bounds
         result
     }
 }

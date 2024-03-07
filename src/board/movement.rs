@@ -137,6 +137,16 @@ impl Chessboard {
         match piece {
             'p' => self.get_pawn_moves(square, false),
             'P' => self.get_pawn_moves(square, true),
+            'r' => self.get_rook_moves(square, false),
+            'R' => self.get_rook_moves(square, true),
+            'b' => self.get_bishop_moves(square, false),
+            'B' => self.get_bishop_moves(square, true),
+            'k' => self.get_king_moves(square, false),
+            'K' => self.get_king_moves(square, true),
+            'q' => self.get_queen_moves(square, false),
+            'Q' => self.get_queen_moves(square, true),
+            'n' => self.get_knight_moves(square, false),
+            'N' => self.get_knight_moves(square, true),
             _ => Vec::new(),
         }
     }

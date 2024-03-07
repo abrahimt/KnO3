@@ -18,7 +18,6 @@ impl Chessboard {
         score
     }
 
-    // I would like to clean up the nesting in here --Cooper
     /// This function does not validate that there is a pawn at this position
     pub fn get_pawn_moves(&self, from: i64, white: bool) -> Vec<i64> {
         let rank = position::square_to_rank(from);
@@ -50,5 +49,25 @@ impl Chessboard {
 
         result.retain(|&square| (0..=63).contains(&square)); // stay within bounds
         result
+    }
+
+    pub fn get_rook_moves(&self, from: i64, white: bool) -> Vec<i64> {
+        Vec::new()
+    }
+
+    pub fn get_bishop_moves(&self, from: i64, white: bool) -> Vec<i64> {
+        Vec::new()
+    }
+
+    pub fn get_king_moves(&self, from: i64, white: bool) -> Vec<i64> {
+        Vec::new()
+    }
+
+    pub fn get_queen_moves(&self, from: i64, white: bool) -> Vec<i64> {
+        Vec::new()
+    }
+
+    pub fn get_knight_moves(&self, from: i64, white: bool) -> Vec<i64> {
+        Vec::new()
     }
 }

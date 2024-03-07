@@ -129,7 +129,7 @@ impl fmt::Debug for Chessboard {
             let coords: Vec<String> = squares
                 .iter()
                 .map(|&square| position::square_to_rank_file(square))
-                .map(|(file, rank)| format!("{file}{rank}"))
+                .map(|(rank, file)| format!("{file}{rank}"))
                 .collect();
 
             writeln!(f, "{:<5} {:<7}: {:?}", color, p_type, coords)?;

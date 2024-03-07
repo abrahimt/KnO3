@@ -22,14 +22,14 @@ pub fn square_to_file(square: i64) -> char {
 ///
 /// ```
 /// use kn_o3::board::position::square_to_rank_file;
-/// let (file, rank) = square_to_rank_file(35);
+/// let (rank, file) = square_to_rank_file(35);
 /// println!("File: {}, Rank: {}", file, rank);
 /// // Output: File: 'D', Rank: 5
 /// ```
-pub fn square_to_rank_file(square: i64) -> (char, usize) {
+pub fn square_to_rank_file(square: i64) -> (usize, char) {
     let rank = square_to_rank(square);
     let file = square_to_file(square);
-    (file, rank as usize)
+    (rank as usize, file)
 }
 
 /// Converts a chess rank and file to its corresponding square index (0-63).

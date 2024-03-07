@@ -40,17 +40,9 @@ impl Chessboard {
             }
         }
 
-        if let Some(color) = self.white_at_position(left_diag) {
-            if color != white {
-                result.push(left_diag);
-            }
-        }
-
-        if let Some(color) = self.white_at_position(right_diag) {
-            if color != white {
-                result.push(right_diag);
-            }
-        }
+        let opponent_pieces = self.one_side_pieces(!white);
+        if opponent_pieces & (1 << left_diag) != 0 { result.push(left_diag); }
+        if opponent_pieces & (1 << right_diag) != 0 { result.push(right_diag); }
 
         result.retain(|&square| (0..=63).contains(&square)); // stay within bounds
         result

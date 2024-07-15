@@ -131,7 +131,9 @@ impl Chessboard {
     }
 
     pub fn get_queen_moves(&self, from: i64, white: bool) -> Vec<i64> {
-        Vec::new()
+        let mut result = self.get_rook_moves(from, white);
+        result.extend(self.get_bishop_moves(from, white));
+        result
     }
 
     pub fn get_knight_moves(&self, from: i64, white: bool) -> Vec<i64> {

@@ -126,13 +126,27 @@ impl Chessboard {
         result
     }
 
-    pub fn get_king_moves(&self, from: i64, white: bool) -> Vec<i64> {
-        Vec::new()
-    }
-
     pub fn get_queen_moves(&self, from: i64, white: bool) -> Vec<i64> {
         let mut result = self.get_rook_moves(from, white);
         result.extend(self.get_bishop_moves(from, white));
+        result
+    }
+
+    pub fn get_king_moves(&self, from: i64, white: bool) -> Vec<i64> {
+        let directions = [-1, 1, -7, 7, -8, 8, -9, 9];
+        let mut result = Vec::new();
+
+        let own = self.one_side_pieces(white);
+
+        for &direction in &directions {
+            let target = from + direction;
+            if target >= 0 && target <= 63 {
+                if own & (1 << target) == 0 {
+                    result.push(target);
+                }
+            }
+        }
+
         result
     }
 

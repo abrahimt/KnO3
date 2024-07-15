@@ -92,7 +92,38 @@ impl Chessboard {
     }
 
     pub fn get_bishop_moves(&self, from: i64, white: bool) -> Vec<i64> {
-        Vec::new()
+        let mut result = Vec::new();
+        let (rank, file) = position::square_to_rank_file(from);
+
+        // ne
+        for (r, f) in (rank + 1..9).zip((file as u8 + 1)..(b'H' + 1)) {
+            let square = position::rank_file_to_square(r as u8, f as char).unwrap();
+            if let Some(_) = self.piece_at_position(square) { break; }
+            result.push(square);
+        }
+
+        // nw
+        for (r, f) in (rank + 1..9).zip((b'A'..file as u8).rev()) {
+            let square = position::rank_file_to_square(r as u8, f as char).unwrap();
+            if let Some(_) = self.piece_at_position(square) { break; }
+            result.push(square);
+        }
+
+        // se
+        for (r, f) in (1..rank).rev().zip((file as u8 + 1)..(b'H' + 1)) {
+            let square = position::rank_file_to_square(r as u8, f as char).unwrap();
+            if let Some(_) = self.piece_at_position(square) { break; }
+            result.push(square);
+        }
+
+        // sw
+        for (r, f) in (1..rank).rev().zip((b'A'..file as u8).rev()) {
+            let square = position::rank_file_to_square(r as u8, f as char).unwrap();
+            if let Some(_) = self.piece_at_position(square) { break; }
+            result.push(square);
+        }
+
+        result
     }
 
     pub fn get_king_moves(&self, from: i64, white: bool) -> Vec<i64> {

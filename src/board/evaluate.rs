@@ -52,7 +52,43 @@ impl Chessboard {
     }
 
     pub fn get_rook_moves(&self, from: i64, white: bool) -> Vec<i64> {
-        Vec::new()
+        let mut result = Vec::new();
+        let (rank, file) = position::square_to_rank_file(from);
+
+        // right moves
+        let test = ((file as u8) + 1)..(b'H' + 1);
+        for f in ((file as u8) + 1)..(b'H' + 1) {
+            let square = position::rank_file_to_square(rank as u8, (b'A' + f as u8) as char).unwrap();
+            if let Some(_) = self.piece_at_position(square) {
+                break;
+            }
+            result.push(square);
+        }
+
+        // left moves
+        for f in ((b'A')..file as u8).rev() {
+            let square = position::rank_file_to_square(rank as u8, f as char).unwrap();
+            if let Some(_) = self.piece_at_position(square) {
+                break;
+            }
+            result.push(square);
+        }
+
+        // up moves
+        for r in (rank + 1)..9 {
+            let square = position::rank_file_to_square(r as u8, file).unwrap();
+            if let Some(_) = self.piece_at_position(square) { break; }
+            result.push(square);
+        }
+
+        // down moves
+        for r in (1..rank).rev() {
+            let square = position::rank_file_to_square(r as u8, file).unwrap();
+            if let Some(_) = self.piece_at_position(square) { break; }
+            result.push(square);
+        }
+
+        result
     }
 
     pub fn get_bishop_moves(&self, from: i64, white: bool) -> Vec<i64> {

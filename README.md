@@ -1,22 +1,13 @@
 # KnO3 - A Rusty Knight Chess Engine
 
-This project is a chess engine built in rust. It provides an engine for playing chess, and can be attached to any GUI.
-
+This project is a chess engine built in rust. It provides an engine for playing chess, and can be attached to any GUI
 ## Primary Contributors
 - [Cooper Hanson](https://github.com/chanson02/)
 - [Abrahim Toutoungi](https://github.com/abrahimt)
 
-## Feature List
-- **Move Generation**: Efficient algorithms for generating legal chess moves for a player (not yet implemented)
-- **Board Representation**: Chessboards are stored as a collection of bitmapped pieces. The Chessboard object comes with human readable representations in the form of the `print` method and `to_string` which returns a [FEN](https://www.chess.com/terms/fen-chess) string.
-- **Rule Enforcement**: The engine can verify moves, making sure they align with standard chess rules. See `src/board/movement.rs#is_valid_move_for_piece`.
-- **FEN Notation**: Support for [Forsyth-Edwards Notation](https://www.chess.com/terms/fen-chess) for describing chessboards. A FEN string can be passed from engine to GUI and vice-versa.
+## Architecture
 
-## Resources
-- [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page)
-- [Forsyth-Edwards Notation](https://www.chess.com/terms/fen-chess)
-
-## Board Representation
+### Board Representation
 
 Each rank-file position can be represented as a 0-63 decimal number. The positions are shown in the table below. A 64bit bitmap can be used to represent an entire board. If a piece is at position H7 (63), the first bit (64) will be enabled.
 

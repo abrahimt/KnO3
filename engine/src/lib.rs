@@ -1,4 +1,5 @@
 mod chessboard;
+mod state;
 pub mod position;
 pub use chessboard::Chessboard;
 

@@ -1,3 +1,6 @@
+mod chessboard;
+pub use chessboard::Chessboard;
+
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }

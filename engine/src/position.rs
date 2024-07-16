@@ -26,13 +26,13 @@ pub fn square_to_string(square: u8) -> String {
 }
 
 /// Coordinate string `A1` - `H8`
-pub fn string_to_square(coord: &str) -> u8 {
+pub fn string_to_square(coord: &str) -> Result<u8, String> {
     let chars: Vec<char> = coord.chars().collect();
-    if chars.len() != 2 { panic!("Invalid coordinate input"); }
+    if chars.len() != 2 { return Err(format!("Invalid coordinate input: {coord}")); }
 
     let rank = chars[1].to_digit(10).expect("Invalid rank") as u8;
     let file = chars[0];
-    rank_file_to_square(rank, file)
+    Ok(rank_file_to_square(rank, file))
 }
 
 /// Find the squares turned on in this bitboard

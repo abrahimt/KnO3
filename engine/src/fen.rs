@@ -24,11 +24,16 @@ impl FEN {
         let parts: Vec<&str> = fen.split_whitespace().collect();
         if parts.len() != 6 { return Err("Invalid FEN string".to_string()); }
 
+        let passant = match parts[3] {
+            "-" => 255, // out of range
+            _ => position::string_to_square(parts[3])?
+        };
+
         Ok(Self {
             piece_placement: parts[0].to_string(),
             white_turn: parts[1] == "w",
             castling: parse_castling_rights(parts[2]),
-            en_passant: position::string_to_square(parts[3]),
+            en_passant: passant,
             half_clock: parts[4].parse().unwrap(),
             move_count: parts[5].parse().unwrap()
         })

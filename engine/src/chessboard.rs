@@ -29,18 +29,19 @@ impl Chessboard {
         let top_row = 56; // 7 rows * bit bits
 
         Chessboard {
-            black_pawns: pawns << (top_row - 8),
-            white_pawns: pawns << 8,
-            black_rooks: rooks << top_row,
             white_rooks: rooks,
-            black_knights: knights << top_row,
             white_knights: knights,
-            black_bishops: bishops << top_row,
             white_bishops: bishops,
-            black_queen: queen << top_row,
+            white_pawns: pawns << 8,
             white_queen: queen,
-            black_king: king << top_row,
             white_king: king,
+
+            black_rooks: rooks << top_row,
+            black_knights: knights << top_row,
+            black_bishops: bishops << top_row,
+            black_queen: queen << top_row,
+            black_king: king << top_row,
+            black_pawns: pawns << (top_row - 8),
 
             castling_rights: 0x0F,
             en_passant: 0,

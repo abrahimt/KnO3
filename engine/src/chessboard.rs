@@ -13,7 +13,7 @@ pub struct Chessboard {
     white_king: i64,
 
     white_turn: bool,
-    caslting_rights: u8,
+    castling_rights: u8,
     en_passant: u8
 }
 

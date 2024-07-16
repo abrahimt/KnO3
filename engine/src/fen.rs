@@ -55,3 +55,54 @@ fn parse_castling_rights(part: &str) -> u8 {
     }
     result
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_game() {
+        let fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        let fen = FEN::from_string(fen_str).unwrap();
+
+        assert_eq!(fen.piece_placement, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        assert_eq!(fen.white_turn, true);
+        assert_eq!(fen.castling, 0b1111);
+        assert_eq!(fen.en_passant, 255);
+        assert_eq!(fen.half_clock, 0);
+        assert_eq!(fen.move_count, 1);
+    }
+
+    #[test]
+    fn test_passant() {
+        let mut fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        assert_eq!(fen.unwrap().en_passant, 255);
+        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1");
+        assert_eq!(fen.unwrap().en_passant, 20);
+        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq i3 0 1");
+        assert!(fen.is_err());
+        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e9 0 1");
+        assert!(fen.is_err());
+    }
+
+    #[test]
+    fn test_castles() {
+        let mut fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap();
+        assert_eq!(fen.castling, 0b1111);
+        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk - 0 1").unwrap();
+        assert_eq!(fen.castling, 0b1010);
+        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Qq - 0 1").unwrap();
+        assert_eq!(fen.castling, 0b0101);
+        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1").unwrap();
+        assert_eq!(fen.castling, 0);
+    }
+
+    #[test]
+    fn test_invalid_fen() {
+        let mut result = FEN::from_string("invalid fen string");
+        assert!(result.is_err());
+
+        result = FEN::from_string("positions turn castles passant clock move");
+        assert!(result.is_err());
+    }
+}

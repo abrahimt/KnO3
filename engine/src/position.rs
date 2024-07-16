@@ -14,7 +14,8 @@ pub fn square_to_rank_file(square: u8) -> (u8, char) {
     (rank, file)
 }
 
-pub fn rank_file_to_square(rank: u8, file: char) -> Result<u8, String> {
+pub fn rank_file_to_square(rank: u8, mut file: char) -> Result<u8, String> {
+    file.make_ascii_uppercase();
     if !(1..=8).contains(&rank)     { return Err(format!("Invalid rank {rank}")); }
     if !('A'..='H').contains(&file) { return Err(format!("Invalid file {file}")); }
     Ok((rank - 1) * 8 + (file as u8 - b'A'))

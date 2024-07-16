@@ -6,6 +6,7 @@ This project is a chess engine built in rust. It provides an engine for playing 
 - [Abrahim Toutoungi](https://github.com/abrahimt)
 
 ## Architecture
+An application can interface with the engine through the CLI by providing a FEN string. From there, the engine can output different actions.
 
 ### Board Representation
 

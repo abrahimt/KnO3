@@ -17,6 +17,24 @@ impl Chessboard {
         ]
     }
 
+    pub fn piece(&mut self, piece: char) -> Result<&mut i64, String> {
+        match piece {
+            'p' => Ok(&mut self.black_pawns),
+            'r' => Ok(&mut self.black_rooks),
+            'n' => Ok(&mut self.black_knights),
+            'b' => Ok(&mut self.black_bishops),
+            'k' => Ok(&mut self.black_king),
+            'q' => Ok(&mut self.black_queen),
+            'P' => Ok(&mut self.white_pawns),
+            'R' => Ok(&mut self.white_rooks),
+            'N' => Ok(&mut self.white_knights),
+            'B' => Ok(&mut self.white_bishops),
+            'K' => Ok(&mut self.white_king),
+            'Q' => Ok(&mut self.white_queen),
+            _ => Err(format!("Invalid piece type: {piece}"))
+        }
+    }
+
     pub fn piece_at_position(&self, square: i64) -> Option<char> {
         let btwise = 1 << square;
         for (p_type, positions) in self.pieces() {

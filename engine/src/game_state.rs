@@ -41,7 +41,7 @@ impl GameState {
             en_passant: passant,
             half_clock: parts[4].parse().unwrap(),
             move_count: parts[5].parse().unwrap(),
-            board: Chessboard::empty()
+            board: Chessboard::from_string(parts[0])?
         })
     }
 }

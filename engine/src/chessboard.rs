@@ -1,3 +1,5 @@
+use crate::fen::FEN;
+
 pub struct Chessboard {
     pub black_pawns: i64,
     pub black_rooks: i64,
@@ -11,13 +13,16 @@ pub struct Chessboard {
     pub white_bishops: i64,
     pub white_queen: i64,
     pub white_king: i64,
-
-    white_turn: bool,
-    castling_rights: u8,
-    en_passant: u8
 }
 
 impl Chessboard {
+    pub fn from_string(fen: &str) -> Option<Chessboard> {
+        todo!()
+    }
+
+    pub fn to_string(&self) -> String {
+        "".to_string()
+    }
     pub fn new() -> Chessboard {
         let pawns = 0xFF;
         let rooks = 0x81;
@@ -42,10 +47,6 @@ impl Chessboard {
             black_queen: queen << top_row,
             black_king: king << top_row,
             black_pawns: pawns << (top_row - 8),
-
-            castling_rights: 0x0F,
-            en_passant: 0,
-            white_turn: true
         }
     }
 }

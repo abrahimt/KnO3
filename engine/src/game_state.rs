@@ -1,24 +1,29 @@
 use crate::position;
+use crate::Chessboard;
 
 // https://www.chess.com/terms/fen-chess
-pub struct FEN {
+pub struct GameState {
     piece_placement: String,
     white_turn: bool,
     castling: u8, // KQkq will be represented by 4 bits
     en_passant: u8, // a square that has en passant ability
     half_clock: u32,
     move_count: u32,
+    board: Chessboard
 }
 
-impl FEN {
-    // pub fn new() -> Self {
-    //     Self {
-    //         piece_placement: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-    //         white_turn: true,
-    //         castling: 0x0F,
-    //         en_passant: 0,
-    //     }
-    // }
+impl GameState {
+    pub fn new() -> Self {
+        Self {
+            piece_placement: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string(),
+            white_turn: true,
+            castling: 0x0F,
+            en_passant: 255,
+            half_clock: 0,
+            move_count: 1,
+            board: Chessboard::new()
+        }
+    }
 
     pub fn from_string(fen: &str) -> Result<Self, String> {
         let parts: Vec<&str> = fen.split_whitespace().collect();
@@ -35,7 +40,8 @@ impl FEN {
             castling: parse_castling_rights(parts[2]),
             en_passant: passant,
             half_clock: parts[4].parse().unwrap(),
-            move_count: parts[5].parse().unwrap()
+            move_count: parts[5].parse().unwrap(),
+            board: Chessboard::empty()
         })
     }
 }
@@ -63,7 +69,7 @@ mod tests {
     #[test]
     fn test_new_game() {
         let fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        let fen = FEN::from_string(fen_str).unwrap();
+        let fen = GameState::from_string(fen_str).unwrap();
 
         assert_eq!(fen.piece_placement, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
         assert_eq!(fen.white_turn, true);
@@ -75,34 +81,34 @@ mod tests {
 
     #[test]
     fn test_passant() {
-        let mut fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        let mut fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         assert_eq!(fen.unwrap().en_passant, 255);
-        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1");
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1");
         assert_eq!(fen.unwrap().en_passant, 20);
-        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq i3 0 1");
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq i3 0 1");
         assert!(fen.is_err());
-        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e9 0 1");
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e9 0 1");
         assert!(fen.is_err());
     }
 
     #[test]
     fn test_castles() {
-        let mut fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap();
+        let mut fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap();
         assert_eq!(fen.castling, 0b1111);
-        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk - 0 1").unwrap();
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk - 0 1").unwrap();
         assert_eq!(fen.castling, 0b1010);
-        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Qq - 0 1").unwrap();
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Qq - 0 1").unwrap();
         assert_eq!(fen.castling, 0b0101);
-        fen = FEN::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1").unwrap();
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1").unwrap();
         assert_eq!(fen.castling, 0);
     }
 
     #[test]
     fn test_invalid_fen() {
-        let mut result = FEN::from_string("invalid fen string");
+        let mut result = GameState::from_string("invalid fen string");
         assert!(result.is_err());
 
-        result = FEN::from_string("positions turn castles passant clock move");
+        result = GameState::from_string("positions turn castles passant clock move");
         assert!(result.is_err());
     }
 }

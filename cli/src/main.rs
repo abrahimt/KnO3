@@ -1,10 +1,17 @@
 mod display;
 
-use display::DisplayBoard;
 use kno3_chess_engine::Chessboard;
+use clap::Parser;
+
+#[derive(Parser)]
+struct Args {
+    /// FEN string representing board state
+    #[clap(short, long)]
+    fen: String
+}
 
 fn main() {
-    let cb = Chessboard::new();
-    cb.display();
-    println!("Hello, world!");
+    let args: Args = Args::parse();
+    // let cb = Chessboard::new();
+    // cb.display();
 }

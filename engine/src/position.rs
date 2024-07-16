@@ -1,30 +1,32 @@
-pub fn square_to_rank(square: i64) -> u8 {
-    ((square / 8) + 1) as u8
+/// A square is a 0-63 number
+
+pub fn square_to_rank(square: u8) -> u8 {
+    (square / 8) + 1
 }
 
-pub fn square_to_file(square: i64) -> char {
-    ((square % 8) as u8 + b'A') as char
+pub fn square_to_file(square: u8) -> char {
+    ((square % 8) + b'A') as char
 }
 
-pub fn square_to_rank_file(square: i64) -> (u8, char) {
+pub fn square_to_rank_file(square: u8) -> (u8, char) {
     let rank = square_to_rank(square);
     let file = square_to_file(square);
     (rank, file)
 }
 
-pub fn rank_file_to_square(rank: u8, file: char) -> i64 {
+pub fn rank_file_to_square(rank: u8, file: char) -> u8 {
     if !(1..=8).contains(&rank)     { panic!("Invalid rank"); }
     if !('A'..='H').contains(&file) { panic!("Invalid file"); }
-    (rank - 1) as i64 * 8 + (file as i64 - b'A' as i64)
+    (rank - 1) * 8 + (file as u8 - b'A')
 }
 
-pub fn square_to_string(square: i64) -> String {
+pub fn square_to_string(square: u8) -> String {
     let (rank, file) = square_to_rank_file(square);
     format!("{}{}", file, rank)
 }
 
 /// Coordinate string `A1` - `H8`
-pub fn string_to_square(coord: &str) -> i64 {
+pub fn string_to_square(coord: &str) -> u8 {
     let chars: Vec<char> = coord.chars().collect();
     if chars.len() != 2 { panic!("Invalid coordinate input"); }
 
@@ -34,7 +36,7 @@ pub fn string_to_square(coord: &str) -> i64 {
 }
 
 /// Find the squares turned on in this bitboard
-pub fn active_squares(mut bitboard: i64) -> Vec<i64> {
+pub fn active_squares(mut bitboard: i64) -> Vec<u8> {
     let mut squares = Vec::new();
     let mut index = 0;
 

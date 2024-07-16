@@ -5,7 +5,7 @@ pub struct FEN {
     piece_placement: String,
     white_turn: bool,
     castling: u8, // KQkq will be represented by 4 bits
-    en_passant: i64, // a square that has en passant ability
+    en_passant: u8, // a square that has en passant ability
     half_clock: u32,
     move_count: u32,
 }

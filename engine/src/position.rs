@@ -14,10 +14,10 @@ pub fn square_to_rank_file(square: u8) -> (u8, char) {
     (rank, file)
 }
 
-pub fn rank_file_to_square(rank: u8, file: char) -> u8 {
-    if !(1..=8).contains(&rank)     { panic!("Invalid rank"); }
-    if !('A'..='H').contains(&file) { panic!("Invalid file"); }
-    (rank - 1) * 8 + (file as u8 - b'A')
+pub fn rank_file_to_square(rank: u8, file: char) -> Result<u8, String> {
+    if !(1..=8).contains(&rank)     { return Err(format!("Invalid rank {rank}")); }
+    if !('A'..='H').contains(&file) { return Err(format!("Invalid file {file}")); }
+    Ok((rank - 1) * 8 + (file as u8 - b'A'))
 }
 
 pub fn square_to_string(square: u8) -> String {
@@ -32,7 +32,7 @@ pub fn string_to_square(coord: &str) -> Result<u8, String> {
 
     let rank = chars[1].to_digit(10).expect("Invalid rank") as u8;
     let file = chars[0];
-    Ok(rank_file_to_square(rank, file))
+    Ok(rank_file_to_square(rank, file)?)
 }
 
 /// Find the squares turned on in this bitboard

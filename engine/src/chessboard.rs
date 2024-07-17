@@ -1,4 +1,6 @@
 use crate::position::rank_file_to_square;
+use std::cmp::PartialEq;
+use std::fmt;
 
 pub struct Chessboard {
     pub black_pawns: i64,
@@ -88,5 +90,50 @@ impl Chessboard {
             black_king: 0,
             black_pawns: 0
         }
+    }
+}
+
+impl PartialEq for Chessboard {
+    /// Would've been easier to compare FEN's here, but this is faster
+    fn eq(&self, other: &Self) -> bool {
+        // Compare pawns first because they're most likely to have been moved
+        self.black_pawns == other.black_pawns &&
+        self.white_pawns == other.white_pawns &&
+
+        self.black_rooks == other.black_rooks &&
+        self.white_rooks == other.white_rooks &&
+
+        self.black_knights == other.black_knights &&
+        self.white_knights == other.white_knights &&
+
+        self.white_bishops == other.white_bishops &&
+        self.black_bishops == other.black_bishops &&
+
+        self.white_queen == other.white_queen &&
+        self.black_queen == other.black_queen &&
+
+        self.white_king == other.white_king &&
+        self.black_king == other.black_king
+    }
+}
+
+impl fmt::Debug for Chessboard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "TODO: show fen here"
+        )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_fen_placement() {
+        let placement = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+        let board = Chessboard::from_string(placement).unwrap();
+        assert_eq!(board, Chessboard::new());
     }
 }

@@ -5,21 +5,18 @@ use std::collections::HashSet;
 impl GameState {
 
     /// Move squares in iterator until a piece is hit
-    fn move_until_piece(&self, range: impl Iterator<Item = u8>, white: bool) -> Vec<u8> {
+    fn move_until_piece<I>(&self, range: I, white: bool) -> Vec<u8>
+    where I: Iterator<Item = u8> {
         let mut result = Vec::new();
+        let own = self.board.one_side_pieces(white);
+        let opps = self.board.one_side_pieces(!white);
 
         for square in range {
-            let piece = match self.board.piece_at_position(square) {
-                Some(p) => p,
-                None => { result.push(square); continue; }
-            };
+            let btwise = 1 << square;
+            if own & btwise != 0 { break; }
 
-            // Am I dumb or is there no way to simplify this logic?
-            let same_color = piece.is_ascii_uppercase() && white || piece.is_ascii_lowercase() && !white;
-            if !same_color {
-                result.push(square);
-            }
-            break;
+            result.push(square);
+            if opps & btwise != 0 { break; }
         }
 
         result

@@ -1,5 +1,6 @@
 use super::GameState;
 use std::cmp::{min, max};
+use std::collections::HashSet;
 
 impl GameState {
 
@@ -45,10 +46,6 @@ impl GameState {
     }
 
     fn possible_pawn_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        todo!()
-    }
-
-    fn possible_knight_moves(&self, from: u8, white: bool) -> Vec<u8> {
         todo!()
     }
 
@@ -116,6 +113,56 @@ impl GameState {
             }
         }
 
+        result
+    }
+
+    fn possible_knight_moves(&self, from: u8, white: bool) -> Vec<u8> {
+        let rank = from % 8;
+        let own = self.board.one_side_pieces(white);
+
+        let mut moves = HashSet::from([-6, 6, -10, 10, -15, 15, -17, 17]);
+        let north = HashSet::from([ 6,  10,  15,  17]);
+        let south = HashSet::from([-6, -10, -15, -17]);
+        let east  = HashSet::from([-6,  10, -15,  17]);
+        let west  = HashSet::from([ 6, -10,  15, -17]);
+        let horz: HashSet<i32> = east.union(&west).cloned().collect();
+        let vert: HashSet<i32> = north.union(&south).cloned().collect();
+
+        if from < 8       { moves = moves.difference(&south).cloned().collect(); }
+        else if from > 55 { moves = moves.difference(&north).cloned().collect(); }
+        else if from < 16 {
+            moves = moves.difference(
+                &south.difference(&horz).cloned().collect()
+            ).cloned().collect();
+        }
+        else if from > 47 {
+            moves = moves.difference(
+                &north.difference(&horz).cloned().collect()
+            ).cloned().collect();
+        }
+
+        if rank == 0      { moves = moves.difference(&west).cloned().collect(); }
+        else if rank == 7 { moves = moves.difference(&east).cloned().collect(); }
+        else if rank == 1 {
+            moves = moves.difference(
+                &west.difference(&vert).cloned().collect()
+            ).cloned().collect();
+        }
+        else if rank == 6 {
+            moves = moves.difference(
+                &east.difference(&vert).cloned().collect()
+            ).cloned().collect();
+        }
+
+        let mut result = Vec::new();
+        for &mve in &moves {
+            let target = from as i32 + mve;
+            if target >= 0 && target <= 63 {
+                if own & (1 << target) == 0 {
+                    result.push(target as u8);
+                }
+            }
+        }
         result
     }
 

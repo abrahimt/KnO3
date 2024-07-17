@@ -65,3 +65,21 @@ impl Chessboard {
         self.one_side_pieces(true) | self.one_side_pieces(false)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_piece_at_position() {
+        let cb = Chessboard {
+            white_pawns: 0x0100,
+            black_knights: 0x00400000,
+            ..Chessboard::empty()
+        };
+
+        assert_eq!(cb.piece_at_position(8), Some('P'));
+        assert_eq!(cb.piece_at_position(22), Some('n'));
+        assert_eq!(cb.piece_at_position(32), None);
+    }
+}

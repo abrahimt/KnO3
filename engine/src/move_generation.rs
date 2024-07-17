@@ -246,4 +246,17 @@ mod tests {
         assert_eq!(gs.possible_king_moves(4, false), vec![3, 11, 12, 13, 14, 6]);
         assert_eq!(gs.possible_king_moves(34, true), vec![41, 42, 43, 33, 35, 25, 26, 27]); // normal move
     }
+
+    #[test]
+    fn test_move_until_piece() {
+        let gs = GameState::new();
+        let itr = (18..=58).step_by(8);
+        // white moves in straight line to black
+        assert_eq!(gs.move_until_piece(itr.clone(), true), vec![18, 26, 34, 42, 50]);
+        // white black moves in straight line to black
+        assert_eq!(gs.move_until_piece(itr, false), vec![18, 26, 34, 42]);
+
+        assert_eq!(gs.move_until_piece(0..7, true), vec![]);
+        assert_eq!(gs.move_until_piece(0..7, false), vec![1]);
+    }
 }

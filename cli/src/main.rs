@@ -1,7 +1,7 @@
 use crate::display::DisplayBoard;
 mod display;
 
-use kno3_chess_engine::Chessboard;
+use kno3_chess_engine::GameState;
 use clap::Parser;
 
 #[derive(Parser)]
@@ -13,6 +13,6 @@ struct Args {
 
 fn main() {
     let args: Args = Args::parse();
-    let cb = Chessboard::new();
-    cb.display();
+    let gs = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap();
+    gs.board.display();
 }

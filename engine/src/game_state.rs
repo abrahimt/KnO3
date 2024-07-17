@@ -9,7 +9,7 @@ pub struct GameState {
     en_passant: u8, // a square that has en passant ability
     half_clock: u32,
     move_count: u32,
-    board: Chessboard
+    pub board: Chessboard
 }
 
 impl GameState {

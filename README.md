@@ -8,6 +8,8 @@ This project is a chess engine built in rust. It provides an engine for playing 
 ## Architecture
 An application can interface with the engine through the CLI by providing a FEN string. From there, the engine can output different actions.
 
+The engine creates a new `GameState` based on the FEN string that was passed in.
+
 ### Board Representation
 
 Each rank-file position can be represented as a 0-63 decimal number. The positions are shown in the table below. A 64bit bitmap can be used to represent an entire board. If a piece is at position H7 (63), the first bit (64) will be enabled.

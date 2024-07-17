@@ -50,22 +50,22 @@ impl GameState {
         let rank = from % 8;
         let direction = if white { 1 } else { -1 };
         let initial_rank = if white { 1 } else { 6 };
+
+        let opps = self.board.one_side_pieces(!white);
+        let taken = self.board.both_side_pieces();
         
         let left_diag = from as i32 + 7 * direction;
         let forward = from as i32 + 8 * direction;
         let right_diag = from as i32 + 9 * direction;
 
-        if forward >= 0 && forward <= 63 && self.board.piece_at_position(forward as u8).is_none() {
+        if taken & 1 << forward != 0 {
             result.push(forward as u8);
             if rank == initial_rank {
                 let double = forward + 8 * direction;
-                if double >= 0 && double <= 63 && self.board.piece_at_position(double as u8).is_none() {
-                    result.push(double as u8);
-                }
+                if taken & 1 << double != 0 { result.push(double as u8); }
             }
         }
 
-        let opps = self.board.one_side_pieces(!white);
         if left_diag >= 0 && left_diag <= 63 && opps & (1 << left_diag) != 0 {
             result.push(left_diag as u8);
         }
@@ -73,6 +73,7 @@ impl GameState {
             result.push(right_diag as u8);
         }
 
+        result.retain(|&square| (0..=63).contains(&square));
         result
     }
 

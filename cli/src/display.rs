@@ -32,7 +32,7 @@ impl DisplayBoard for Chessboard {
         for rank in ranks.iter() {
             print!("{rank} ");
             for (f_index, file) in files.iter().enumerate() {
-                let square = rank_file_to_square(*rank, *file);
+                let square = rank_file_to_square(*rank, *file).expect("These are manually set");
                 let piece = self.piece_at_position(square).unwrap_or('.');
 
                 let fg = find_fg(piece);

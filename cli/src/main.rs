@@ -1,3 +1,4 @@
+use crate::display::DisplayBoard;
 mod display;
 
 use kno3_chess_engine::Chessboard;
@@ -12,6 +13,6 @@ struct Args {
 
 fn main() {
     let args: Args = Args::parse();
-    // let cb = Chessboard::new();
-    // cb.display();
+    let cb = Chessboard::new();
+    cb.display();
 }

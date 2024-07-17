@@ -35,7 +35,7 @@ impl Chessboard {
         }
     }
 
-    pub fn piece_at_position(&self, square: i64) -> Option<char> {
+    pub fn piece_at_position(&self, square: u8) -> Option<char> {
         let btwise = 1 << square;
         for (p_type, positions) in self.pieces() {
             if btwise & positions != 0 { return Some(p_type); }

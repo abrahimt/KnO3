@@ -101,8 +101,22 @@ impl GameState {
         result
     }
 
+    // TODO: Make sure they are not moving into check/mate
     fn possible_king_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        todo!()
+        let mut result = Vec::new();
+        let directions: [i8; 8] = [-1, 1, -7, 7, -8, 8, -9, 9];
+        let own = self.board.one_side_pieces(white);
+
+        for &direction in &directions {
+            let target = from as i8 + direction;
+            if target >= 0 && target <= 63 {
+                if own & (1 << target) == 0 {
+                    result.push(target as u8);
+                }
+            }
+        }
+
+        result
     }
 
 }

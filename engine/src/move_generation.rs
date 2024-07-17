@@ -45,6 +45,7 @@ impl GameState {
         Some(possible_moves)
     }
 
+    // TODO: en passant check
     fn possible_pawn_moves(&self, from: u8, white: bool) -> Vec<u8> {
         let mut result = Vec::new();
         let rank = from % 8;

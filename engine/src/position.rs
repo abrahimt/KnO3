@@ -1,5 +1,4 @@
 /// A square is a 0-63 number
-
 pub fn square_to_rank(square: u8) -> u8 {
     (square / 8) + 1
 }
@@ -49,4 +48,52 @@ pub fn active_squares(mut bitboard: i64) -> Vec<u8> {
         bitboard >>= 1;
     }
     squares
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_square_to_rank() {
+        assert_eq!(square_to_rank(0), 1);
+        assert_eq!(square_to_rank(7), 1);
+        assert_eq!(square_to_rank(8), 2);
+        assert_eq!(square_to_rank(63), 8);
+    }
+
+    #[test]
+    fn test_square_to_file() {
+        assert_eq!(square_to_file(0), 'A');
+        assert_eq!(square_to_file(7), 'H');
+        assert_eq!(square_to_file(8), 'A');
+        assert_eq!(square_to_file(62), 'G')
+    }
+
+    #[test]
+    fn test_to_square() {
+        assert_eq!(rank_file_to_square(1, 'A').unwrap(), 0);
+        assert_eq!(rank_file_to_square(1, 'H').unwrap(), 7);
+        assert_eq!(rank_file_to_square(2, 'A').unwrap(), 8);
+        assert_eq!(rank_file_to_square(8, 'H').unwrap(), 63);
+        assert_eq!(rank_file_to_square(1, 'B').unwrap(), rank_file_to_square(1, 'b').unwrap());
+
+        assert_eq!(string_to_square("A1").unwrap(), 0);
+        assert_eq!(string_to_square("H1").unwrap(), 7);
+        assert_eq!(string_to_square("A2").unwrap(), 8);
+        assert_eq!(string_to_square("H8").unwrap(), 63);
+        assert_eq!(string_to_square("B1").unwrap(), string_to_square("b1").unwrap());
+
+        assert!(rank_file_to_square(0, 'A').is_err());
+        assert!(rank_file_to_square(1, 'I').is_err());
+        assert!(string_to_square("A0").is_err());
+        assert!(string_to_square("I1").is_err());
+    }
+
+    #[test]
+    fn test_acitve_squares() {
+        assert_eq!(active_squares(0b10101010), vec![1, 3, 5, 7]);
+        assert_eq!(active_squares(0b11100000), vec![5, 6, 7]);
+        assert_eq!(active_squares(0), vec![]);
+    }
 }

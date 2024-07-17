@@ -1,6 +1,6 @@
 use super::Chessboard;
 impl Chessboard {
-    pub fn pieces(&self) -> [(char, i64); 12] {
+    pub fn piece_bitboards(&self) -> [(char, i64); 12] {
         [
             ('P', self.white_pawns),
             ('N', self.white_knights),
@@ -17,7 +17,7 @@ impl Chessboard {
         ]
     }
 
-    pub fn piece(&mut self, piece: char) -> Result<&mut i64, String> {
+    pub fn piece_bitboard(&mut self, piece: char) -> Result<&mut i64, String> {
         match piece {
             'p' => Ok(&mut self.black_pawns),
             'r' => Ok(&mut self.black_rooks),
@@ -37,7 +37,7 @@ impl Chessboard {
 
     pub fn piece_at_position(&self, square: u8) -> Option<char> {
         let btwise = 1 << square;
-        for (p_type, positions) in self.pieces() {
+        for (p_type, positions) in self.piece_bitboards() {
             if btwise & positions != 0 { return Some(p_type); }
         }
         None

@@ -32,8 +32,8 @@ impl Chessboard {
 
 
                 let square = rank_file_to_square(rank_ndx, file_ndx as char)?;
-                let piece = result.piece(piece)?;
-                *piece |= 1_i64 << square;
+                *result.piece_bitboard(piece)? |= 1_i64 << square;
+                file_ndx += 1;
             }
             rank_ndx -= 1;
         }

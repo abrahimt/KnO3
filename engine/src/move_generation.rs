@@ -1,4 +1,5 @@
 use super::GameState;
+use std::cmp::{min, max};
 
 impl GameState {
 
@@ -58,11 +59,11 @@ impl GameState {
 
         result.extend(self.move_until_piece((left_bound..from).rev(), white)); // leftward moves
         result.extend(self.move_until_piece(from+1..=right_bound, white)); // rightwards 
-        result.extend(self.move_until_piece(
+        result.extend(self.move_until_piece( // upward
                 (from + 8..=63).step_by(8),
                 white
         ));
-        result.extend(self.move_until_piece(
+        result.extend(self.move_until_piece( // downward
                 (0..from).step_by(8).rev(),
                 white
         ))
@@ -71,7 +72,27 @@ impl GameState {
     }
 
     fn possible_bishop_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        todo!()
+        let mut result = Vec::new();
+
+        let rank = from % 8; // how many rows we can move right
+        let nw_bound = min(56, from + rank * 7);
+        let sw_bound = max(0, from - rank * 9);
+
+        let inv_rank = 7 - rank; // inverse rank (how many rows we can move left)
+        let ne_bound = min(63, from + inv_rank * 9);
+        let se_bound = max(7, from - inv_rank * 7);
+
+        let nw = (from + 7..=nw_bound).step_by(7);
+        let sw = (sw_bound..from).rev().step_by(9);
+        let ne = (from + 9..=ne_bound).step_by(9);
+        let se = (se_bound..from).rev().step_by(7);
+
+        result.extend(self.move_until_piece(nw, white));
+        result.extend(self.move_until_piece(sw, white));
+        result.extend(self.move_until_piece(ne, white));
+        result.extend(self.move_until_piece(se, white));
+
+        result
     }
 
     fn possible_queen_moves(&self, from: u8, white: bool) -> Vec<u8> {

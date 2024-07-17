@@ -259,4 +259,27 @@ mod tests {
         assert_eq!(gs.move_until_piece(0..7, true), vec![]);
         assert_eq!(gs.move_until_piece(0..7, false), vec![1]);
     }
+
+    #[test]
+    fn test_possible_moves() {
+        let mut gs = GameState::new();
+        assert_eq!(gs.possible_moves(9).expect("White pawn"), gs.possible_pawn_moves(9, true)); // pawn begin
+        assert_eq!(gs.possible_moves(42), None); // nothing here
+        gs.board.white_pawns |= 1 << 42;
+        assert_eq!(gs.possible_moves(42).expect("White pawn"), gs.possible_pawn_moves(42, true)); // pawn eat
+        assert_eq!(gs.possible_moves(50).expect("Black pawn"), gs.possible_pawn_moves(50, false)); // black pawn blocked
+
+        gs.board.white_pawns = 0;
+        gs.board.black_pawns = 0;
+        assert_eq!(gs.possible_moves(0).expect("White rook"), gs.possible_rook_moves(0, true));
+        assert_eq!(gs.possible_moves(56).expect("Black rook"), gs.possible_rook_moves(0, false));
+        assert_eq!(gs.possible_moves(1).expect("White knight"), gs.possible_knight_moves(1, true));
+        assert_eq!(gs.possible_moves(57).expect("Black knight"), gs.possible_knight_moves(57, false));
+        assert_eq!(gs.possible_moves(2).expect("White bishop"), gs.possible_bishop_moves(2, true));
+        assert_eq!(gs.possible_moves(58).expect("Black bishop"), gs.possible_bishop_moves(58, false));
+        assert_eq!(gs.possible_moves(3).expect("White king"), gs.possible_king_moves(3, true));
+        assert_eq!(gs.possible_moves(59).expect("Black king"), gs.possible_king_moves(59, false));
+        assert_eq!(gs.possible_moves(4).expect("White queen"), gs.possible_queen_moves(4, true));
+        assert_eq!(gs.possible_moves(60).expect("Black queen"), gs.possible_queen_moves(60, false));
+    }
 }

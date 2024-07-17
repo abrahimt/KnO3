@@ -228,4 +228,13 @@ mod tests {
         assert_eq!(gs.possible_bishop_moves(2, true), vec![]); // blocked
         assert_eq!(gs.possible_bishop_moves(34, true), vec![41, 48, 43, 52, 27, 20, 25, 16]);
     }
+
+    #[test]
+    fn test_knight_moves() {
+        let gs = GameState::new();
+        assert_eq!(gs.possible_knight_moves(1, true), vec![16, 18]); // white left starting
+        assert_eq!(gs.possible_knight_moves(6, true), vec![21, 23]); // white right starting
+        assert_eq!(gs.possible_knight_moves(34, true), vec![49, 51, 44, 28, 19, 17, 24, 40]); // normal move
+        assert_eq!(gs.possible_knight_moves(62, false), vec![45, 47]); // black right starting
+    }
 }

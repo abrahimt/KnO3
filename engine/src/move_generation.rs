@@ -66,7 +66,7 @@ impl GameState {
         result.extend(self.move_until_piece( // downward
                 (0..from).step_by(8).rev(),
                 white
-        ))
+        ));
 
         result
     }
@@ -96,7 +96,9 @@ impl GameState {
     }
 
     fn possible_queen_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        todo!()
+        let mut result = self.possible_rook_moves(from, white);
+        result.extend(self.possible_bishop_moves(from, white));
+        result
     }
 
     fn possible_king_moves(&self, from: u8, white: bool) -> Vec<u8> {

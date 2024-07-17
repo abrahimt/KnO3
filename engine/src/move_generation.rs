@@ -237,4 +237,13 @@ mod tests {
         assert_eq!(gs.possible_knight_moves(34, true), vec![49, 51, 44, 28, 19, 17, 24, 40]); // normal move
         assert_eq!(gs.possible_knight_moves(62, false), vec![45, 47]); // black right starting
     }
+
+    #[test]
+    fn test_king_moves() {
+        let gs = GameState::new();
+        assert_eq!(gs.possible_king_moves(4, true), vec![]); // blocked
+        // TODO: this will fail when checking is added
+        assert_eq!(gs.possible_king_moves(4, false), vec![3, 11, 12, 13, 14, 6]);
+        assert_eq!(gs.possible_king_moves(34, true), vec![41, 42, 43, 33, 35, 25, 26, 27]); // normal move
+    }
 }

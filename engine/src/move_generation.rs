@@ -217,8 +217,15 @@ mod tests {
 
     #[test]
     fn test_rook_moves() {
-        let mut gs = GameState::new();
+        let gs = GameState::new();
         assert_eq!(gs.possible_rook_moves(0, true), vec![]); // blocked
         assert_eq!(gs.possible_rook_moves(33, true), vec![32, 34, 35, 36, 37, 38, 39, 25, 17, 41, 49]); // normal move
+    }
+
+    #[test]
+    fn test_bishop_moves() {
+        let gs = GameState::new();
+        assert_eq!(gs.possible_bishop_moves(2, true), vec![]); // blocked
+        assert_eq!(gs.possible_bishop_moves(34, true), vec![41, 48, 43, 52, 27, 20, 25, 16]);
     }
 }

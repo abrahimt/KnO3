@@ -214,4 +214,11 @@ mod tests {
         gs.board.black_pawns |= 1 << 8; // place a black pawn on 8
         assert_eq!(gs.possible_pawn_moves(1, true), vec![8]); // should be able to take 8 now
     }
+
+    #[test]
+    fn test_rook_moves() {
+        let mut gs = GameState::new();
+        assert_eq!(gs.possible_rook_moves(0, true), vec![]); // blocked
+        assert_eq!(gs.possible_rook_moves(33, true), vec![32, 34, 35, 36, 37, 38, 39, 25, 17, 41, 49]); // normal move
+    }
 }

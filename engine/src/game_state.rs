@@ -3,7 +3,6 @@ use crate::Chessboard;
 
 // https://www.chess.com/terms/fen-chess
 pub struct GameState {
-    piece_placement: String,
     white_turn: bool,
     castling: u8, // KQkq will be represented by 4 bits
     en_passant: u8, // a square that has en passant ability
@@ -21,7 +20,6 @@ impl Default for GameState {
 impl GameState {
     pub fn new() -> Self {
         Self {
-            piece_placement: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".to_string(),
             white_turn: true,
             castling: 0x0F,
             en_passant: 255,
@@ -41,7 +39,6 @@ impl GameState {
         };
 
         Ok(Self {
-            piece_placement: parts[0].to_string(),
             white_turn: parts[1] == "w",
             castling: parse_castling_rights(parts[2]),
             en_passant: passant,
@@ -77,7 +74,6 @@ mod tests {
         let fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         let fen = GameState::from_string(fen_str).unwrap();
 
-        assert_eq!(fen.piece_placement, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
         assert!(fen.white_turn);
         assert_eq!(fen.castling, 0b1111);
         assert_eq!(fen.en_passant, 255);

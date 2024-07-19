@@ -147,51 +147,24 @@ impl GameState {
 
     fn possible_knight_moves(&self, from: u8, white: bool) -> Vec<u8> {
         let file = from % 8;
+        let rank = from / 8;
         let own = self.board.one_side_pieces(white);
+        let mut result = vec![];
 
-        let mut moves = HashSet::from([-6, 6, -10, 10, -15, 15, -17, 17]);
-        let north = HashSet::from([ 6,  10,  15,  17]);
-        let south = HashSet::from([-6, -10, -15, -17]);
-        let east  = HashSet::from([-6,  10, -15,  17]);
-        let west  = HashSet::from([ 6, -10,  15, -17]);
-        let horz: HashSet<i32> = east.union(&west).cloned().collect();
-        let vert: HashSet<i32> = north.union(&south).cloned().collect();
+        let moves: [(i8, i8); 8] = [
+            (-1, -2), (-1, 2), (1, -2), (1, 2),
+            (-2, -1), (-2, 1), (2, -1), (2, 1)
+        ];
 
-        if from < 8       { moves = moves.difference(&south).cloned().collect(); }
-        else if from > 55 { moves = moves.difference(&north).cloned().collect(); }
-        else if from < 16 {
-            moves = moves.difference(
-                &south.difference(&horz).cloned().collect()
-            ).cloned().collect();
-        }
-        else if from > 47 {
-            moves = moves.difference(
-                &north.difference(&horz).cloned().collect()
-            ).cloned().collect();
+        for (d_rank, d_file) in moves.iter() {
+            let n_rank = d_rank + rank as i8;
+            let n_file = d_file + file as i8;
+            if !(0..8).contains(&n_rank) || !(0..8).contains(&n_file) { continue; }
+
+            let target = (n_rank  * 8 + n_file) as u8;
+            if own & (1 << target) == 0 { result.push(target); }
         }
 
-        if file == 0      { moves = moves.difference(&west).cloned().collect(); }
-        else if file == 7 { moves = moves.difference(&east).cloned().collect(); }
-        else if file == 1 {
-            moves = moves.difference(
-                &west.difference(&vert).cloned().collect()
-            ).cloned().collect();
-        }
-        else if file == 6 {
-            moves = moves.difference(
-                &east.difference(&vert).cloned().collect()
-            ).cloned().collect();
-        }
-
-        let mut result = Vec::new();
-        for &mve in &moves {
-            let target = from as i32 + mve;
-            if target >= 0 && target <= 63 {
-                if own & (1 << target) == 0 {
-                    result.push(target as u8);
-                }
-            }
-        }
         result
     }
 
@@ -236,8 +209,9 @@ mod tests {
     fn test_knight_moves() {
         let gs = GameState::new();
         assert_eq!(gs.possible_knight_moves(1, true), vec![16, 18]); // white left starting
+        assert_eq!(gs.possible_knight_moves(1, false), vec![11, 16, 18]); // black taking
         assert_eq!(gs.possible_knight_moves(6, true), vec![21, 23]); // white right starting
-        assert_eq!(gs.possible_knight_moves(34, true), vec![49, 51, 44, 28, 19, 17, 24, 40]); // normal move
+        assert_eq!(gs.possible_knight_moves(34, true), vec![24, 28, 40, 44, 17, 19, 49, 51]); // normal move
         assert_eq!(gs.possible_knight_moves(62, false), vec![45, 47]); // black right starting
     }
 
@@ -276,9 +250,8 @@ mod tests {
         gs.board.black_pawns = 0;
         assert_eq!(gs.possible_moves(0).expect("White rook"), gs.possible_rook_moves(0, true));
         assert_eq!(gs.possible_moves(56).expect("Black rook"), gs.possible_rook_moves(56, false));
-        // these are returning in a different order for some reason?
-        // assert_eq!(gs.possible_moves(1).expect("White knight"), gs.possible_knight_moves(1, true));
-        // assert_eq!(gs.possible_moves(57).expect("Black knight"), gs.possible_knight_moves(57, false));
+        assert_eq!(gs.possible_moves(1).expect("White knight"), gs.possible_knight_moves(1, true));
+        assert_eq!(gs.possible_moves(57).expect("Black knight"), gs.possible_knight_moves(57, false));
         assert_eq!(gs.possible_moves(2).expect("White bishop"), gs.possible_bishop_moves(2, true));
         assert_eq!(gs.possible_moves(58).expect("Black bishop"), gs.possible_bishop_moves(58, false));
         assert_eq!(gs.possible_moves(3).expect("White queen"), gs.possible_queen_moves(3, true));

@@ -79,7 +79,8 @@ impl GameState {
 
     fn possible_rook_moves(&self, from: u8, white: bool) -> Vec<u8> {
         let mut result = Vec::new();
-        let left_bound = from - from % 8;
+        let file = from % 8;
+        let left_bound = from - file;
         let right_bound = left_bound + 7;
 
         result.extend(self.move_until_piece((left_bound..from).rev(), white)); // leftward moves
@@ -89,7 +90,7 @@ impl GameState {
                 white
         ));
         result.extend(self.move_until_piece( // downward
-                (0..from).step_by(8).rev(),
+                (file..from).step_by(8).rev(),
                 white
         ));
 
@@ -221,7 +222,7 @@ mod tests {
     fn test_rook_moves() {
         let gs = GameState::new();
         assert_eq!(gs.possible_rook_moves(0, true), vec![]); // blocked
-        assert_eq!(gs.possible_rook_moves(33, true), vec![32, 34, 35, 36, 37, 38, 39, 25, 17, 41, 49]); // normal move
+        assert_eq!(gs.possible_rook_moves(33, true), vec![32, 34, 35, 36, 37, 38, 39, 41, 49, 25, 17]); // normal move
     }
 
     #[test]

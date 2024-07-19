@@ -12,6 +12,12 @@ pub struct GameState {
     pub board: Chessboard
 }
 
+impl Default for GameState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl GameState {
     pub fn new() -> Self {
         Self {
@@ -72,7 +78,7 @@ mod tests {
         let fen = GameState::from_string(fen_str).unwrap();
 
         assert_eq!(fen.piece_placement, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-        assert_eq!(fen.white_turn, true);
+        assert!(fen.white_turn);
         assert_eq!(fen.castling, 0b1111);
         assert_eq!(fen.en_passant, 255);
         assert_eq!(fen.half_clock, 0);

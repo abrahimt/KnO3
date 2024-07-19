@@ -1,6 +1,5 @@
 use super::GameState;
 use std::cmp::{min, max};
-use std::collections::HashSet;
 
 impl GameState {
 
@@ -135,10 +134,8 @@ impl GameState {
 
         for &direction in &directions {
             let target = from as i8 + direction;
-            if target >= 0 && target <= 63 {
-                if own & (1 << target) == 0 {
-                    result.push(target as u8);
-                }
+            if (0..=63).contains(&target) && own & (1 << target) == 0 {
+                result.push(target as u8);
             }
         }
 

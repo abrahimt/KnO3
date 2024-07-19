@@ -32,7 +32,7 @@ pub fn string_to_square(coord: &str) -> Result<u8, String> {
 
     let rank = chars[1].to_digit(10).expect("Invalid rank") as u8;
     let file = chars[0];
-    Ok(rank_file_to_square(rank, file)?)
+    rank_file_to_square(rank, file)
 }
 
 /// Find the squares turned on in this bitboard

@@ -102,16 +102,16 @@ impl GameState {
 
         let file = from % 8; // how many rows we can move right
         let nw_bound = min(56, from + file * 7);
-        let sw_bound = max(0, from - file * 9);
+        let sw_bound = from.saturating_sub(file * 9);
 
         let inv_file = 7 - file; // inverse rank (how many rows we can move left)
         let ne_bound = min(63, from + inv_file * 9);
-        let se_bound = max(7, from - inv_file * 7);
+        let se_bound = max(7, from.saturating_sub(inv_file * 7));
 
-        let nw = (from + 7..=nw_bound).step_by(7);
-        let sw = (sw_bound..from).rev().step_by(9);
-        let ne = (from + 9..=ne_bound).step_by(9);
-        let se = (se_bound..from).rev().step_by(7);
+        let nw = (from + 7..=nw_bound).step_by(7); // correct
+        let sw = (sw_bound..=from.saturating_sub(9)).rev().step_by(9);
+        let ne = (from + 9..=ne_bound).step_by(9); // correct
+        let se = (se_bound..=from.saturating_sub(7)).rev().step_by(7);
 
         result.extend(self.move_until_piece(nw, white));
         result.extend(self.move_until_piece(sw, white));
@@ -229,7 +229,7 @@ mod tests {
     fn test_bishop_moves() {
         let gs = GameState::new();
         assert_eq!(gs.possible_bishop_moves(2, true), vec![]); // blocked
-        assert_eq!(gs.possible_bishop_moves(34, true), vec![41, 48, 43, 52, 27, 20, 25, 16]);
+        assert_eq!(gs.possible_bishop_moves(34, true), vec![41, 48, 25, 16, 43, 52, 27, 20]);
     }
 
     #[test]

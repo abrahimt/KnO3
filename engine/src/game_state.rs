@@ -1,3 +1,6 @@
+use core::fmt;
+use std::fmt::Display;
+
 use crate::position;
 use crate::Chessboard;
 
@@ -14,6 +17,35 @@ pub struct GameState {
 impl Default for GameState {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl Display for GameState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let color = if self.white_turn { 'w' } else { 'b' };
+
+        let mut castles = String::new();
+        if self.castling & 0b1000 != 0 { castles.push('K'); }
+        if self.castling & 0b0100 != 0 { castles.push('Q'); }
+        if self.castling & 0b0010 != 0 { castles.push('k'); }
+        if self.castling & 0b0001 != 0 { castles.push('q'); }
+        if castles.is_empty() { castles.push('-'); }
+
+        let en_passant = if self.en_passant > 63 { "-".to_string() } else {
+            format!("{}{}", position::square_to_file(self.en_passant), position::square_to_rank(self.en_passant))
+        };
+
+        write!(
+            f,
+            "{} {} {} {} {} {}",
+            self.board, color, castles, en_passant, self.half_clock, self.move_count
+        )
+    }
+}
+
+impl fmt::Debug for GameState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{self}")
     }
 }
 
@@ -112,5 +144,11 @@ mod tests {
 
         result = GameState::from_string("positions turn castles passant clock move");
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_to_string() {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        assert_eq!(GameState::from_string(fen).expect("").to_string(), fen);
     }
 }

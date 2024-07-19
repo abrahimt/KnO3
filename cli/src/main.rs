@@ -59,8 +59,8 @@ fn main() -> Result<(), Error> {
     // Getters //
     if let Some(position) = matches.get_one::<String>("get-moves") {
         let square = position::string_to_square(position).map_err(|e| Error::ArgumentError(e.to_string()))?;
-        let moves = gs.possible_moves(square);
-        println!("{:?}", moves);
+        let moves = gs.possible_moves(square).into_iter().map(position::square_to_string).collect::<Vec<String>>().join(" ");
+        println!("{}", moves);
     }
 
     Ok(())

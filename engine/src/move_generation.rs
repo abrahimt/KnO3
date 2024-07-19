@@ -21,24 +21,22 @@ impl GameState {
         result
     }
 
-    pub fn possible_moves(&self, square: u8) -> Option<Vec<u8>> {
+    pub fn possible_moves(&self, square: u8) -> Vec<u8> {
         let piece = match self.board.piece_at_position(square) {
             Some(p) => p,
-            None => return None
+            None => return vec![]
         };
 
         let is_white = piece.is_ascii_uppercase();
-
-        let possible_moves = match piece.to_ascii_lowercase() {
+        match piece.to_ascii_lowercase() {
             'p' => self.possible_pawn_moves(square, is_white),
             'r' => self.possible_rook_moves(square, is_white),
             'n' => self.possible_knight_moves(square, is_white),
             'b' => self.possible_bishop_moves(square, is_white),
             'k' => self.possible_king_moves(square, is_white),
             'q' => self.possible_queen_moves(square, is_white),
-            _ => return None
-        };
-        Some(possible_moves)
+            _ => vec![]
+        }
     }
 
     // TODO: en passant check

@@ -246,8 +246,8 @@ mod tests {
         let gs = GameState::new();
         assert_eq!(gs.possible_king_moves(4, true), vec![]); // blocked
         // TODO: this will fail when checking is added
-        assert_eq!(gs.possible_king_moves(4, false), vec![3, 11, 12, 13, 14, 6]);
-        assert_eq!(gs.possible_king_moves(34, true), vec![41, 42, 43, 33, 35, 25, 26, 27]); // normal move
+        assert_eq!(gs.possible_king_moves(4, false), vec![3, 5, 11, 12, 13]);
+        assert_eq!(gs.possible_king_moves(34, true), vec![33, 35, 27, 41, 26, 42, 25, 43]); // normal move
     }
 
     #[test]

@@ -260,7 +260,7 @@ mod tests {
         assert_eq!(gs.move_until_piece(itr, false), vec![18, 26, 34, 42]);
 
         assert_eq!(gs.move_until_piece(0..7, true), vec![]);
-        assert_eq!(gs.move_until_piece(0..7, false), vec![1]);
+        assert_eq!(gs.move_until_piece(0..7, false), vec![0]); // can eat this piece
     }
 
     #[test]

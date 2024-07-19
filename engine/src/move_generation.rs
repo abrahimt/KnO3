@@ -100,13 +100,13 @@ impl GameState {
     fn possible_bishop_moves(&self, from: u8, white: bool) -> Vec<u8> {
         let mut result = Vec::new();
 
-        let rank = from % 8; // how many rows we can move right
-        let nw_bound = min(56, from + rank * 7);
-        let sw_bound = max(0, from - rank * 9);
+        let file = from % 8; // how many rows we can move right
+        let nw_bound = min(56, from + file * 7);
+        let sw_bound = max(0, from - file * 9);
 
-        let inv_rank = 7 - rank; // inverse rank (how many rows we can move left)
-        let ne_bound = min(63, from + inv_rank * 9);
-        let se_bound = max(7, from - inv_rank * 7);
+        let inv_file = 7 - file; // inverse rank (how many rows we can move left)
+        let ne_bound = min(63, from + inv_file * 9);
+        let se_bound = max(7, from - inv_file * 7);
 
         let nw = (from + 7..=nw_bound).step_by(7);
         let sw = (sw_bound..from).rev().step_by(9);
@@ -146,7 +146,7 @@ impl GameState {
     }
 
     fn possible_knight_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        let rank = from % 8;
+        let file = from % 8;
         let own = self.board.one_side_pieces(white);
 
         let mut moves = HashSet::from([-6, 6, -10, 10, -15, 15, -17, 17]);
@@ -170,14 +170,14 @@ impl GameState {
             ).cloned().collect();
         }
 
-        if rank == 0      { moves = moves.difference(&west).cloned().collect(); }
-        else if rank == 7 { moves = moves.difference(&east).cloned().collect(); }
-        else if rank == 1 {
+        if file == 0      { moves = moves.difference(&west).cloned().collect(); }
+        else if file == 7 { moves = moves.difference(&east).cloned().collect(); }
+        else if file == 1 {
             moves = moves.difference(
                 &west.difference(&vert).cloned().collect()
             ).cloned().collect();
         }
-        else if rank == 6 {
+        else if file == 6 {
             moves = moves.difference(
                 &east.difference(&vert).cloned().collect()
             ).cloned().collect();

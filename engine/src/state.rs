@@ -64,6 +64,27 @@ impl Chessboard {
     pub fn both_side_pieces(&self) -> i64 {
         self.one_side_pieces(true) | self.one_side_pieces(false)
     }
+
+    /// Determine who is winning
+    /// A positive number indicates white is winning
+    pub fn evaluate(&self) -> i64 {
+        let mut result = 0;
+
+        for (piece, board) in self.piece_bitboards() {
+            let score = match piece.to_ascii_uppercase() {
+                'P' => 1,
+                'R' => 5,
+                'N' => 3,
+                'B' => 3,
+                'Q' => 9,
+                _ => 0
+            } * board.count_ones() as i64;
+            if piece.is_ascii_uppercase() { result += score; }
+            else { result -= score; }
+        }
+
+        result
+    }
 }
 
 #[cfg(test)]
@@ -81,5 +102,11 @@ mod tests {
         assert_eq!(cb.piece_at_position(8), Some('P'));
         assert_eq!(cb.piece_at_position(22), Some('n'));
         assert_eq!(cb.piece_at_position(32), None);
+    }
+
+    #[test]
+    fn test_evaluate() {
+        let gs = Chessboard::new();
+        assert_eq!(gs.evaluate(), 0);
     }
 }

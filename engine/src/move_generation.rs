@@ -45,9 +45,12 @@ impl GameState {
     // TODO: en passant check
     fn possible_pawn_moves(&self, from: u8, white: bool) -> Vec<u8> {
         let mut result = Vec::new();
-        let rank = from % 8;
+        let rank = from / 8;
         let direction = if white { 1 } else { -1 };
         let initial_rank = if white { 1 } else { 6 };
+
+        let out_of_bounds = (direction == 1 && from > 55) || (direction == -1 && from < 8);
+        if out_of_bounds { return result; }
 
         let opps = self.board.one_side_pieces(!white);
         let taken = self.board.both_side_pieces();
@@ -56,22 +59,21 @@ impl GameState {
         let forward = from as i32 + 8 * direction;
         let right_diag = from as i32 + 9 * direction;
 
-        if taken & 1 << forward != 0 {
+        if taken & (1 << forward) == 0 {
             result.push(forward as u8);
             if rank == initial_rank {
                 let double = forward + 8 * direction;
-                if taken & 1 << double != 0 { result.push(double as u8); }
+                if taken & (1 << double) == 0 { result.push(double as u8); }
             }
         }
 
-        if left_diag >= 0 && left_diag <= 63 && opps & (1 << left_diag) != 0 {
+        if opps & (1 << left_diag) != 0 {
             result.push(left_diag as u8);
         }
-        if right_diag >= 0 && right_diag <= 63 && opps & (1 << right_diag) != 0 {
+        if opps & (1 << right_diag) != 0 {
             result.push(right_diag as u8);
         }
 
-        result.retain(|&square| (0..=63).contains(&square));
         result
     }
 

@@ -46,18 +46,18 @@ impl Chessboard {
     pub fn one_side_pieces(&self, white: bool) -> i64 {
         if white {
             self.white_bishops
-                & self.white_king
-                & self.white_knights
-                & self.white_pawns
-                & self.white_rooks
-                & self.white_queen
+                | self.white_king
+                | self.white_knights
+                | self.white_pawns
+                | self.white_rooks
+                | self.white_queen
         } else {
             self.black_bishops
-                & self.black_king
-                & self.black_knights
-                & self.black_pawns
-                & self.black_rooks
-                & self.black_queen
+                | self.black_king
+                | self.black_knights
+                | self.black_pawns
+                | self.black_rooks
+                | self.black_queen
         }
     }
 

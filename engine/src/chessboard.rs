@@ -1,6 +1,6 @@
 use crate::position::rank_file_to_square;
 use std::cmp::PartialEq;
-use std::fmt;
+use std::fmt::{self, Display};
 
 pub struct Chessboard {
     pub black_pawns: i64,
@@ -15,6 +15,29 @@ pub struct Chessboard {
     pub white_bishops: i64,
     pub white_queen: i64,
     pub white_king: i64,
+}
+
+impl Display for Chessboard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut fen = String::new();
+
+        for rank in (1..=8).rev() {
+            let mut blank = 0;
+            for file in 'A'..='H' {
+                if let Some(piece) = self.piece_at_position(rank_file_to_square(rank, file).expect("Expected rank 1-8 file A-H")) {
+                    if blank > 0 {
+                        fen.push_str(&blank.to_string());
+                        blank = 0;
+                    }
+                    fen.push(piece);
+                }
+                else { blank += 1; }
+            }
+            if blank > 0 { fen.push_str(&blank.to_string()); }
+            if rank > 1 { fen.push('/'); }
+        }
+        write!(f, "{}", fen)
+    }
 }
 
 impl Chessboard {
@@ -41,10 +64,6 @@ impl Chessboard {
         }
         
         Ok(result)
-    }
-
-    pub fn to_string(&self) -> String {
-        todo!()
     }
 
     pub fn new() -> Chessboard {
@@ -119,10 +138,7 @@ impl PartialEq for Chessboard {
 
 impl fmt::Debug for Chessboard {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "TODO: show fen here"
-        )
+        write!( f, "{}", self)
     }
 }
 
@@ -135,5 +151,6 @@ mod tests {
         let placement = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
         let board = Chessboard::from_string(placement).unwrap();
         assert_eq!(board, Chessboard::new());
+        assert_eq!(board.to_string(), placement);
     }
 }

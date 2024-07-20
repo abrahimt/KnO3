@@ -24,17 +24,24 @@ impl Display for Chessboard {
         for rank in (1..=8).rev() {
             let mut blank = 0;
             for file in 'A'..='H' {
-                if let Some(piece) = self.piece_at_position(rank_file_to_square(rank, file).expect("Expected rank 1-8 file A-H")) {
+                if let Some(piece) = self.piece_at_position(
+                    rank_file_to_square(rank, file).expect("Expected rank 1-8 file A-H"),
+                ) {
                     if blank > 0 {
                         fen.push_str(&blank.to_string());
                         blank = 0;
                     }
                     fen.push(piece);
+                } else {
+                    blank += 1;
                 }
-                else { blank += 1; }
             }
-            if blank > 0 { fen.push_str(&blank.to_string()); }
-            if rank > 1 { fen.push('/'); }
+            if blank > 0 {
+                fen.push_str(&blank.to_string());
+            }
+            if rank > 1 {
+                fen.push('/');
+            }
         }
         write!(f, "{}", fen)
     }
@@ -55,14 +62,13 @@ impl Chessboard {
                     continue;
                 }
 
-
                 let square = rank_file_to_square(rank_ndx, file_ndx as char)?;
                 *result.piece_bitboard(piece)? |= 1_i64 << square;
                 file_ndx += 1;
             }
             rank_ndx -= 1;
         }
-        
+
         Ok(result)
     }
 
@@ -107,7 +113,7 @@ impl Chessboard {
             black_bishops: 0,
             black_queen: 0,
             black_king: 0,
-            black_pawns: 0
+            black_pawns: 0,
         }
     }
 }
@@ -116,29 +122,24 @@ impl PartialEq for Chessboard {
     /// Would've been easier to compare FEN's here, but this is faster
     fn eq(&self, other: &Self) -> bool {
         // Compare pawns first because they're most likely to have been moved
-        self.black_pawns == other.black_pawns &&
-        self.white_pawns == other.white_pawns &&
-
-        self.black_rooks == other.black_rooks &&
-        self.white_rooks == other.white_rooks &&
-
-        self.black_knights == other.black_knights &&
-        self.white_knights == other.white_knights &&
-
-        self.white_bishops == other.white_bishops &&
-        self.black_bishops == other.black_bishops &&
-
-        self.white_queen == other.white_queen &&
-        self.black_queen == other.black_queen &&
-
-        self.white_king == other.white_king &&
-        self.black_king == other.black_king
+        self.black_pawns == other.black_pawns
+            && self.white_pawns == other.white_pawns
+            && self.black_rooks == other.black_rooks
+            && self.white_rooks == other.white_rooks
+            && self.black_knights == other.black_knights
+            && self.white_knights == other.white_knights
+            && self.white_bishops == other.white_bishops
+            && self.black_bishops == other.black_bishops
+            && self.white_queen == other.white_queen
+            && self.black_queen == other.black_queen
+            && self.white_king == other.white_king
+            && self.black_king == other.black_king
     }
 }
 
 impl fmt::Debug for Chessboard {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!( f, "{}", self)
+        write!(f, "{}", self)
     }
 }
 

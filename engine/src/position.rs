@@ -13,6 +13,7 @@ pub fn square_to_rank_file(square: u8) -> (u8, char) {
     (rank, file)
 }
 
+#[rustfmt::skip]
 pub fn rank_file_to_square(rank: u8, mut file: char) -> Result<u8, String> {
     file.make_ascii_uppercase();
     if !(1..=8).contains(&rank)     { return Err(format!("Invalid rank {rank}")); }
@@ -28,7 +29,9 @@ pub fn square_to_string(square: u8) -> String {
 /// Coordinate string `A1` - `H8`
 pub fn string_to_square(coord: &str) -> Result<u8, String> {
     let chars: Vec<char> = coord.chars().collect();
-    if chars.len() != 2 { return Err(format!("Invalid coordinate input: {coord}")); }
+    if chars.len() != 2 {
+        return Err(format!("Invalid coordinate input: {coord}"));
+    }
 
     let rank = chars[1].to_digit(10).expect("Invalid rank") as u8;
     let file = chars[0];
@@ -76,13 +79,19 @@ mod tests {
         assert_eq!(rank_file_to_square(1, 'H').unwrap(), 7);
         assert_eq!(rank_file_to_square(2, 'A').unwrap(), 8);
         assert_eq!(rank_file_to_square(8, 'H').unwrap(), 63);
-        assert_eq!(rank_file_to_square(1, 'B').unwrap(), rank_file_to_square(1, 'b').unwrap());
+        assert_eq!(
+            rank_file_to_square(1, 'B').unwrap(),
+            rank_file_to_square(1, 'b').unwrap()
+        );
 
         assert_eq!(string_to_square("A1").unwrap(), 0);
         assert_eq!(string_to_square("H1").unwrap(), 7);
         assert_eq!(string_to_square("A2").unwrap(), 8);
         assert_eq!(string_to_square("H8").unwrap(), 63);
-        assert_eq!(string_to_square("B1").unwrap(), string_to_square("b1").unwrap());
+        assert_eq!(
+            string_to_square("B1").unwrap(),
+            string_to_square("b1").unwrap()
+        );
 
         assert!(rank_file_to_square(0, 'A').is_err());
         assert!(rank_file_to_square(1, 'I').is_err());

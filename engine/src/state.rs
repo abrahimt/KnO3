@@ -31,14 +31,16 @@ impl Chessboard {
             'B' => Ok(&mut self.white_bishops),
             'K' => Ok(&mut self.white_king),
             'Q' => Ok(&mut self.white_queen),
-            _ => Err(format!("Invalid piece type: {piece}"))
+            _ => Err(format!("Invalid piece type: {piece}")),
         }
     }
 
     pub fn piece_at_position(&self, square: u8) -> Option<char> {
         let btwise = 1 << square;
         for (p_type, positions) in self.piece_bitboards() {
-            if btwise & positions != 0 { return Some(p_type); }
+            if btwise & positions != 0 {
+                return Some(p_type);
+            }
         }
         None
     }
@@ -77,10 +79,13 @@ impl Chessboard {
                 'N' => 3,
                 'B' => 3,
                 'Q' => 9,
-                _ => 0
+                _ => 0,
             } * board.count_ones() as i64;
-            if piece.is_ascii_uppercase() { result += score; }
-            else { result -= score; }
+            if piece.is_ascii_uppercase() {
+                result += score;
+            } else {
+                result -= score;
+            }
         }
 
         result

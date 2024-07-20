@@ -1,21 +1,26 @@
 use super::GameState;
-use std::cmp::{min, max};
+use std::cmp::{max, min};
 
 impl GameState {
-
     /// Move squares in iterator until a piece is hit
     fn move_until_piece<I>(&self, range: I, white: bool) -> Vec<u8>
-    where I: Iterator<Item = u8> {
+    where
+        I: Iterator<Item = u8>,
+    {
         let mut result = Vec::new();
         let own = self.board.one_side_pieces(white);
         let opps = self.board.one_side_pieces(!white);
 
         for square in range {
             let btwise = 1 << square;
-            if own & btwise != 0 { break; }
+            if own & btwise != 0 {
+                break;
+            }
 
             result.push(square);
-            if opps & btwise != 0 { break; }
+            if opps & btwise != 0 {
+                break;
+            }
         }
 
         result
@@ -24,7 +29,7 @@ impl GameState {
     pub fn possible_moves(&self, square: u8) -> Vec<u8> {
         let piece = match self.board.piece_at_position(square) {
             Some(p) => p,
-            None => return vec![]
+            None => return vec![],
         };
 
         let is_white = piece.is_ascii_uppercase();
@@ -35,7 +40,7 @@ impl GameState {
             'b' => self.possible_bishop_moves(square, is_white),
             'k' => self.possible_king_moves(square, is_white),
             'q' => self.possible_queen_moves(square, is_white),
-            _ => vec![]
+            _ => vec![],
         }
     }
 
@@ -47,11 +52,13 @@ impl GameState {
         let initial_rank = if white { 1 } else { 6 };
 
         let out_of_bounds = (direction == 1 && from > 55) || (direction == -1 && from < 8);
-        if out_of_bounds { return result; }
+        if out_of_bounds {
+            return result;
+        }
 
         let opps = self.board.one_side_pieces(!white);
         let taken = self.board.both_side_pieces();
-        
+
         let left_diag = from as i32 + 7 * direction;
         let forward = from as i32 + 8 * direction;
         let right_diag = from as i32 + 9 * direction;
@@ -60,7 +67,9 @@ impl GameState {
             result.push(forward as u8);
             if rank == initial_rank {
                 let double = forward + 8 * direction;
-                if taken & (1 << double) == 0 { result.push(double as u8); }
+                if taken & (1 << double) == 0 {
+                    result.push(double as u8);
+                }
             }
         }
 
@@ -81,14 +90,16 @@ impl GameState {
         let right_bound = left_bound + 7;
 
         result.extend(self.move_until_piece((left_bound..from).rev(), white)); // leftward moves
-        result.extend(self.move_until_piece(from+1..=right_bound, white)); // rightwards 
-        result.extend(self.move_until_piece( // upward
-                (from + 8..=63).step_by(8),
-                white
+        result.extend(self.move_until_piece(from + 1..=right_bound, white)); // rightwards
+        result.extend(self.move_until_piece(
+            // upward
+            (from + 8..=63).step_by(8),
+            white,
         ));
-        result.extend(self.move_until_piece( // downward
-                (file..from).step_by(8).rev(),
-                white
+        result.extend(self.move_until_piece(
+            // downward
+            (file..from).step_by(8).rev(),
+            white,
         ));
 
         result
@@ -147,22 +158,31 @@ impl GameState {
         let mut result = vec![];
 
         let moves: [(i8, i8); 8] = [
-            (-1, -2), (-1, 2), (1, -2), (1, 2),
-            (-2, -1), (-2, 1), (2, -1), (2, 1)
+            (-1, -2),
+            (-1, 2),
+            (1, -2),
+            (1, 2),
+            (-2, -1),
+            (-2, 1),
+            (2, -1),
+            (2, 1),
         ];
 
         for (d_rank, d_file) in moves.iter() {
             let n_rank = d_rank + rank as i8;
             let n_file = d_file + file as i8;
-            if !(0..8).contains(&n_rank) || !(0..8).contains(&n_file) { continue; }
+            if !(0..8).contains(&n_rank) || !(0..8).contains(&n_file) {
+                continue;
+            }
 
-            let target = (n_rank  * 8 + n_file) as u8;
-            if own & (1 << target) == 0 { result.push(target); }
+            let target = (n_rank * 8 + n_file) as u8;
+            if own & (1 << target) == 0 {
+                result.push(target);
+            }
         }
 
         result
     }
-
 }
 
 #[cfg(test)]
@@ -190,14 +210,20 @@ mod tests {
     fn test_rook_moves() {
         let gs = GameState::new();
         assert_eq!(gs.possible_rook_moves(0, true), vec![]); // blocked
-        assert_eq!(gs.possible_rook_moves(33, true), vec![32, 34, 35, 36, 37, 38, 39, 41, 49, 25, 17]); // normal move
+        assert_eq!(
+            gs.possible_rook_moves(33, true),
+            vec![32, 34, 35, 36, 37, 38, 39, 41, 49, 25, 17]
+        ); // normal move
     }
 
     #[test]
     fn test_bishop_moves() {
         let gs = GameState::new();
         assert_eq!(gs.possible_bishop_moves(2, true), vec![]); // blocked
-        assert_eq!(gs.possible_bishop_moves(34, true), vec![41, 48, 25, 16, 43, 52, 27, 20]);
+        assert_eq!(
+            gs.possible_bishop_moves(34, true),
+            vec![41, 48, 25, 16, 43, 52, 27, 20]
+        );
     }
 
     #[test]
@@ -206,7 +232,10 @@ mod tests {
         assert_eq!(gs.possible_knight_moves(1, true), vec![16, 18]); // white left starting
         assert_eq!(gs.possible_knight_moves(1, false), vec![11, 16, 18]); // black taking
         assert_eq!(gs.possible_knight_moves(6, true), vec![21, 23]); // white right starting
-        assert_eq!(gs.possible_knight_moves(34, true), vec![24, 28, 40, 44, 17, 19, 49, 51]); // normal move
+        assert_eq!(
+            gs.possible_knight_moves(34, true),
+            vec![24, 28, 40, 44, 17, 19, 49, 51]
+        ); // normal move
         assert_eq!(gs.possible_knight_moves(62, false), vec![45, 47]); // black right starting
     }
 
@@ -214,9 +243,12 @@ mod tests {
     fn test_king_moves() {
         let gs = GameState::new();
         assert_eq!(gs.possible_king_moves(4, true), vec![]); // blocked
-        // TODO: this will fail when checking is added
+                                                             // TODO: this will fail when checking is added
         assert_eq!(gs.possible_king_moves(4, false), vec![3, 5, 11, 12, 13]);
-        assert_eq!(gs.possible_king_moves(34, true), vec![33, 35, 27, 41, 26, 42, 25, 43]); // normal move
+        assert_eq!(
+            gs.possible_king_moves(34, true),
+            vec![33, 35, 27, 41, 26, 42, 25, 43]
+        ); // normal move
     }
 
     #[test]
@@ -224,7 +256,10 @@ mod tests {
         let gs = GameState::new();
         let itr = (18..=58).step_by(8);
         // white moves in straight line to black
-        assert_eq!(gs.move_until_piece(itr.clone(), true), vec![18, 26, 34, 42, 50]);
+        assert_eq!(
+            gs.move_until_piece(itr.clone(), true),
+            vec![18, 26, 34, 42, 50]
+        );
         // white black moves in straight line to black
         assert_eq!(gs.move_until_piece(itr, false), vec![18, 26, 34, 42]);
 

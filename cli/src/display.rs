@@ -1,9 +1,9 @@
-use kno3_chess_engine::Chessboard;
-use kno3_chess_engine::position::rank_file_to_square;
 use crossterm::{
     execute,
     style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
 };
+use kno3_chess_engine::position::rank_file_to_square;
+use kno3_chess_engine::Chessboard;
 use std::io::stdout;
 
 #[rustfmt::skip]
@@ -49,7 +49,9 @@ impl DisplayBoard for Chessboard {
             println!();
         }
         print!(" ");
-        for file in files.iter() { print!(" {file} "); }
+        for file in files.iter() {
+            print!(" {file} ");
+        }
         println!();
     }
 }

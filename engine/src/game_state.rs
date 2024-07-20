@@ -7,11 +7,11 @@ use crate::Chessboard;
 // https://www.chess.com/terms/fen-chess
 pub struct GameState {
     white_turn: bool,
-    castling: u8, // KQkq will be represented by 4 bits
+    castling: u8,   // KQkq will be represented by 4 bits
     en_passant: u8, // a square that has en passant ability
     half_clock: u32,
     move_count: u32,
-    pub board: Chessboard
+    pub board: Chessboard,
 }
 
 impl Default for GameState {
@@ -21,6 +21,7 @@ impl Default for GameState {
 }
 
 impl Display for GameState {
+    #[rustfmt::skip]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let color = if self.white_turn { 'w' } else { 'b' };
 
@@ -57,17 +58,19 @@ impl GameState {
             en_passant: 255,
             half_clock: 0,
             move_count: 1,
-            board: Chessboard::new()
+            board: Chessboard::new(),
         }
     }
 
     pub fn from_string(fen: &str) -> Result<Self, String> {
         let parts: Vec<&str> = fen.split_whitespace().collect();
-        if parts.len() != 6 { return Err("Invalid FEN string".to_string()); }
+        if parts.len() != 6 {
+            return Err("Invalid FEN string".to_string());
+        }
 
         let passant = match parts[3] {
             "-" => 255, // out of range
-            _ => position::string_to_square(parts[3])?
+            _ => position::string_to_square(parts[3])?,
         };
 
         Ok(Self {
@@ -76,7 +79,7 @@ impl GameState {
             en_passant: passant,
             half_clock: parts[4].parse().unwrap(),
             move_count: parts[5].parse().unwrap(),
-            board: Chessboard::from_string(parts[0])?
+            board: Chessboard::from_string(parts[0])?,
         })
     }
 }
@@ -90,7 +93,7 @@ fn parse_castling_rights(part: &str) -> u8 {
             'Q' => 0b0100,
             'k' => 0b0010,
             'q' => 0b0001,
-            _ => 0
+            _ => 0,
         };
         result |= v;
     }
@@ -115,7 +118,8 @@ mod tests {
 
     #[test]
     fn test_passant() {
-        let mut fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        let mut fen =
+            GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         assert_eq!(fen.unwrap().en_passant, 255);
         fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq e3 0 1");
         assert_eq!(fen.unwrap().en_passant, 20);
@@ -127,13 +131,18 @@ mod tests {
 
     #[test]
     fn test_castles() {
-        let mut fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap();
+        let mut fen =
+            GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+                .unwrap();
         assert_eq!(fen.castling, 0b1111);
-        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk - 0 1").unwrap();
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kk - 0 1")
+            .unwrap();
         assert_eq!(fen.castling, 0b1010);
-        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Qq - 0 1").unwrap();
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Qq - 0 1")
+            .unwrap();
         assert_eq!(fen.castling, 0b0101);
-        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1").unwrap();
+        fen = GameState::from_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1")
+            .unwrap();
         assert_eq!(fen.castling, 0);
     }
 

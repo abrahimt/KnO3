@@ -5,10 +5,16 @@ This project is a chess engine built in rust. It provides an engine for playing 
 - [Cooper Hanson](https://github.com/chanson02/)
 - [Abrahim Toutoungi](https://github.com/abrahimt)
 
-## Architecture
-An application can interface with the engine through the CLI by providing a FEN string. From there, the engine can output different actions.
+## Usage
+The engine can be interfaced through stdio with the help of the CLI.
+`cargo run -- --help` to see all available options.
+- **Example**: `cargo run -- -f "8/5k2/3p4/1p1Pp2p/pP2Pp1P/P4P1K/8/8 b - - 99 50" --get-moves f7 --show`
 
+
+## Architecture
 The engine creates a new `GameState` based on the FEN string that was passed in.
+
+The engine is a library that is completely detatched from the CLI. This would allow anyone to hook up just the engine to an existing chess application and be able to interface with it. The CLI and potentially a server could be used for cross communication between different languages.
 
 ### Board Representation
 

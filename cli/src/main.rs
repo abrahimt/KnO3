@@ -36,6 +36,7 @@ fn main() -> Result<(), Error> {
         .arg(
             Arg::new("show")
                 .long("show")
+                .short('s')
                 .help("Prints the state of the board")
                 .action(clap::ArgAction::SetTrue)
         )

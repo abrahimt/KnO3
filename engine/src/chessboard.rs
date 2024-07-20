@@ -80,7 +80,7 @@ impl Chessboard {
         let queen = 0x08;
         let king = 0x10;
 
-        let top_row = 56; // 7 rows * bit bits
+        let top_row = 56; // 7 rows * 8 bits
 
         Chessboard {
             white_rooks: rooks,

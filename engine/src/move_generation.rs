@@ -116,9 +116,9 @@ impl GameState {
         let ne_bound = min(63, from + inv_file * 9);
         let se_bound = max(7, from.saturating_sub(inv_file * 7));
 
-        let nw = (from + 7..=nw_bound).step_by(7); // correct
+        let nw = (from + 7..=nw_bound).step_by(7);
         let sw = (sw_bound..=from.saturating_sub(9)).rev().step_by(9);
-        let ne = (from + 9..=ne_bound).step_by(9); // correct
+        let ne = (from + 9..=ne_bound).step_by(9);
         let se = (se_bound..=from.saturating_sub(7)).rev().step_by(7);
 
         result.extend(self.move_until_piece(nw, white));

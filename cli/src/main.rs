@@ -45,6 +45,13 @@ fn main() -> Result<(), Error> {
                 .short('m')
                 .value_name("POSITION")
                 .help("Get possible moves for piece at the given position (ex: 'e2')")
+        )
+        .arg(
+            Arg::new("evaluate")
+                .long("evaluate")
+                .short('e')
+                .help("Determines who is winning. Positive number indicates a white advantage.")
+                .action(clap::ArgAction::SetTrue)
         ).get_matches();
 
     let fen = matches.get_one::<String>("fen").ok_or(Error::ArgumentError("FEN string required".to_string()))?;
@@ -54,9 +61,11 @@ fn main() -> Result<(), Error> {
 
 
     // Show //
-    if matches.get_flag("show") { gs.board.display(); }
 
     // Getters //
+    if matches.get_flag("show") { gs.board.display(); }
+    if matches.get_flag("evaluate") { println!("{}", gs.board.evaluate()); }
+
     if let Some(position) = matches.get_one::<String>("get-moves") {
         let square = position::string_to_square(position).map_err(|e| Error::ArgumentError(e.to_string()))?;
         let moves = gs.possible_moves(square).into_iter().map(position::square_to_string).collect::<Vec<String>>().join(" ");

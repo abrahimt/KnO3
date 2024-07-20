@@ -63,8 +63,6 @@ fn main() -> Result<(), Error> {
 
     // Setters //
 
-    // Show //
-
     // Getters //
     if matches.get_flag("show") {
         gs.board.display();
@@ -87,4 +85,3 @@ fn main() -> Result<(), Error> {
 
     Ok(())
 }
-// cargo run -- -f "8/5k2/3p4/1p1Pp2p/pP2Pp1P/P4P1K/8/8 b - - 99 50" --get-moves f7 --show

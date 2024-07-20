@@ -84,7 +84,7 @@ impl GameState {
     }
 }
 
-/// rights: The portion of the fen string that marks castling
+/// part: The portion of the fen string that marks castling
 fn parse_castling_rights(part: &str) -> u8 {
     let mut result = 0;
     for c in part.chars() {

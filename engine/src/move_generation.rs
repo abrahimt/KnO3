@@ -26,10 +26,10 @@ impl GameState {
         result
     }
 
-    pub fn possible_moves(&self, square: u8) -> Vec<u8> {
+    pub fn possible_moves(&self, square: u8) -> u64 {
         let piece = match self.board.piece_at_position(square) {
             Some(p) => p,
-            None => return vec![],
+            None => return 0,
         };
 
         let is_white = piece.is_ascii_uppercase();
@@ -40,10 +40,9 @@ impl GameState {
             'b' => self.possible_bishop_moves(square, is_white),
             'k' => self.possible_king_moves(square, is_white),
             'q' => self.possible_queen_moves(square, is_white),
-            _ => vec![],
+            _ => 0,
         }
     }
-
 
     fn possible_pawn_moves(&self, from: u8, white: bool) -> u64 {
         let mut result = 0;
@@ -152,11 +151,11 @@ impl GameState {
         result
     }
 
-    fn possible_knight_moves(&self, from: u8, white: bool) -> Vec<u8> {
+    fn possible_knight_moves(&self, from: u8, white: bool) -> u64 {
         let file = from % 8;
         let rank = from / 8;
         let own = self.board.one_side_pieces(white);
-        let mut result = vec![];
+        let mut result = 0;
 
         let moves: [(i8, i8); 8] = [
             (-1, -2),
@@ -178,7 +177,7 @@ impl GameState {
 
             let target = (n_rank * 8 + n_file) as u8;
             if own & (1 << target) == 0 {
-                result.push(target);
+                result |= 1 << target;
             }
         }
 
@@ -237,14 +236,15 @@ mod tests {
     #[test]
     fn test_knight_moves() {
         let gs = GameState::new();
-        assert_eq!(gs.possible_knight_moves(1, true), vec![16, 18]); // white left starting
-        assert_eq!(gs.possible_knight_moves(1, false), vec![11, 16, 18]); // black taking
-        assert_eq!(gs.possible_knight_moves(6, true), vec![21, 23]); // white right starting
+        assert_eq!(gs.possible_knight_moves(1, true), 1 << 16 | 1 << 18); // white left starting
+        assert_eq!(gs.possible_knight_moves(1, false), 1 << 11 | 1 << 16 | 1 << 18); // black taking
+        assert_eq!(gs.possible_knight_moves(6, true), 1 << 21 | 1 << 23); // white right starting
         assert_eq!(
             gs.possible_knight_moves(34, true),
-            vec![24, 28, 40, 44, 17, 19, 49, 51]
-        ); // normal move
-        assert_eq!(gs.possible_knight_moves(62, false), vec![45, 47]); // black right starting
+            1 << 24 | 1 << 28 | 1 << 40 | 1 << 44 | 1 << 17 | 1 << 19 | 1 << 49 | 1 << 51,
+            "Failed normal move"
+        );
+        assert_eq!(gs.possible_knight_moves(62, false), 1 << 45 | 1 << 47); // black right starting
     }
 
     #[test]
@@ -279,7 +279,7 @@ mod tests {
     fn test_possible_moves() {
         let mut gs = GameState::new();
         assert_eq!(gs.possible_moves(9), gs.possible_pawn_moves(9, true)); // pawn begin
-        assert_eq!(gs.possible_moves(42), vec![]); // nothing here
+        assert_eq!(gs.possible_moves(42), 0); // nothing here
         gs.board.white_pawns |= 1 << 42;
         assert_eq!(gs.possible_moves(42), gs.possible_pawn_moves(42, true)); // pawn eat
         assert_eq!(gs.possible_moves(50), gs.possible_pawn_moves(50, false)); // black pawn blocked

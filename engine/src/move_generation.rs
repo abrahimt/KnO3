@@ -44,12 +44,11 @@ impl GameState {
         }
     }
 
-    // TODO: en passant check
     fn possible_pawn_moves(&self, from: u8, white: bool) -> Vec<u8> {
         let mut result = Vec::new();
         let rank = from / 8;
         let direction = if white { 1 } else { -1 };
-        let initial_rank = if white { 1 } else { 6 };
+        let initial_rank = if white { rank == 1 } else { rank == 6 };
 
         let out_of_bounds = (direction == 1 && from > 55) || (direction == -1 && from < 8);
         if out_of_bounds {
@@ -65,7 +64,7 @@ impl GameState {
 
         if taken & (1 << forward) == 0 {
             result.push(forward as u8);
-            if rank == initial_rank {
+            if initial_rank {
                 let double = forward + 8 * direction;
                 if taken & (1 << double) == 0 {
                     result.push(double as u8);
@@ -73,10 +72,15 @@ impl GameState {
             }
         }
 
-        if opps & (1 << left_diag) != 0 {
+        let opp_left = opps & (1 << left_diag) != 0;
+        let en_passant_left = !initial_rank && left_diag == self.en_passant as i32;
+        if opp_left || en_passant_left {
             result.push(left_diag as u8);
         }
-        if opps & (1 << right_diag) != 0 {
+
+        let opp_right = opps & (1 << right_diag) != 0;
+        let en_passant_right = !initial_rank && right_diag == self.en_passant as i32;
+        if opp_right || en_passant_right {
             result.push(right_diag as u8);
         }
 
@@ -200,6 +204,11 @@ mod tests {
         // out of bounds
         assert_eq!(gs.possible_pawn_moves(57, true), vec![], "Failed white oob");
         assert_eq!(gs.possible_pawn_moves(1, false), vec![], "Failed black oob");
+
+        gs.en_passant = 16;
+        assert_eq!(gs.possible_pawn_moves(9, true), vec![17, 25], "En-passanted own piece");
+        gs.en_passant = 24;
+        assert_eq!(gs.possible_pawn_moves(17, true), vec![25, 24], "Did not en passant");
 
         assert_eq!(gs.possible_pawn_moves(1, true), vec![], "Moved behind own piece");
         gs.board.black_pawns |= 1 << 8; // place a black pawn on 8

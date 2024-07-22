@@ -8,7 +8,7 @@ use crate::Chessboard;
 pub struct GameState {
     white_turn: bool,
     castling: u8,   // KQkq will be represented by 4 bits
-    en_passant: u8, // a square that has en passant ability
+    pub en_passant: u8, // a square that has en passant ability
     half_clock: u32,
     move_count: u32,
     pub board: Chessboard,

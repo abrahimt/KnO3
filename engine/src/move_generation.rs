@@ -1,6 +1,7 @@
 use super::GameState;
 use std::cmp::{max, min};
 
+// TODO: Castling
 impl GameState {
     /// Move squares in iterator until a piece is hit
     fn move_until_piece<I>(&self, range: I, white: bool) -> u64
@@ -107,6 +108,33 @@ impl GameState {
         result
     }
 
+    fn rook_attack_map(&self, pos: u8, white: bool) -> u64 {
+        let rank = pos / 8;
+        let mut result = 0;
+        let possible_attacks = self.possible_rook_moves(pos, white) & self.board.one_side_pieces(!white);
+
+        // Find the furthest move in each direction (north, east, south, west)
+        let north = !((1 << (pos + 1)) - 1); // everything above `pos` is 1
+        let south = (1 << pos) - 1; // everything below `pos` is 1
+        let horz = 0xFF << (rank * 8); // everything on the same rank as `pos`
+        let east = horz & north;
+        let west = horz & south;
+
+        let north_most = (possible_attacks & north).leading_zeros();
+        if north_most < 64 { result |= 1 << (63 - north_most); }
+
+        let south_most = (possible_attacks & south).trailing_zeros();
+        if south_most < 64 { result |= 1 << south_most; }
+
+        let east_most = (possible_attacks & east).leading_zeros();
+        if east_most < 64 { result |= 1 << (63 - east_most); }
+
+        let west_most = (possible_attacks & west).trailing_zeros();
+        if west_most < 64 { result |= 1 << west_most; }
+
+        result
+    }
+
     fn possible_bishop_moves(&self, from: u8, white: bool) -> u64 {
         let mut result = 0;
 
@@ -176,17 +204,26 @@ impl GameState {
             }
 
             let target = (n_rank * 8 + n_file) as u8;
-            if own & (1 << target) == 0 {
+            if own & (1 << target) == 0 && !self.position_under_attack(target, white) {
                 result |= 1 << target;
             }
         }
 
         result
     }
+
+    /// Can this square be taken by the opponent next turn?
+    fn position_under_attack(&self, square: u8, white: bool) -> bool {
+        let opp_rooks = if white { self.board.black_rooks | self.board.black_queen } else { self.board.white_rooks | self.board.white_queen };
+
+        false
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::Chessboard;
+
     use super::*;
 
     #[test]
@@ -220,6 +257,27 @@ mod tests {
             1 << 32 | 1 << 34 | 1 << 35 | 1 << 36 | 1 << 37 | 1 << 38 | 1 << 39 | 1 << 41 | 1 << 49 | 1 << 25 | 1 << 17,
             "Failed normal move"
         );
+
+    }
+
+    #[test]
+    fn test_rook_attacks() {
+        let mut gs = GameState::new();
+        assert_eq!(gs.rook_attack_map(8, true), 1 << 48, "Did not attack north");
+        assert_eq!(gs.rook_attack_map(49, false), 1 << 9, "Did not attack south");
+
+        gs.board = Chessboard::empty();
+        assert_eq!(gs.rook_attack_map(0, true), 0, "Attacking nothing");
+
+        gs.board.black_pawns |= 1 << 1;
+        assert_eq!(gs.rook_attack_map(0, true), 1 << 1, "Did not attack east");
+        assert_eq!(gs.rook_attack_map(7, true), 1 << 1, "Did not attack west");
+
+        // surround a rook with pieces
+        let pawns = 1 << 1 | 1 << 8 | 1 << 17 | 1 << 10;
+        gs.board.black_pawns = pawns;
+        assert_eq!(gs.rook_attack_map(9, true), pawns, "Did not attack all directions");
+
     }
 
     #[test]

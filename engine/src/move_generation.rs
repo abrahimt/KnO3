@@ -192,18 +192,19 @@ mod tests {
     #[test]
     fn test_pawn_moves() {
         let mut gs = GameState::new();
-        assert_eq!(gs.possible_pawn_moves(17, true), vec![25]); // normal move
-        assert_eq!(gs.possible_pawn_moves(9, true), vec![17, 25]); // beginning move
-        assert_eq!(gs.possible_pawn_moves(49, false), vec![41, 33]); // beginning move
-        assert_eq!(gs.possible_pawn_moves(42, true), vec![49, 51]); // capture
+        assert_eq!(gs.possible_pawn_moves(17, true), vec![25], "Failed normal move");
+        assert_eq!(gs.possible_pawn_moves(9, true), vec![17, 25], "Failed beginning move");
+        assert_eq!(gs.possible_pawn_moves(49, false), vec![41, 33], "Failed black start move");
+        assert_eq!(gs.possible_pawn_moves(42, true), vec![49, 51], "Failed white->black capture");
 
         // out of bounds
-        assert_eq!(gs.possible_pawn_moves(57, true), vec![]);
-        assert_eq!(gs.possible_pawn_moves(1, false), vec![]);
+        assert_eq!(gs.possible_pawn_moves(57, true), vec![], "Failed white oob");
+        assert_eq!(gs.possible_pawn_moves(1, false), vec![], "Failed black oob");
 
-        assert_eq!(gs.possible_pawn_moves(1, true), vec![]); // behind another white piece
+        assert_eq!(gs.possible_pawn_moves(1, true), vec![], "Moved behind own piece");
         gs.board.black_pawns |= 1 << 8; // place a black pawn on 8
-        assert_eq!(gs.possible_pawn_moves(1, true), vec![8]); // should be able to take 8 now
+        assert_eq!(gs.possible_pawn_moves(1, true), vec![8], "Failed capture");
+
     }
 
     #[test]

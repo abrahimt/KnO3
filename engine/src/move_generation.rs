@@ -247,12 +247,16 @@ impl GameState {
             }
 
             let target = (n_rank * 8 + n_file) as u8;
-            if own & (1 << target) == 0 && !self.position_under_attack(target, white) {
+            if own & (1 << target) == 0 {
                 result |= 1 << target;
             }
         }
 
         result
+    }
+
+    fn knight_attack_map(&self, pos: u8, white: bool) -> u64 {
+        self.possible_knight_moves(pos, white) & self.board.one_side_pieces(!white)
     }
 
     /// Can this square be taken by the opponent next turn?

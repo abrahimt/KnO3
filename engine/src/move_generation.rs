@@ -252,13 +252,14 @@ mod tests {
     #[test]
     fn test_king_moves() {
         let gs = GameState::new();
-        assert_eq!(gs.possible_king_moves(4, true), vec![]); // blocked
+        assert_eq!(gs.possible_king_moves(4, true), vec![], "Captured own");
                                                              // TODO: this will fail when checking is added
         assert_eq!(gs.possible_king_moves(4, false), vec![3, 5, 11, 12, 13]);
         assert_eq!(
             gs.possible_king_moves(34, true),
-            vec![33, 35, 27, 41, 26, 42, 25, 43]
-        ); // normal move
+            vec![33, 35, 27, 41, 26, 42, 25, 43],
+            "Failed normal move"
+        );
     }
 
     #[test]

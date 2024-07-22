@@ -222,6 +222,10 @@ impl GameState {
         result
     }
 
+    fn king_attack_map(&self, pos: u8, white: bool) -> u64 {
+        self.possible_king_moves(pos, white) & self.board.one_side_pieces(!white)
+    }
+
     fn possible_knight_moves(&self, from: u8, white: bool) -> u64 {
         let file = from % 8;
         let rank = from / 8;
@@ -261,9 +265,36 @@ impl GameState {
 
     /// Can this square be taken by the opponent next turn?
     fn position_under_attack(&self, square: u8, white: bool) -> bool {
+        let file = square % 8;
         let opp_rooks = if white { self.board.black_rooks | self.board.black_queen } else { self.board.white_rooks | self.board.white_queen };
+        let opp_bish = if white { self.board.black_bishops | self.board.black_queen } else { self.board.white_bishops | self.board.white_queen };
+        let opp_knights = if white { self.board.black_knights } else { self.board.white_knights };
+        let opp_king = if white { self.board.black_king } else { self.board.white_king };
+        let opp_pawn = if white { self.board.black_pawns } else { self.board.white_pawns };
 
-        false
+        let pawn_attack_map = if white {
+            if square >= 48 { 0 }
+            else {
+                let mut map = 0;
+                if file != 0 { map |= 1 << (square + 7); }
+                if file != 7 { map |= 1 << (square + 9); }
+                map
+            }
+        } else {
+            if square <= 15 { 0 }
+            else {
+                let mut map = 0;
+                if file != 0 { map |= 1 << (square - 9); }
+                if file != 7 { map |= 1 << (square - 7); }
+                map
+            }
+        };
+
+        self.rook_attack_map(square, white) & opp_rooks != 0 ||
+            self.bishop_attack_map(square, white) & opp_bish != 0 ||
+            self.knight_attack_map(square, white) & opp_knights != 0 ||
+            self.king_attack_map(square, white) & opp_king != 0 ||
+            pawn_attack_map & opp_pawn != 0
     }
 }
 
@@ -422,5 +453,34 @@ mod tests {
         assert_eq!(gs.possible_moves(59), gs.possible_queen_moves(59, false));
         assert_eq!(gs.possible_moves(4), gs.possible_king_moves(4, true));
         assert_eq!(gs.possible_moves(60), gs.possible_king_moves(60, false));
+    }
+
+    #[test]
+    fn test_position_under_attack() {
+        let mut gs = GameState::new();
+        gs.board = Chessboard::empty();
+
+        assert!(!gs.position_under_attack(9, true), "Attacked by nothing");
+
+        gs.board.black_pawns = 1 << 16;
+        assert!(gs.position_under_attack(9, true), "Pawn not attacking");
+        gs.board.black_pawns = 1 << 2;
+        assert!(!gs.position_under_attack(9, true), "Black pawn attacking backwards");
+        gs.board.black_pawns = 0;
+
+        gs.board.black_queen = 1 << 57;
+        assert!(gs.position_under_attack(9, true), "Queen not attacking");
+        gs.board.black_queen = 0;
+
+        gs.board.black_rooks = 1 << 49;
+        assert!(gs.position_under_attack(9, true), "Rook not attacking");
+        gs.board.black_rooks = 0;
+
+        gs.board.black_bishops = 1 << 18;
+        assert!(gs.position_under_attack(9, true), "Bishop not attacking");
+        gs.board.black_bishops = 0;
+
+        gs.board.black_knights = 1 << 26;
+        assert!(gs.position_under_attack(9, true), "Knight not attacking");
     }
 }

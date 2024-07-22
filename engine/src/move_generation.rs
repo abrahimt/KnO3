@@ -58,9 +58,9 @@ impl GameState {
         let opps = self.board.one_side_pieces(!white);
         let taken = self.board.both_side_pieces();
 
-        let left_diag = from as i32 + 7 * direction;
+        let left_diag = (from as i32 + 7 * direction) as u8;
         let forward = from as i32 + 8 * direction;
-        let right_diag = from as i32 + 9 * direction;
+        let right_diag = (from as i32 + 9 * direction) as u8;
 
         if taken & (1 << forward) == 0 {
             result.push(forward as u8);
@@ -73,15 +73,15 @@ impl GameState {
         }
 
         let opp_left = opps & (1 << left_diag) != 0;
-        let en_passant_left = !initial_rank && left_diag == self.en_passant as i32;
+        let en_passant_left = !initial_rank && left_diag == self.en_passant;
         if opp_left || en_passant_left {
-            result.push(left_diag as u8);
+            result.push(left_diag);
         }
 
         let opp_right = opps & (1 << right_diag) != 0;
-        let en_passant_right = !initial_rank && right_diag == self.en_passant as i32;
+        let en_passant_right = !initial_rank && right_diag == self.en_passant;
         if opp_right || en_passant_right {
-            result.push(right_diag as u8);
+            result.push(right_diag);
         }
 
         result

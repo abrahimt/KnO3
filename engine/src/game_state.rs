@@ -70,15 +70,15 @@ impl GameState {
 
         let passant = match parts[3] {
             "-" => 255, // out of range
-            _ => position::string_to_square(parts[3])?,
+            _ => position::string_to_square(parts[3]).map_err(|e| format!("Invalid en passant: {e}"))?,
         };
 
         Ok(Self {
             white_turn: parts[1] == "w",
             castling: parse_castling_rights(parts[2]),
             en_passant: passant,
-            half_clock: parts[4].parse().unwrap(),
-            move_count: parts[5].parse().unwrap(),
+            half_clock: parts[4].parse().map_err(|_| "Invalid half clock".to_string())?,
+            move_count: parts[5].parse().map_err(|_| "Invalid move count".to_string())?,
             board: Chessboard::from_string(parts[0])?,
         })
     }

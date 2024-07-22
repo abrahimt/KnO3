@@ -1,6 +1,6 @@
 use super::Chessboard;
 impl Chessboard {
-    pub fn piece_bitboards(&self) -> [(char, i64); 12] {
+    pub fn piece_bitboards(&self) -> [(char, u64); 12] {
         [
             ('P', self.white_pawns),
             ('N', self.white_knights),
@@ -17,7 +17,7 @@ impl Chessboard {
         ]
     }
 
-    pub fn piece_bitboard(&mut self, piece: char) -> Result<&mut i64, String> {
+    pub fn piece_bitboard(&mut self, piece: char) -> Result<&mut u64, String> {
         match piece {
             'p' => Ok(&mut self.black_pawns),
             'r' => Ok(&mut self.black_rooks),
@@ -45,7 +45,7 @@ impl Chessboard {
         None
     }
 
-    pub fn one_side_pieces(&self, white: bool) -> i64 {
+    pub fn one_side_pieces(&self, white: bool) -> u64 {
         if white {
             self.white_bishops
                 | self.white_king
@@ -63,7 +63,7 @@ impl Chessboard {
         }
     }
 
-    pub fn both_side_pieces(&self) -> i64 {
+    pub fn both_side_pieces(&self) -> u64 {
         self.one_side_pieces(true) | self.one_side_pieces(false)
     }
 

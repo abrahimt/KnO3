@@ -3,18 +3,18 @@ use std::cmp::PartialEq;
 use std::fmt::{self, Display};
 
 pub struct Chessboard {
-    pub black_pawns: i64,
-    pub black_rooks: i64,
-    pub black_knights: i64,
-    pub black_bishops: i64,
-    pub black_queen: i64,
-    pub black_king: i64,
-    pub white_pawns: i64,
-    pub white_rooks: i64,
-    pub white_knights: i64,
-    pub white_bishops: i64,
-    pub white_queen: i64,
-    pub white_king: i64,
+    pub black_pawns: u64,
+    pub black_rooks: u64,
+    pub black_knights: u64,
+    pub black_bishops: u64,
+    pub black_queen: u64,
+    pub black_king: u64,
+    pub white_pawns: u64,
+    pub white_rooks: u64,
+    pub white_knights: u64,
+    pub white_bishops: u64,
+    pub white_queen: u64,
+    pub white_king: u64,
 }
 
 impl Display for Chessboard {
@@ -63,7 +63,7 @@ impl Chessboard {
                 }
 
                 let square = rank_file_to_square(rank_ndx, file_ndx as char)?;
-                *result.piece_bitboard(piece)? |= 1_i64 << square;
+                *result.piece_bitboard(piece)? |= 1 << square;
                 file_ndx += 1;
             }
             rank_ndx -= 1;

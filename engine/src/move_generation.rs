@@ -3,11 +3,11 @@ use std::cmp::{max, min};
 
 impl GameState {
     /// Move squares in iterator until a piece is hit
-    fn move_until_piece<I>(&self, range: I, white: bool) -> Vec<u8>
+    fn move_until_piece<I>(&self, range: I, white: bool) -> u64
     where
         I: Iterator<Item = u8>,
     {
-        let mut result = Vec::new();
+        let mut result = 0;
         let own = self.board.one_side_pieces(white);
         let opps = self.board.one_side_pieces(!white);
 
@@ -17,7 +17,7 @@ impl GameState {
                 break;
             }
 
-            result.push(square);
+            result |= btwise;
             if opps & btwise != 0 {
                 break;
             }
@@ -88,24 +88,22 @@ impl GameState {
         result
     }
 
-    fn possible_rook_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        let mut result = Vec::new();
+    fn possible_rook_moves(&self, from: u8, white: bool) -> u64 {
+        let mut result = 0;
         let file = from % 8;
         let left_bound = from - file;
         let right_bound = left_bound + 7;
 
-        result.extend(self.move_until_piece((left_bound..from).rev(), white)); // leftward moves
-        result.extend(self.move_until_piece(from + 1..=right_bound, white)); // rightwards
-        result.extend(self.move_until_piece(
-            // upward
+        result |= self.move_until_piece((left_bound..from).rev(), white); // west moves
+        result |= self.move_until_piece(from + 1..=right_bound, white); // east moves
+        result |= self.move_until_piece(
             (from + 8..=63).step_by(8),
-            white,
-        ));
-        result.extend(self.move_until_piece(
-            // downward
+            white
+        ); // north moves
+        result |= self.move_until_piece(
             (file..from).step_by(8).rev(),
-            white,
-        ));
+            white
+        ); // south moves
 
         result
     }
@@ -219,12 +217,9 @@ mod tests {
     #[test]
     fn test_rook_moves() {
         let gs = GameState::new();
-        assert_eq!(gs.possible_rook_moves(0, true), vec![]); // blocked
+        assert_eq!(gs.possible_rook_moves(0, true), 0, "Captured own");
         assert_eq!(
             gs.possible_rook_moves(33, true),
-            vec![32, 34, 35, 36, 37, 38, 39, 41, 49, 25, 17]
-        ); // normal move
-    }
 
     #[test]
     fn test_bishop_moves() {
@@ -233,6 +228,8 @@ mod tests {
         assert_eq!(
             gs.possible_bishop_moves(34, true),
             vec![41, 48, 25, 16, 43, 52, 27, 20]
+            1 << 32 | 1 << 34 | 1 << 35 | 1 << 36 | 1 << 37 | 1 << 38 | 1 << 39 | 1 << 41 | 1 << 49 | 1 << 25 | 1 << 17,
+            "Failed normal move"
         );
     }
 
@@ -266,16 +263,15 @@ mod tests {
     fn test_move_until_piece() {
         let gs = GameState::new();
         let itr = (18..=58).step_by(8);
-        // white moves in straight line to black
         assert_eq!(
             gs.move_until_piece(itr.clone(), true),
-            vec![18, 26, 34, 42, 50]
+            1 << 18 | 1 << 26 | 1 << 34 | 1 << 42 | 1 << 50,
+            "White should move in straight line to black"
         );
-        // white black moves in straight line to black
-        assert_eq!(gs.move_until_piece(itr, false), vec![18, 26, 34, 42]);
+        assert_eq!(gs.move_until_piece(itr, false), 1 << 18 | 1 << 26 | 1 << 34 | 1 << 42, "Black should move to next black");
 
-        assert_eq!(gs.move_until_piece(0..7, true), vec![]);
-        assert_eq!(gs.move_until_piece(0..7, false), vec![0]); // can eat this piece
+        assert_eq!(gs.move_until_piece(0..7, true), 0);
+        assert_eq!(gs.move_until_piece(0..7, false), 1); // can eat this piece
     }
 
     #[test]

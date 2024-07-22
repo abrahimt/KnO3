@@ -108,8 +108,8 @@ impl GameState {
         result
     }
 
-    fn possible_bishop_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        let mut result = Vec::new();
+    fn possible_bishop_moves(&self, from: u8, white: bool) -> u64 {
+        let mut result = 0;
 
         let file = from % 8; // how many rows we can move right
         let nw_bound = min(56, from + file * 7);
@@ -124,18 +124,16 @@ impl GameState {
         let ne = (from + 9..=ne_bound).step_by(9);
         let se = (se_bound..=from.saturating_sub(7)).rev().step_by(7);
 
-        result.extend(self.move_until_piece(nw, white));
-        result.extend(self.move_until_piece(sw, white));
-        result.extend(self.move_until_piece(ne, white));
-        result.extend(self.move_until_piece(se, white));
+        result |= self.move_until_piece(nw, white);
+        result |= self.move_until_piece(sw, white);
+        result |= self.move_until_piece(ne, white);
+        result |= self.move_until_piece(se, white);
 
         result
     }
 
-    fn possible_queen_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        let mut result = self.possible_rook_moves(from, white);
-        result.extend(self.possible_bishop_moves(from, white));
-        result
+    fn possible_queen_moves(&self, from: u8, white: bool) -> u64 {
+        self.possible_rook_moves(from, white) | self.possible_bishop_moves(from, white)
     }
 
     // TODO: Make sure they are not moving into check/mate
@@ -220,15 +218,18 @@ mod tests {
         assert_eq!(gs.possible_rook_moves(0, true), 0, "Captured own");
         assert_eq!(
             gs.possible_rook_moves(33, true),
+            1 << 32 | 1 << 34 | 1 << 35 | 1 << 36 | 1 << 37 | 1 << 38 | 1 << 39 | 1 << 41 | 1 << 49 | 1 << 25 | 1 << 17,
+            "Failed normal move"
+        );
+    }
 
     #[test]
     fn test_bishop_moves() {
         let gs = GameState::new();
-        assert_eq!(gs.possible_bishop_moves(2, true), vec![]); // blocked
+        assert_eq!(gs.possible_bishop_moves(2, true), 0, "Captured own");
         assert_eq!(
             gs.possible_bishop_moves(34, true),
-            vec![41, 48, 25, 16, 43, 52, 27, 20]
-            1 << 32 | 1 << 34 | 1 << 35 | 1 << 36 | 1 << 37 | 1 << 38 | 1 << 39 | 1 << 41 | 1 << 49 | 1 << 25 | 1 << 17,
+            1 << 41 | 1 << 48 | 1 << 25 | 1 << 16 | 1 << 43 | 1 << 52 | 1 << 27 | 1 << 20,
             "Failed normal move"
         );
     }

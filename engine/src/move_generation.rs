@@ -44,8 +44,9 @@ impl GameState {
         }
     }
 
-    fn possible_pawn_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        let mut result = Vec::new();
+
+    fn possible_pawn_moves(&self, from: u8, white: bool) -> u64 {
+        let mut result = 0;
         let rank = from / 8;
         let direction = if white { 1 } else { -1 };
         let initial_rank = if white { rank == 1 } else { rank == 6 };
@@ -63,11 +64,11 @@ impl GameState {
         let right_diag = (from as i32 + 9 * direction) as u8;
 
         if taken & (1 << forward) == 0 {
-            result.push(forward as u8);
+            result |= 1 << forward;
             if initial_rank {
                 let double = forward + 8 * direction;
                 if taken & (1 << double) == 0 {
-                    result.push(double as u8);
+                    result |= 1 << double;
                 }
             }
         }
@@ -75,13 +76,13 @@ impl GameState {
         let opp_left = opps & (1 << left_diag) != 0;
         let en_passant_left = !initial_rank && left_diag == self.en_passant;
         if opp_left || en_passant_left {
-            result.push(left_diag);
+            result |= 1 << left_diag;
         }
 
         let opp_right = opps & (1 << right_diag) != 0;
         let en_passant_right = !initial_rank && right_diag == self.en_passant;
         if opp_right || en_passant_right {
-            result.push(right_diag);
+            result |= 1 << right_diag;
         }
 
         result
@@ -196,24 +197,23 @@ mod tests {
     #[test]
     fn test_pawn_moves() {
         let mut gs = GameState::new();
-        assert_eq!(gs.possible_pawn_moves(17, true), vec![25], "Failed normal move");
-        assert_eq!(gs.possible_pawn_moves(9, true), vec![17, 25], "Failed beginning move");
-        assert_eq!(gs.possible_pawn_moves(49, false), vec![41, 33], "Failed black start move");
-        assert_eq!(gs.possible_pawn_moves(42, true), vec![49, 51], "Failed white->black capture");
+        assert_eq!(gs.possible_pawn_moves(17, true), 1 << 25, "Failed normal move");
+        assert_eq!(gs.possible_pawn_moves(9, true), 1 << 17 | 1 << 25, "Failed beginning move");
+        assert_eq!(gs.possible_pawn_moves(49, false), 1 << 41 | 1 << 33, "Failed black start move");
+        assert_eq!(gs.possible_pawn_moves(42, true), 1 << 49 | 1 << 51, "Failed white->black capture");
 
         // out of bounds
-        assert_eq!(gs.possible_pawn_moves(57, true), vec![], "Failed white oob");
-        assert_eq!(gs.possible_pawn_moves(1, false), vec![], "Failed black oob");
+        assert_eq!(gs.possible_pawn_moves(57, true), 0, "Failed white oob");
+        assert_eq!(gs.possible_pawn_moves(1, false), 0, "Failed black oob");
 
         gs.en_passant = 16;
-        assert_eq!(gs.possible_pawn_moves(9, true), vec![17, 25], "En-passanted own piece");
+        assert_eq!(gs.possible_pawn_moves(9, true), 1 << 17 | 1 << 25, "En-passanted own piece");
         gs.en_passant = 24;
-        assert_eq!(gs.possible_pawn_moves(17, true), vec![25, 24], "Did not en passant");
+        assert_eq!(gs.possible_pawn_moves(17, true), 1 << 24 | 1 << 25, "Did not en passant");
 
-        assert_eq!(gs.possible_pawn_moves(1, true), vec![], "Moved behind own piece");
+        assert_eq!(gs.possible_pawn_moves(1, true), 0, "Moved behind own piece");
         gs.board.black_pawns |= 1 << 8; // place a black pawn on 8
-        assert_eq!(gs.possible_pawn_moves(1, true), vec![8], "Failed capture");
-
+        assert_eq!(gs.possible_pawn_moves(1, true), 1 << 8, "Failed capture");
     }
 
     #[test]

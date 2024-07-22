@@ -33,7 +33,9 @@ pub fn string_to_square(coord: &str) -> Result<u8, String> {
         return Err(format!("Invalid coordinate input: {coord}"));
     }
 
-    let rank = chars[1].to_digit(10).ok_or_else(|| format!("Invalid rank: {}", chars[1]))? as u8;
+    let rank = chars[1]
+        .to_digit(10)
+        .ok_or_else(|| format!("Invalid rank: {}", chars[1]))? as u8;
     let file = chars[0];
     rank_file_to_square(rank, file)
 }

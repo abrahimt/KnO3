@@ -7,7 +7,7 @@ use crate::Chessboard;
 // https://www.chess.com/terms/fen-chess
 pub struct GameState {
     white_turn: bool,
-    castling: u8,   // KQkq will be represented by 4 bits
+    castling: u8,       // KQkq will be represented by 4 bits
     pub en_passant: u8, // a square that has en passant ability
     half_clock: u32,
     move_count: u32,
@@ -70,15 +70,20 @@ impl GameState {
 
         let passant = match parts[3] {
             "-" => 255, // out of range
-            _ => position::string_to_square(parts[3]).map_err(|e| format!("Invalid en passant: {e}"))?,
+            _ => position::string_to_square(parts[3])
+                .map_err(|e| format!("Invalid en passant: {e}"))?,
         };
 
         Ok(Self {
             white_turn: parts[1] == "w",
             castling: parse_castling_rights(parts[2]),
             en_passant: passant,
-            half_clock: parts[4].parse().map_err(|_| "Invalid half clock".to_string())?,
-            move_count: parts[5].parse().map_err(|_| "Invalid move count".to_string())?,
+            half_clock: parts[4]
+                .parse()
+                .map_err(|_| "Invalid half clock".to_string())?,
+            move_count: parts[5]
+                .parse()
+                .map_err(|_| "Invalid move count".to_string())?,
             board: Chessboard::from_string(parts[0])?,
         })
     }

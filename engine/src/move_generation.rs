@@ -96,14 +96,8 @@ impl GameState {
 
         result |= self.move_until_piece((left_bound..from).rev(), white); // west moves
         result |= self.move_until_piece(from + 1..=right_bound, white); // east moves
-        result |= self.move_until_piece(
-            (from + 8..=63).step_by(8),
-            white
-        ); // north moves
-        result |= self.move_until_piece(
-            (file..from).step_by(8).rev(),
-            white
-        ); // south moves
+        result |= self.move_until_piece((from + 8..=63).step_by(8), white); // north moves
+        result |= self.move_until_piece((file..from).step_by(8).rev(), white); // south moves
 
         result
     }
@@ -111,7 +105,8 @@ impl GameState {
     fn rook_attack_map(&self, pos: u8, white: bool) -> u64 {
         let rank = pos / 8;
         let mut result = 0;
-        let possible_attacks = self.possible_rook_moves(pos, white) & self.board.one_side_pieces(!white);
+        let possible_attacks =
+            self.possible_rook_moves(pos, white) & self.board.one_side_pieces(!white);
 
         // Find the furthest move in each direction (north, east, south, west)
         let north = !((1 << (pos + 1)) - 1); // everything above `pos` is 1
@@ -121,16 +116,24 @@ impl GameState {
         let west = horz & south;
 
         let north_most = (possible_attacks & north).leading_zeros();
-        if north_most < 64 { result |= 1 << (63 - north_most); }
+        if north_most < 64 {
+            result |= 1 << (63 - north_most);
+        }
 
         let south_most = (possible_attacks & south).trailing_zeros();
-        if south_most < 64 { result |= 1 << south_most; }
+        if south_most < 64 {
+            result |= 1 << south_most;
+        }
 
         let east_most = (possible_attacks & east).leading_zeros();
-        if east_most < 64 { result |= 1 << (63 - east_most); }
+        if east_most < 64 {
+            result |= 1 << (63 - east_most);
+        }
 
         let west_most = (possible_attacks & west).trailing_zeros();
-        if west_most < 64 { result |= 1 << west_most; }
+        if west_most < 64 {
+            result |= 1 << west_most;
+        }
 
         result
     }
@@ -162,42 +165,51 @@ impl GameState {
     fn bishop_attack_map(&self, pos: u8, white: bool) -> u64 {
         let mut result = 0;
         let file = pos % 8;
-        let possible_attacks = self.possible_bishop_moves(pos, white) & self.board.one_side_pieces(!white);
+        let possible_attacks =
+            self.possible_bishop_moves(pos, white) & self.board.one_side_pieces(!white);
 
         let west_of_file = (1 << file) - 1_u64;
         let east_of_file = 0xFF & !((1 << (file + 1)) - 1_u64);
 
-        let west = possible_attacks &
-            (west_of_file |
-            west_of_file << 8 |
-            west_of_file << (8 * 2) |
-            west_of_file << (8 * 3) |
-            west_of_file << (8 * 4) |
-            west_of_file << (8 * 5) |
-            west_of_file << (8 * 6) |
-            west_of_file << (8 * 7));
+        let west = possible_attacks
+            & (west_of_file
+                | west_of_file << 8
+                | west_of_file << (8 * 2)
+                | west_of_file << (8 * 3)
+                | west_of_file << (8 * 4)
+                | west_of_file << (8 * 5)
+                | west_of_file << (8 * 6)
+                | west_of_file << (8 * 7));
 
-        let east = possible_attacks &
-            (east_of_file |
-            east_of_file << 8 |
-            east_of_file << (8 * 2) |
-            east_of_file << (8 * 3) |
-            east_of_file << (8 * 4) |
-            east_of_file << (8 * 5) |
-            east_of_file << (8 * 6) |
-            east_of_file << (8 * 7));
+        let east = possible_attacks
+            & (east_of_file
+                | east_of_file << 8
+                | east_of_file << (8 * 2)
+                | east_of_file << (8 * 3)
+                | east_of_file << (8 * 4)
+                | east_of_file << (8 * 5)
+                | east_of_file << (8 * 6)
+                | east_of_file << (8 * 7));
 
         let ne_most = east.leading_zeros();
-        if ne_most < 64 { result |= 1 << (63 - ne_most); }
+        if ne_most < 64 {
+            result |= 1 << (63 - ne_most);
+        }
 
         let nw_most = west.leading_zeros();
-        if nw_most < 64 { result |= 1 << (63 - nw_most); }
+        if nw_most < 64 {
+            result |= 1 << (63 - nw_most);
+        }
 
         let se_most = east.trailing_zeros();
-        if se_most < 64 { result |= 1 << se_most; }
+        if se_most < 64 {
+            result |= 1 << se_most;
+        }
 
         let sw_most = west.trailing_zeros();
-        if sw_most < 64 { result |= 1 << sw_most; }
+        if sw_most < 64 {
+            result |= 1 << sw_most;
+        }
 
         result
     }
@@ -228,16 +240,19 @@ impl GameState {
         while all_moves != 0 {
             let to = all_moves.trailing_zeros() as u8;
             let mask = 1 << to;
-            if !self.position_under_attack(to, white) { filtered |= mask; }
+            if !self.position_under_attack(to, white) {
+                filtered |= mask;
+            }
             all_moves &= all_moves - 1;
         }
 
         filtered
     }
 
-    fn king_attack_map(&self, pos: u8, white: bool) -> u64 {
-        self.possible_king_moves(pos, white) & self.board.one_side_pieces(!white)
-    }
+    // Clippy is mad this isn't being used anywhere yet -Cooper
+    // fn king_attack_map(&self, pos: u8, white: bool) -> u64 {
+    //     self.possible_king_moves(pos, white) & self.board.one_side_pieces(!white)
+    // }
 
     fn king_attack_map_ignore_check(&self, pos: u8, white: bool) -> u64 {
         self.possible_king_moves_ignore_check(pos, white) & self.board.one_side_pieces(!white)
@@ -283,35 +298,63 @@ impl GameState {
     /// Can this square be taken by the opponent next turn?
     fn position_under_attack(&self, square: u8, white: bool) -> bool {
         let file = square % 8;
-        let opp_rooks = if white { self.board.black_rooks | self.board.black_queen } else { self.board.white_rooks | self.board.white_queen };
-        let opp_bish = if white { self.board.black_bishops | self.board.black_queen } else { self.board.white_bishops | self.board.white_queen };
-        let opp_knights = if white { self.board.black_knights } else { self.board.white_knights };
-        let opp_king = if white { self.board.black_king } else { self.board.white_king };
-        let opp_pawn = if white { self.board.black_pawns } else { self.board.white_pawns };
-
-        let pawn_attack_map = if white {
-            if square >= 48 { 0 }
-            else {
-                let mut map = 0;
-                if file != 0 { map |= 1 << (square + 7); }
-                if file != 7 { map |= 1 << (square + 9); }
-                map
-            }
+        let opp_rooks = if white {
+            self.board.black_rooks | self.board.black_queen
         } else {
-            if square <= 15 { 0 }
-            else {
-                let mut map = 0;
-                if file != 0 { map |= 1 << (square - 9); }
-                if file != 7 { map |= 1 << (square - 7); }
-                map
-            }
+            self.board.white_rooks | self.board.white_queen
+        };
+        let opp_bish = if white {
+            self.board.black_bishops | self.board.black_queen
+        } else {
+            self.board.white_bishops | self.board.white_queen
+        };
+        let opp_knights = if white {
+            self.board.black_knights
+        } else {
+            self.board.white_knights
+        };
+        let opp_king = if white {
+            self.board.black_king
+        } else {
+            self.board.white_king
+        };
+        let opp_pawn = if white {
+            self.board.black_pawns
+        } else {
+            self.board.white_pawns
         };
 
-        self.rook_attack_map(square, white) & opp_rooks != 0 ||
-            self.bishop_attack_map(square, white) & opp_bish != 0 ||
-            self.knight_attack_map(square, white) & opp_knights != 0 ||
-            self.king_attack_map_ignore_check(square, white) & opp_king != 0 ||
-            pawn_attack_map & opp_pawn != 0
+        let pawn_attack_map = if white {
+            if square >= 48 {
+                0
+            } else {
+                let mut map = 0;
+                if file != 0 {
+                    map |= 1 << (square + 7);
+                }
+                if file != 7 {
+                    map |= 1 << (square + 9);
+                }
+                map
+            }
+        } else if square <= 15 {
+            0
+        } else {
+            let mut map = 0;
+            if file != 0 {
+                map |= 1 << (square - 9);
+            }
+            if file != 7 {
+                map |= 1 << (square - 7);
+            }
+            map
+        };
+
+        self.rook_attack_map(square, white) & opp_rooks != 0
+            || self.bishop_attack_map(square, white) & opp_bish != 0
+            || self.knight_attack_map(square, white) & opp_knights != 0
+            || self.king_attack_map_ignore_check(square, white) & opp_king != 0
+            || pawn_attack_map & opp_pawn != 0
     }
 }
 
@@ -324,19 +367,43 @@ mod tests {
     #[test]
     fn test_pawn_moves() {
         let mut gs = GameState::new();
-        assert_eq!(gs.possible_pawn_moves(17, true), 1 << 25, "Failed normal move");
-        assert_eq!(gs.possible_pawn_moves(9, true), 1 << 17 | 1 << 25, "Failed beginning move");
-        assert_eq!(gs.possible_pawn_moves(49, false), 1 << 41 | 1 << 33, "Failed black start move");
-        assert_eq!(gs.possible_pawn_moves(42, true), 1 << 49 | 1 << 51, "Failed white->black capture");
+        assert_eq!(
+            gs.possible_pawn_moves(17, true),
+            1 << 25,
+            "Failed normal move"
+        );
+        assert_eq!(
+            gs.possible_pawn_moves(9, true),
+            1 << 17 | 1 << 25,
+            "Failed beginning move"
+        );
+        assert_eq!(
+            gs.possible_pawn_moves(49, false),
+            1 << 41 | 1 << 33,
+            "Failed black start move"
+        );
+        assert_eq!(
+            gs.possible_pawn_moves(42, true),
+            1 << 49 | 1 << 51,
+            "Failed white->black capture"
+        );
 
         // out of bounds
         assert_eq!(gs.possible_pawn_moves(57, true), 0, "Failed white oob");
         assert_eq!(gs.possible_pawn_moves(1, false), 0, "Failed black oob");
 
         gs.en_passant = 16;
-        assert_eq!(gs.possible_pawn_moves(9, true), 1 << 17 | 1 << 25, "En-passanted own piece");
+        assert_eq!(
+            gs.possible_pawn_moves(9, true),
+            1 << 17 | 1 << 25,
+            "En-passanted own piece"
+        );
         gs.en_passant = 24;
-        assert_eq!(gs.possible_pawn_moves(17, true), 1 << 24 | 1 << 25, "Did not en passant");
+        assert_eq!(
+            gs.possible_pawn_moves(17, true),
+            1 << 24 | 1 << 25,
+            "Did not en passant"
+        );
 
         assert_eq!(gs.possible_pawn_moves(1, true), 0, "Moved behind own piece");
         gs.board.black_pawns |= 1 << 8; // place a black pawn on 8
@@ -349,17 +416,30 @@ mod tests {
         assert_eq!(gs.possible_rook_moves(0, true), 0, "Captured own");
         assert_eq!(
             gs.possible_rook_moves(33, true),
-            1 << 32 | 1 << 34 | 1 << 35 | 1 << 36 | 1 << 37 | 1 << 38 | 1 << 39 | 1 << 41 | 1 << 49 | 1 << 25 | 1 << 17,
+            1 << 32
+                | 1 << 34
+                | 1 << 35
+                | 1 << 36
+                | 1 << 37
+                | 1 << 38
+                | 1 << 39
+                | 1 << 41
+                | 1 << 49
+                | 1 << 25
+                | 1 << 17,
             "Failed normal move"
         );
-
     }
 
     #[test]
     fn test_rook_attacks() {
         let mut gs = GameState::new();
         assert_eq!(gs.rook_attack_map(8, true), 1 << 48, "Did not attack north");
-        assert_eq!(gs.rook_attack_map(49, false), 1 << 9, "Did not attack south");
+        assert_eq!(
+            gs.rook_attack_map(49, false),
+            1 << 9,
+            "Did not attack south"
+        );
 
         gs.board = Chessboard::empty();
         assert_eq!(gs.rook_attack_map(0, true), 0, "Attacking nothing");
@@ -371,8 +451,11 @@ mod tests {
         // surround a rook with pieces
         let pawns = 1 << 1 | 1 << 8 | 1 << 17 | 1 << 10;
         gs.board.black_pawns = pawns;
-        assert_eq!(gs.rook_attack_map(9, true), pawns, "Did not attack all directions");
-
+        assert_eq!(
+            gs.rook_attack_map(9, true),
+            pawns,
+            "Did not attack all directions"
+        );
     }
 
     #[test]
@@ -396,22 +479,37 @@ mod tests {
         gs.board.black_pawns |= 1 << 18;
         assert_eq!(gs.bishop_attack_map(0, true), 1 << 18);
         gs.board.black_pawns |= 1 << 9;
-        assert_eq!(gs.bishop_attack_map(0, true), 1 << 9, "Attacked through piece");
+        assert_eq!(
+            gs.bishop_attack_map(0, true),
+            1 << 9,
+            "Attacked through piece"
+        );
 
         let pawns = 1 << 16 | 1 << 18 | 1 | 1 << 2;
         gs.board.black_pawns = pawns;
-        assert_eq!(gs.bishop_attack_map(9, true), pawns, "Did not attack all directions");
+        assert_eq!(
+            gs.bishop_attack_map(9, true),
+            pawns,
+            "Did not attack all directions"
+        );
 
         gs.board.black_pawns = 0;
         gs.board.white_pawns = pawns;
-        assert_eq!(gs.bishop_attack_map(9, false), pawns, "Black did not attack all directions");
+        assert_eq!(
+            gs.bishop_attack_map(9, false),
+            pawns,
+            "Black did not attack all directions"
+        );
     }
 
     #[test]
     fn test_knight_moves() {
         let gs = GameState::new();
         assert_eq!(gs.possible_knight_moves(1, true), 1 << 16 | 1 << 18); // white left starting
-        assert_eq!(gs.possible_knight_moves(1, false), 1 << 11 | 1 << 16 | 1 << 18); // black taking
+        assert_eq!(
+            gs.possible_knight_moves(1, false),
+            1 << 11 | 1 << 16 | 1 << 18
+        ); // black taking
         assert_eq!(gs.possible_knight_moves(6, true), 1 << 21 | 1 << 23); // white right starting
         assert_eq!(
             gs.possible_knight_moves(34, true),
@@ -426,7 +524,10 @@ mod tests {
         let gs = GameState::new();
         assert_eq!(gs.possible_king_moves(4, true), 0, "Captured own");
 
-        assert_eq!(gs.possible_king_moves_ignore_check(4, false), 1 << 3 | 1 << 5 | 1 << 11 | 1 << 12 | 1 << 13);
+        assert_eq!(
+            gs.possible_king_moves_ignore_check(4, false),
+            1 << 3 | 1 << 5 | 1 << 11 | 1 << 12 | 1 << 13
+        );
         assert_eq!(gs.possible_king_moves(4, false), 0, "Moved into check");
 
         assert_eq!(
@@ -445,7 +546,11 @@ mod tests {
             1 << 18 | 1 << 26 | 1 << 34 | 1 << 42 | 1 << 50,
             "White should move in straight line to black"
         );
-        assert_eq!(gs.move_until_piece(itr, false), 1 << 18 | 1 << 26 | 1 << 34 | 1 << 42, "Black should move to next black");
+        assert_eq!(
+            gs.move_until_piece(itr, false),
+            1 << 18 | 1 << 26 | 1 << 34 | 1 << 42,
+            "Black should move to next black"
+        );
 
         assert_eq!(gs.move_until_piece(0..7, true), 0);
         assert_eq!(gs.move_until_piece(0..7, false), 1); // can eat this piece
@@ -484,7 +589,10 @@ mod tests {
         gs.board.black_pawns = 1 << 16;
         assert!(gs.position_under_attack(9, true), "Pawn not attacking");
         gs.board.black_pawns = 1 << 2;
-        assert!(!gs.position_under_attack(9, true), "Black pawn attacking backwards");
+        assert!(
+            !gs.position_under_attack(9, true),
+            "Black pawn attacking backwards"
+        );
         gs.board.black_pawns = 0;
 
         gs.board.black_queen = 1 << 57;

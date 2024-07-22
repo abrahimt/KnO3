@@ -137,15 +137,15 @@ impl GameState {
     }
 
     // TODO: Make sure they are not moving into check/mate
-    fn possible_king_moves(&self, from: u8, white: bool) -> Vec<u8> {
-        let mut result = Vec::new();
+    fn possible_king_moves(&self, from: u8, white: bool) -> u64 {
+        let mut result = 0;
         let directions: [i8; 8] = [-1, 1, -7, 7, -8, 8, -9, 9];
         let own = self.board.one_side_pieces(white);
 
         for &direction in &directions {
             let target = from as i8 + direction;
             if (0..=63).contains(&target) && own & (1 << target) == 0 {
-                result.push(target as u8);
+                result |= 1 << target;
             }
         }
 
@@ -250,12 +250,12 @@ mod tests {
     #[test]
     fn test_king_moves() {
         let gs = GameState::new();
-        assert_eq!(gs.possible_king_moves(4, true), vec![], "Captured own");
+        assert_eq!(gs.possible_king_moves(4, true), 0, "Captured own");
                                                              // TODO: this will fail when checking is added
-        assert_eq!(gs.possible_king_moves(4, false), vec![3, 5, 11, 12, 13]);
+        assert_eq!(gs.possible_king_moves(4, false), 1 << 3 | 1 << 5 | 1 << 11 | 1 << 12 | 1 << 13);
         assert_eq!(
             gs.possible_king_moves(34, true),
-            vec![33, 35, 27, 41, 26, 42, 25, 43],
+            1 << 33 | 1 << 35 | 1 << 27 | 1 << 41 | 1 << 26 | 1 << 42 | 1 << 25 | 1 << 43,
             "Failed normal move"
         );
     }

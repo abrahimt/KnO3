@@ -206,8 +206,7 @@ impl GameState {
         self.possible_rook_moves(from, white) | self.possible_bishop_moves(from, white)
     }
 
-    // TODO: Make sure they are not moving into check/mate
-    fn possible_king_moves(&self, from: u8, white: bool) -> u64 {
+    fn possible_king_moves_ignore_check(&self, from: u8, white: bool) -> u64 {
         let mut result = 0;
         let directions: [i8; 8] = [-1, 1, -7, 7, -8, 8, -9, 9];
         let own = self.board.one_side_pieces(white);
@@ -222,8 +221,26 @@ impl GameState {
         result
     }
 
+    fn possible_king_moves(&self, from: u8, white: bool) -> u64 {
+        let mut all_moves = self.possible_king_moves_ignore_check(from, white);
+        let mut filtered = 0;
+
+        while all_moves != 0 {
+            let to = all_moves.trailing_zeros() as u8;
+            let mask = 1 << to;
+            if !self.position_under_attack(to, white) { filtered |= mask; }
+            all_moves &= all_moves - 1;
+        }
+
+        filtered
+    }
+
     fn king_attack_map(&self, pos: u8, white: bool) -> u64 {
         self.possible_king_moves(pos, white) & self.board.one_side_pieces(!white)
+    }
+
+    fn king_attack_map_ignore_check(&self, pos: u8, white: bool) -> u64 {
+        self.possible_king_moves_ignore_check(pos, white) & self.board.one_side_pieces(!white)
     }
 
     fn possible_knight_moves(&self, from: u8, white: bool) -> u64 {
@@ -293,7 +310,7 @@ impl GameState {
         self.rook_attack_map(square, white) & opp_rooks != 0 ||
             self.bishop_attack_map(square, white) & opp_bish != 0 ||
             self.knight_attack_map(square, white) & opp_knights != 0 ||
-            self.king_attack_map(square, white) & opp_king != 0 ||
+            self.king_attack_map_ignore_check(square, white) & opp_king != 0 ||
             pawn_attack_map & opp_pawn != 0
     }
 }
@@ -408,11 +425,13 @@ mod tests {
     fn test_king_moves() {
         let gs = GameState::new();
         assert_eq!(gs.possible_king_moves(4, true), 0, "Captured own");
-                                                             // TODO: this will fail when checking is added
-        assert_eq!(gs.possible_king_moves(4, false), 1 << 3 | 1 << 5 | 1 << 11 | 1 << 12 | 1 << 13);
+
+        assert_eq!(gs.possible_king_moves_ignore_check(4, false), 1 << 3 | 1 << 5 | 1 << 11 | 1 << 12 | 1 << 13);
+        assert_eq!(gs.possible_king_moves(4, false), 0, "Moved into check");
+
         assert_eq!(
             gs.possible_king_moves(34, true),
-            1 << 33 | 1 << 35 | 1 << 27 | 1 << 41 | 1 << 26 | 1 << 42 | 1 << 25 | 1 << 43,
+            1 << 33 | 1 << 35 | 1 << 27 | 1 << 26 | 1 << 25,
             "Failed normal move"
         );
     }

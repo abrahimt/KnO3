@@ -144,7 +144,7 @@ impl GameState {
 
         let inv_file = 7 - file; // inverse rank (how many rows we can move left)
         let ne_bound = min(63, from + inv_file * 9);
-        let se_bound = max(7, from.saturating_sub(inv_file * 7));
+        let se_bound = max(0, from.saturating_sub(inv_file * 7));
 
         let nw = (from + 7..=nw_bound).step_by(7);
         let sw = (sw_bound..=from.saturating_sub(9)).rev().step_by(9);
@@ -155,6 +155,49 @@ impl GameState {
         result |= self.move_until_piece(sw, white);
         result |= self.move_until_piece(ne, white);
         result |= self.move_until_piece(se, white);
+
+        result
+    }
+
+    fn bishop_attack_map(&self, pos: u8, white: bool) -> u64 {
+        let mut result = 0;
+        let file = pos % 8;
+        let possible_attacks = self.possible_bishop_moves(pos, white) & self.board.one_side_pieces(!white);
+
+        let west_of_file = (1 << file) - 1_u64;
+        let east_of_file = 0xFF & !((1 << (file + 1)) - 1_u64);
+
+        let west = possible_attacks &
+            (west_of_file |
+            west_of_file << 8 |
+            west_of_file << (8 * 2) |
+            west_of_file << (8 * 3) |
+            west_of_file << (8 * 4) |
+            west_of_file << (8 * 5) |
+            west_of_file << (8 * 6) |
+            west_of_file << (8 * 7));
+
+        let east = possible_attacks &
+            (east_of_file |
+            east_of_file << 8 |
+            east_of_file << (8 * 2) |
+            east_of_file << (8 * 3) |
+            east_of_file << (8 * 4) |
+            east_of_file << (8 * 5) |
+            east_of_file << (8 * 6) |
+            east_of_file << (8 * 7));
+
+        let ne_most = east.leading_zeros();
+        if ne_most < 64 { result |= 1 << (63 - ne_most); }
+
+        let nw_most = west.leading_zeros();
+        if nw_most < 64 { result |= 1 << (63 - nw_most); }
+
+        let se_most = east.trailing_zeros();
+        if se_most < 64 { result |= 1 << se_most; }
+
+        let sw_most = west.trailing_zeros();
+        if sw_most < 64 { result |= 1 << sw_most; }
 
         result
     }
@@ -289,6 +332,27 @@ mod tests {
             1 << 41 | 1 << 48 | 1 << 25 | 1 << 16 | 1 << 43 | 1 << 52 | 1 << 27 | 1 << 20,
             "Failed normal move"
         );
+    }
+
+    #[test]
+    fn test_bishop_attacks() {
+        let mut gs = GameState::new();
+        gs.board = Chessboard::empty();
+
+        assert_eq!(gs.bishop_attack_map(0, true), 0, "Attacking nothing");
+
+        gs.board.black_pawns |= 1 << 18;
+        assert_eq!(gs.bishop_attack_map(0, true), 1 << 18);
+        gs.board.black_pawns |= 1 << 9;
+        assert_eq!(gs.bishop_attack_map(0, true), 1 << 9, "Attacked through piece");
+
+        let pawns = 1 << 16 | 1 << 18 | 1 | 1 << 2;
+        gs.board.black_pawns = pawns;
+        assert_eq!(gs.bishop_attack_map(9, true), pawns, "Did not attack all directions");
+
+        gs.board.black_pawns = 0;
+        gs.board.white_pawns = pawns;
+        assert_eq!(gs.bishop_attack_map(9, false), pawns, "Black did not attack all directions");
     }
 
     #[test]

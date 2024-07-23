@@ -245,8 +245,35 @@ impl GameState {
             }
             all_moves &= all_moves - 1;
         }
+        //only getting not setting. GET that into your head
+        //is castling possible?
+        let K = self.castling & 0b1000 != 0;
+        let Q = self.castling & 0b0100 != 0;
+        let k = self.castling & 0b0010 != 0;
+        let q = self.castling & 0b0001 != 0;
 
-        filtered
+        if white && !(K || Q) || !white && !(k || q) || self.position_under_attack(from, white) {
+            return filtered;
+        }
+        
+        let rank = from / 8;
+
+        // Find the furthest move in each direction (north, east, south, west)
+        let greater_than = !((1 << (from + 1)) - 1); // everything above `pos` is 1
+        let less_than = (1 << from) - 1; // everything below `pos` is 1
+        let horz = 0xFF << (rank * 8); // everything on the same rank as `pos`
+        let east = horz & greater_than; //king side
+        let west = horz & less_than; //queen side
+        // think about using horz to make black white neutral if statements
+        if east & 0b0110000 == 0 && (K && white || k && !white) {
+            filtered |= 0b01000000;
+        }
+        if west & 0b00001110 == 0 && (Q && white || q && !white) {
+            filtered |= 0b00000100;
+        }
+        filtered //all moves the king can make 
+        
+
     }
 
     // Clippy is mad this isn't being used anywhere yet -Cooper

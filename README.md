@@ -2,7 +2,7 @@
 
 This project is a chess engine built in rust. It provides an engine for playing chess, and can be attached to any GUI
 ## Primary Contributors
-- [Cooper Hanson](https://github.com/chanson02/)
+- [Cooper Hanson](https://github.com/chanson02)
 - [Abrahim Toutoungi](https://github.com/abrahimt)
 
 ## Usage

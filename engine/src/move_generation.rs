@@ -245,14 +245,13 @@ impl GameState {
             }
             all_moves &= all_moves - 1;
         }
-        //only getting not setting. GET that into your head
-        //is castling possible?
-        let K = self.castling & 0b1000 != 0;
-        let Q = self.castling & 0b0100 != 0;
+
+        let capital_k = self.castling & 0b1000 != 0;
+        let capital_q = self.castling & 0b0100 != 0;
         let k = self.castling & 0b0010 != 0;
         let q = self.castling & 0b0001 != 0;
 
-        if white && !(K || Q) || !white && !(k || q) || self.position_under_attack(from, white) {
+        if white && !(capital_k || capital_q) || !(white || k || q) || self.position_under_attack(from, white) {
             return filtered;
         }
         
@@ -265,10 +264,10 @@ impl GameState {
         let east = horz & greater_than; //king side
         let west = horz & less_than; //queen side
         // think about using horz to make black white neutral if statements
-        if east & 0b0110000 == 0 && (K && white || k && !white) {
+        if east & 0b0110000 == 0 && (capital_k && white || k && !white) {
             filtered |= 0b01000000;
         }
-        if west & 0b00001110 == 0 && (Q && white || q && !white) {
+        if west & 0b00001110 == 0 && (capital_q && white || q && !white) {
             filtered |= 0b00000100;
         }
         filtered //all moves the king can make 

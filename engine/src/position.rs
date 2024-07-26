@@ -41,7 +41,7 @@ pub fn string_to_square(coord: &str) -> Result<u8, String> {
 }
 
 /// Find the squares turned on in this bitboard
-pub fn active_squares(mut bitboard: i64) -> Vec<u8> {
+pub fn active_squares(mut bitboard: u64) -> Vec<u8> {
     let mut squares = Vec::new();
     let mut index = 0;
 

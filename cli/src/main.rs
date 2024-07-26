@@ -11,7 +11,6 @@ enum Error {
     ArgumentError(String),
 }
 
-// I don't think this is doing anything but it's suppressing a warning -Cooper
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -74,8 +73,7 @@ fn main() -> Result<(), Error> {
     if let Some(position) = matches.get_one::<String>("get-moves") {
         let square = position::string_to_square(position)
             .map_err(|e| Error::ArgumentError(e.to_string()))?;
-        let moves = gs
-            .possible_moves(square)
+        let moves = position::active_squares(gs.possible_moves(square))
             .into_iter()
             .map(position::square_to_string)
             .collect::<Vec<String>>()

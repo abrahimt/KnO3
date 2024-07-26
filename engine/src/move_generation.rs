@@ -236,7 +236,8 @@ impl GameState {
     fn possible_king_moves(&self, from: u8, white: bool) -> u64 {
         let mut all_moves = self.possible_king_moves_ignore_check(from, white);
         let mut filtered = 0;
-
+        
+        // check for squares that aren't under attack
         while all_moves != 0 {
             let to = all_moves.trailing_zeros() as u8;
             let mask = 1 << to;
@@ -245,7 +246,7 @@ impl GameState {
             }
             all_moves &= all_moves - 1;
         }
-
+        // check for castling possibility
         let capital_k = self.castling & 0b1000 != 0;
         let capital_q = self.castling & 0b0100 != 0;
         let k = self.castling & 0b0010 != 0;
@@ -266,7 +267,8 @@ impl GameState {
         let horz = 0xFF << (rank * 8); // everything on the same rank as `pos`
         let east = horz & greater_than; //king side
         let west = horz & less_than; //queen side
-                                     // think about using horz to make black white neutral if statements
+        
+        // todo: think about using horz to make black white neutral if statements
         if east & 0b0110000 == 0 && (capital_k && white || k && !white) {
             filtered |= 0b01000000;
         }
@@ -276,6 +278,7 @@ impl GameState {
         filtered //all moves the king can make
     }
 
+    // Todo: figure this bad boy out
     // Clippy is mad this isn't being used anywhere yet -Cooper
     // fn king_attack_map(&self, pos: u8, white: bool) -> u64 {
     //     self.possible_king_moves(pos, white) & self.board.one_side_pieces(!white)

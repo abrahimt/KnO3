@@ -1,7 +1,6 @@
 use super::GameState;
 use std::cmp::{max, min};
 
-// TODO: Castling
 impl GameState {
     /// Move squares in iterator until a piece is hit
     fn move_until_piece<I>(&self, range: I, white: bool) -> u64
@@ -237,7 +236,7 @@ impl GameState {
         let mut all_moves = self.possible_king_moves_ignore_check(from, white);
         let mut filtered = 0;
         
-        // check for squares that aren't under attack
+        // Filter out squares under attack
         while all_moves != 0 {
             let to = all_moves.trailing_zeros() as u8;
             let mask = 1 << to;
@@ -246,43 +245,36 @@ impl GameState {
             }
             all_moves &= all_moves - 1;
         }
+
         // check for castling possibility
         let capital_k = self.castling & 0b1000 != 0;
         let capital_q = self.castling & 0b0100 != 0;
         let k = self.castling & 0b0010 != 0;
         let q = self.castling & 0b0001 != 0;
 
-        if white && !(capital_k || capital_q)
-            || !(white || k || q)
-            || self.position_under_attack(from, white)
-        {
-            return filtered;
+        // check which side we can castle too
+        let king_side = capital_k & white || k & !white;
+        let queen_side = capital_q & white || q & !white;
+        if (!king_side & !queen_side) || self.position_under_attack(from, white) { return filtered; }
+
+        let shift = 8 * (from / 8);
+        let greater_than = !((1u64 << (from + 1)) - 1); // everything above `pos` is 1
+        let less_than = (1u64 << from) - 1; // everything below `pos` is 1
+        let horz = (0xFF << shift) & self.board.both_side_pieces(); // everything on the same rank as `pos`
+        let east = horz & greater_than;
+        let west = horz & less_than;
+
+        let blocked_k_side = !king_side || east & (0b01100000 << shift) != 0;
+        let blocked_q_side = !queen_side || west & (0b00001110 << shift) != 0;
+        if !blocked_k_side && !self.position_under_attack(from + 1, white) && !self.position_under_attack(from + 2, white) {
+            filtered |= 0b01000000 << shift;
+        }
+        if !blocked_q_side && !self.position_under_attack(from - 1, white) && !self.position_under_attack(from - 2, white) {
+            filtered |= 0b00000100 << shift;
         }
 
-        let rank = from / 8;
-
-        // Find the furthest move in each direction (north, east, south, west)
-        let greater_than = !((1 << (from + 1)) - 1); // everything above `pos` is 1
-        let less_than = (1 << from) - 1; // everything below `pos` is 1
-        let horz = 0xFF << (rank * 8); // everything on the same rank as `pos`
-        let east = horz & greater_than; //king side
-        let west = horz & less_than; //queen side
-        
-        // todo: think about using horz to make black white neutral if statements
-        if east & 0b0110000 == 0 && (capital_k && white || k && !white) {
-            filtered |= 0b01000000;
-        }
-        if west & 0b00001110 == 0 && (capital_q && white || q && !white) {
-            filtered |= 0b00000100;
-        }
         filtered //all moves the king can make
     }
-
-    // Todo: figure this bad boy out
-    // Clippy is mad this isn't being used anywhere yet -Cooper
-    // fn king_attack_map(&self, pos: u8, white: bool) -> u64 {
-    //     self.possible_king_moves(pos, white) & self.board.one_side_pieces(!white)
-    // }
 
     fn king_attack_map_ignore_check(&self, pos: u8, white: bool) -> u64 {
         self.possible_king_moves_ignore_check(pos, white) & self.board.one_side_pieces(!white)
@@ -551,7 +543,8 @@ mod tests {
 
     #[test]
     fn test_king_moves() {
-        let gs = GameState::new();
+        let mut gs = GameState::new();
+        gs.castling = 0;
         assert_eq!(gs.possible_king_moves(4, true), 0, "Captured own");
 
         assert_eq!(
@@ -565,6 +558,23 @@ mod tests {
             1 << 33 | 1 << 35 | 1 << 27 | 1 << 26 | 1 << 25,
             "Failed normal move"
         );
+    }
+
+    #[test]
+    fn test_castling() {
+        let mut gs = GameState::new();
+        gs.board = Chessboard::empty();
+        gs.castling = 0b1111;
+
+        assert!(gs.possible_king_moves(4, true) & (1 << 6) != 0, "White king did not castle king side");
+        assert!(gs.possible_king_moves(4, true) & (1 << 2) != 0, "White king did not castle queen side");
+        assert!(gs.possible_king_moves(60, false) & (1 << 62 | 1 << 58) != 0, "Black king did not castle");
+
+        gs.board.black_rooks = 1 << 13;
+        gs.castling = 0b1001;
+        assert!(gs.possible_king_moves(4, true) & (1 << 6) == 0, "Castled through attack");
+        assert!(gs.possible_king_moves(4, true) & (1 << 2) == 0, "White castled after piece moved");
+        assert!(gs.possible_king_moves(60, false) & (1 << 62) == 0, "Black castled after piece moved");
     }
 
     #[test]

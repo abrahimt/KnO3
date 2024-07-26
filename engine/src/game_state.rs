@@ -7,7 +7,7 @@ use crate::Chessboard;
 // https://www.chess.com/terms/fen-chess
 pub struct GameState {
     white_turn: bool,
-    pub castling: u8,       // KQkq will be represented by 4 bits
+    pub castling: u8,   // KQkq will be represented by 4 bits
     pub en_passant: u8, // a square that has en passant ability
     half_clock: u32,
     move_count: u32,

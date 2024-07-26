@@ -251,10 +251,13 @@ impl GameState {
         let k = self.castling & 0b0010 != 0;
         let q = self.castling & 0b0001 != 0;
 
-        if white && !(capital_k || capital_q) || !(white || k || q) || self.position_under_attack(from, white) {
+        if white && !(capital_k || capital_q)
+            || !(white || k || q)
+            || self.position_under_attack(from, white)
+        {
             return filtered;
         }
-        
+
         let rank = from / 8;
 
         // Find the furthest move in each direction (north, east, south, west)
@@ -263,16 +266,14 @@ impl GameState {
         let horz = 0xFF << (rank * 8); // everything on the same rank as `pos`
         let east = horz & greater_than; //king side
         let west = horz & less_than; //queen side
-        // think about using horz to make black white neutral if statements
+                                     // think about using horz to make black white neutral if statements
         if east & 0b0110000 == 0 && (capital_k && white || k && !white) {
             filtered |= 0b01000000;
         }
         if west & 0b00001110 == 0 && (capital_q && white || q && !white) {
             filtered |= 0b00000100;
         }
-        filtered //all moves the king can make 
-        
-
+        filtered //all moves the king can make
     }
 
     // Clippy is mad this isn't being used anywhere yet -Cooper

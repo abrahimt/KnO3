@@ -235,7 +235,7 @@ impl GameState {
     fn possible_king_moves(&self, from: u8, white: bool) -> u64 {
         let mut all_moves = self.possible_king_moves_ignore_check(from, white);
         let mut filtered = 0;
-        
+
         // Filter out squares under attack
         while all_moves != 0 {
             let to = all_moves.trailing_zeros() as u8;
@@ -255,7 +255,9 @@ impl GameState {
         // check which side we can castle too
         let king_side = capital_k & white || k & !white;
         let queen_side = capital_q & white || q & !white;
-        if (!king_side & !queen_side) || self.position_under_attack(from, white) { return filtered; }
+        if (!king_side & !queen_side) || self.position_under_attack(from, white) {
+            return filtered;
+        }
 
         let shift = 8 * (from / 8);
         let greater_than = !((1u64 << (from + 1)) - 1); // everything above `pos` is 1
@@ -266,10 +268,16 @@ impl GameState {
 
         let blocked_k_side = !king_side || east & (0b01100000 << shift) != 0;
         let blocked_q_side = !queen_side || west & (0b00001110 << shift) != 0;
-        if !blocked_k_side && !self.position_under_attack(from + 1, white) && !self.position_under_attack(from + 2, white) {
+        if !blocked_k_side
+            && !self.position_under_attack(from + 1, white)
+            && !self.position_under_attack(from + 2, white)
+        {
             filtered |= 0b01000000 << shift;
         }
-        if !blocked_q_side && !self.position_under_attack(from - 1, white) && !self.position_under_attack(from - 2, white) {
+        if !blocked_q_side
+            && !self.position_under_attack(from - 1, white)
+            && !self.position_under_attack(from - 2, white)
+        {
             filtered |= 0b00000100 << shift;
         }
 
@@ -566,15 +574,33 @@ mod tests {
         gs.board = Chessboard::empty();
         gs.castling = 0b1111;
 
-        assert!(gs.possible_king_moves(4, true) & (1 << 6) != 0, "White king did not castle king side");
-        assert!(gs.possible_king_moves(4, true) & (1 << 2) != 0, "White king did not castle queen side");
-        assert!(gs.possible_king_moves(60, false) & (1 << 62 | 1 << 58) != 0, "Black king did not castle");
+        assert!(
+            gs.possible_king_moves(4, true) & (1 << 6) != 0,
+            "White king did not castle king side"
+        );
+        assert!(
+            gs.possible_king_moves(4, true) & (1 << 2) != 0,
+            "White king did not castle queen side"
+        );
+        assert!(
+            gs.possible_king_moves(60, false) & (1 << 62 | 1 << 58) != 0,
+            "Black king did not castle"
+        );
 
         gs.board.black_rooks = 1 << 13;
         gs.castling = 0b1001;
-        assert!(gs.possible_king_moves(4, true) & (1 << 6) == 0, "Castled through attack");
-        assert!(gs.possible_king_moves(4, true) & (1 << 2) == 0, "White castled after piece moved");
-        assert!(gs.possible_king_moves(60, false) & (1 << 62) == 0, "Black castled after piece moved");
+        assert!(
+            gs.possible_king_moves(4, true) & (1 << 6) == 0,
+            "Castled through attack"
+        );
+        assert!(
+            gs.possible_king_moves(4, true) & (1 << 2) == 0,
+            "White castled after piece moved"
+        );
+        assert!(
+            gs.possible_king_moves(60, false) & (1 << 62) == 0,
+            "Black castled after piece moved"
+        );
     }
 
     #[test]

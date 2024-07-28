@@ -5,8 +5,13 @@ use std::cmp::{max, min};
 
 impl GameState {
     pub fn move_piece(&mut self, from: u8, to: u8) {
-        self.en_passant = 255;
+        let piece = match self.board.piece_at_position(from) {
+            None => return,
+            Some(p) => p,
+        };
+        let piece_type = piece.to_ascii_lowercase();
 
+        // Clear position we're landing on
         if let Some(piece) = self.board.piece_at_position(to) {
             let to_piece_bitboard = self
                 .board
@@ -15,20 +20,25 @@ impl GameState {
             *to_piece_bitboard &= !(1 << to);
         }
 
-        if let Some(piece) = self.board.piece_at_position(from) {
-            let from_piece_bitboard = self
-                .board
-                .piece_bitboard(piece)
-                .expect("we already validate this");
-            *from_piece_bitboard &= !(1 << from);
-            *from_piece_bitboard |= 1 << to;
+        // Clear enemy pawn if en passanted
+        if piece_type == 'p' && to == self.en_passant {
+            let enemy_pawns = if self.white_turn { self.board.piece_bitboard('p').expect("Black pawns") } else { self.board.piece_bitboard('P').expect("White pawns") };
+            *enemy_pawns &= !(1 << if self.white_turn { to.saturating_sub(8) } else { to + 8 });
+        }
 
-            // check en passant
-            if piece.to_ascii_lowercase() == 'p' {
-                let en_passant_square = (from + to) / 2;
-                if from + 8 == en_passant_square || from.saturating_sub(8) == en_passant_square {
-                    self.en_passant = en_passant_square;
-                }
+        self.en_passant = 255;
+        let from_piece_bitboard = self
+            .board
+            .piece_bitboard(piece)
+            .expect("we already validate this");
+        *from_piece_bitboard &= !(1 << from); // Clear position coming from
+        *from_piece_bitboard |= 1 << to; // Set position landing on
+
+        // check en passant
+        if piece.to_ascii_lowercase() == 'p' {
+            let en_passant_square = (from + to) / 2;
+            if from + 8 == en_passant_square || from.saturating_sub(8) == en_passant_square {
+                self.en_passant = en_passant_square;
             }
         }
     }
@@ -770,6 +780,13 @@ mod tests {
         assert_eq!(gs.en_passant, 40, "Black pawn did not set en passant");
         gs.move_piece(32, 24);
         assert!(gs.en_passant > 63, "En passant did not reset");
+
+        gs.board = Chessboard::empty();
+        gs.board.black_pawns |= 1 << 32;
+        gs.board.white_pawns |= 1 << 33;
+        gs.en_passant = 40;
+        gs.move_piece(33, 40);
+        assert!(gs.board.black_pawns & (1 << 32) == 0, "En Passanted pawn not cleared after capture");
     }
 
     #[test]

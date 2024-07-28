@@ -18,15 +18,15 @@ The engine is a library that is completely detatched from the CLI. This would al
 
 ### Board Representation
 
-Each rank-file position can be represented as a 0-63 decimal number. The positions are shown in the table below. A 64bit bitmap can be used to represent an entire board. If a piece is at position H7 (63), the first bit (64) will be enabled.
+Each rank-file position can be represented as a 0-63 decimal number. The positions are shown in the table below. A 64bit bitmap can be used to represent an entire board. If a piece is at position H8 (63), the first bit (64) will be enabled.
 
 | R | A | B | C | D | E | F | G | H |
 |---|---|---|---|---|---|---|---|---|
-| 7 | 56| 57| 58| 59| 60| 61| 62| 63|
-| 6 | 48| 49| 50| 51| 52| 53| 54| 55|
-| 5 | 40| 41| 42| 43| 44| 45| 46| 47|
-| 4 | 32| 33| 34| 35| 36| 37| 38| 39|
-| 3 | 24| 25| 26| 27| 28| 29| 30| 31|
-| 2 | 16| 17| 18| 19| 20| 21| 22| 23|
-| 1 |  8|  9| 10| 11| 12| 13| 14| 15|
-| 0 |  0|  1|  2|  3|  4|  5|  6|  7|
+| *8* | 56| 57| 58| 59| 60| 61| 62| 63|
+| *7* | 48| 49| 50| 51| 52| 53| 54| 55|
+| *6* | 40| 41| 42| 43| 44| 45| 46| 47|
+| *5* | 32| 33| 34| 35| 36| 37| 38| 39|
+| *4* | 24| 25| 26| 27| 28| 29| 30| 31|
+| *3* | 16| 17| 18| 19| 20| 21| 22| 23|
+| *2* |  8|  9| 10| 11| 12| 13| 14| 15|
+| *1* |  0|  1|  2|  3|  4|  5|  6|  7|

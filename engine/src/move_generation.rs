@@ -4,11 +4,17 @@ use std::cmp::{max, min};
 impl GameState {
     pub fn move_piece(&mut self, from: u8, to: u8) {
         if let Some(piece) = self.board.piece_at_position(to) {
-            let to_piece_bitboard = self.board.piece_bitboard(piece).expect("we already validate this");
-            *to_piece_bitboard &= !(1 << to );
+            let to_piece_bitboard = self
+                .board
+                .piece_bitboard(piece)
+                .expect("we already validate this");
+            *to_piece_bitboard &= !(1 << to);
         }
         if let Some(piece) = self.board.piece_at_position(from) {
-            let from_piece_bitboard = self.board.piece_bitboard(piece).expect("we already validate this");
+            let from_piece_bitboard = self
+                .board
+                .piece_bitboard(piece)
+                .expect("we already validate this");
             *from_piece_bitboard &= !(1 << from);
             *from_piece_bitboard |= 1 << to;
         }

@@ -72,22 +72,9 @@ fn main() -> Result<(), Error> {
 
     // Setters //
 
-    if let Some(move_coords) = matches.get_one::<String>("move") {
-        let mut move_coords = move_coords.split(':');
-        let start_square = match move_coords.next() {
-            Some(square) => square,
-            None => return Err(Error::ArgumentError("Invalid move format".to_string())),
-        };
-        let from = position::string_to_square(start_square)
-            .map_err(|e| Error::ArgumentError(e.to_string()))?;
-        let end_square = match move_coords.next() {
-            Some(square) => square,
-            None => return Err(Error::ArgumentError("Invalid move format".to_string())),
-        };
-        let to = position::string_to_square(end_square)
-            .map_err(|e| Error::ArgumentError(e.to_string()))?;
-        gs.move_piece_legally(from, to)
-            .map_err(|e| Error::ArgumentError(e.to_string()))?;
+    match matches.get_one::<String>("move") {
+        None => (),
+        Some(coords) => move_piece(coords, &mut gs).map_err(Error::ArgumentError)?,
     }
 
     // Getters //
@@ -110,4 +97,26 @@ fn main() -> Result<(), Error> {
     }
 
     Ok(())
+}
+
+fn move_piece(move_string: &str, game: &mut GameState) -> Result<(), String> {
+    let mut coords = move_string.split(':');
+
+    let from = match coords.next() {
+        None => return Err("Invalid move format. Start position not supplied".to_string()),
+        Some(coord) => match position::string_to_square(coord) {
+            Err(e) => return Err(e),
+            Ok(square) => square,
+        }
+    };
+
+    let to = match coords.next() {
+        None => return Err("Invalid move format. End position not supplied".to_string()),
+        Some(coord) => match position::string_to_square(coord) {
+            Err(e) => return Err(e),
+            Ok(square) => square,
+        }
+    };
+
+    game.move_piece_legally(from, to)
 }

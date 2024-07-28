@@ -23,12 +23,21 @@ impl GameState {
     }
 
     pub fn move_piece_legally(&mut self, from: u8, to: u8) -> Result<(), String> {
+        // Check if it's this pieces turn
+        if let Some(piece) = self.board.piece_at_position(from) {
+            if self.white_turn == piece.is_ascii_lowercase() {
+                return Err("Cannot move piece on opponents turn".to_string());
+            }
+        }
+
+        // Check if this piece
         let possible_moves = self.possible_moves(from);
         if 1 << to & possible_moves == 0 {
             let from_string = position::square_to_string(from);
-            let to_string = &position::square_to_string(to);
+            let to_string = position::square_to_string(to);
             return Err(format!("{from_string} -> {to_string} illegal move"));
         }
+
         self.move_piece(from, to);
         Ok(())
     }
@@ -766,5 +775,11 @@ mod tests {
         );
         let illegal_move = gs.move_piece_legally(24, 16);
         assert!(illegal_move.is_err(), "Empty square moved");
+
+        let illegal_move = gs.move_piece_legally(48, 40);
+        assert!(illegal_move.is_err(), "Moved black on white turn");
+        gs.white_turn = false;
+        let legal_move = gs.move_piece_legally(48, 40);
+        assert!(legal_move.is_ok(), "Cannot move black on blacks turn");
     }
 }

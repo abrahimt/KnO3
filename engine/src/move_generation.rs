@@ -2,19 +2,19 @@ use super::GameState;
 use std::cmp::{max, min};
 
 impl GameState {
-    pub fn move_piece(mut self, from: u8, to: u8) {
-        if let Some(piece) = self.board.piece_at_position(from) {
-            let from_piece_bitboard = self.board.piece_bitboard(piece).expect("we already validate this");
-            *from_piece_bitboard &= !(1 << from );
-            *from_piece_bitboard |= 1 << to;
-        }
+    pub fn move_piece(&mut self, from: u8, to: u8) {
         if let Some(piece) = self.board.piece_at_position(to) {
             let to_piece_bitboard = self.board.piece_bitboard(piece).expect("we already validate this");
             *to_piece_bitboard &= !(1 << to );
         }
+        if let Some(piece) = self.board.piece_at_position(from) {
+            let from_piece_bitboard = self.board.piece_bitboard(piece).expect("we already validate this");
+            *from_piece_bitboard &= !(1 << from);
+            *from_piece_bitboard |= 1 << to;
+        }
     }
 
-    pub fn move_piece_legally(self, from: u8, to: u8) -> Result<(), String> {
+    pub fn move_piece_legally(&mut self, from: u8, to: u8) -> Result<(), String> {
         // "E2:E4"
         //Get moves from E2
         let possible_moves = self.possible_moves(from);
@@ -699,5 +699,14 @@ mod tests {
 
         gs.board.black_knights = 1 << 26;
         assert!(gs.position_under_attack(9, true), "Knight not attacking");
+    }
+
+    #[test]
+    fn test_move_piece() {
+        let mut gs = GameState::new();
+
+        gs.move_piece(12, 28);
+        assert_eq!(gs.board.piece_at_position(12), None);
+        assert_eq!(gs.board.piece_at_position(28), Some('P'));
     }
 }

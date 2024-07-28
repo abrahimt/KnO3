@@ -27,9 +27,7 @@ impl GameState {
         let from_string = position::square_to_string(from);
         let to_string = &position::square_to_string(to);
         if 1 << to & possible_moves == 0 {
-            return Err(
-                (from_string + " -> " + to_string + " is not a legal move").to_string(),
-            );
+            return Err((from_string + " -> " + to_string + " is not a legal move").to_string());
         }
         self.move_piece(from, to);
         Ok(())

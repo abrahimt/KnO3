@@ -24,10 +24,10 @@ impl GameState {
 
     pub fn move_piece_legally(&mut self, from: u8, to: u8) -> Result<(), String> {
         let possible_moves = self.possible_moves(from);
-        let from_string = position::square_to_string(from);
-        let to_string = &position::square_to_string(to);
         if 1 << to & possible_moves == 0 {
-            return Err((from_string + " -> " + to_string + " is not a legal move").to_string());
+            let from_string = position::square_to_string(from);
+            let to_string = &position::square_to_string(to);
+            return Err(format!("{from_string} -> {to_string} illegal move"));
         }
         self.move_piece(from, to);
         Ok(())

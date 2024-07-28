@@ -2,6 +2,30 @@ use super::GameState;
 use std::cmp::{max, min};
 
 impl GameState {
+    pub fn move_piece(mut self, from: u8, to: u8) {
+        if let Some(piece) = self.board.piece_at_position(from) {
+            let from_piece_bitboard = self.board.piece_bitboard(piece).expect("we already validate this");
+            *from_piece_bitboard &= !(1 << from );
+            *from_piece_bitboard |= 1 << to;
+        }
+        if let Some(piece) = self.board.piece_at_position(to) {
+            let to_piece_bitboard = self.board.piece_bitboard(piece).expect("we already validate this");
+            *to_piece_bitboard &= !(1 << to );
+        }
+    }
+
+    pub fn move_piece_legally(self, from: u8, to: u8) -> Result<(), String> {
+        // "E2:E4"
+        //Get moves from E2
+        let possible_moves = self.possible_moves(from);
+        //Compare E4 to get moves
+        if 1 << to & possible_moves == 0 {
+            return Err(("Not a legal move").to_string());
+        }
+        self.move_piece(from, to);
+        return Ok(());
+    }
+
     /// Move squares in iterator until a piece is hit
     fn move_until_piece<I>(&self, range: I, white: bool) -> u64
     where

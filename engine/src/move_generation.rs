@@ -711,17 +711,33 @@ mod tests {
     #[test]
     fn test_move_piece() {
         let mut gs = GameState::new();
-        gs.move_piece(12, 28);
 
-        assert_eq!(gs.board.piece_at_position(12), None);
-        assert_eq!(gs.board.piece_at_position(28), Some('P'));
+        gs.move_piece(12, 28);
+        assert_eq!(gs.board.piece_at_position(12), None, "Pawn still exists in old position");
+        assert_eq!(gs.board.piece_at_position(28), Some('P'), "Pawn does not exist in new position");
+
+        gs.move_piece(28, 52);
+        assert!(gs.board.black_pawns & (1 << 52) == 0, "Captured piece not overwritten");
+
+        assert_eq!(gs.board.piece_at_position(24), None, "24 should be empty for the next test to pass");
+        gs.move_piece(24, 32);
+        assert_eq!(gs.board.piece_at_position(32), None, "Empty square moved");
     }
+
     #[test]
     fn test_move_piece_legally() {
         let mut gs = GameState::new();
-        let _ = gs.move_piece_legally(12, 28);
+        let mve = gs.move_piece_legally(12, 28);
 
-        assert_eq!(gs.board.piece_at_position(12), None);
-        assert_eq!(gs.board.piece_at_position(28), Some('P'));
+        assert!(mve.is_ok(), "Expected white pawn to move 12 -> 28");
+        assert_eq!(gs.board.piece_at_position(12), None, "Pawn still exists in old position");
+        assert_eq!(gs.board.piece_at_position(28), Some('P'), "Pawn does not exist in new position");
+
+        let illegal_move = gs.move_piece_legally(28, 12);
+        assert!(illegal_move.is_err(), "Pawn illegally moved backwards");
+
+        assert_eq!(gs.board.piece_at_position(24), None, "24 should be emtpy for next test to pass");
+        let illegal_move = gs.move_piece_legally(24, 16);
+        assert!(illegal_move.is_err(), "Empty square moved");
     }
 }

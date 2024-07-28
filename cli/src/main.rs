@@ -107,7 +107,7 @@ fn move_piece(move_string: &str, game: &mut GameState) -> Result<(), String> {
         Some(coord) => match position::string_to_square(coord) {
             Err(e) => return Err(e),
             Ok(square) => square,
-        }
+        },
     };
 
     let to = match coords.next() {
@@ -115,7 +115,7 @@ fn move_piece(move_string: &str, game: &mut GameState) -> Result<(), String> {
         Some(coord) => match position::string_to_square(coord) {
             Err(e) => return Err(e),
             Ok(square) => square,
-        }
+        },
     };
 
     game.move_piece_legally(from, to)

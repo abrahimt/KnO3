@@ -1,3 +1,5 @@
+use crate::position;
+
 use super::GameState;
 use std::cmp::{max, min};
 
@@ -21,12 +23,13 @@ impl GameState {
     }
 
     pub fn move_piece_legally(&mut self, from: u8, to: u8) -> Result<(), String> {
-        // "E2:E4"
-        //Get moves from E2
         let possible_moves = self.possible_moves(from);
-        //Compare E4 to get moves
+        let from_string = position::square_to_string(from);
+        let to_string = &position::square_to_string(to);
         if 1 << to & possible_moves == 0 {
-            return Err(("Not a legal move").to_string());
+            return Err(
+                (from_string + " -> " + to_string + " is not a legal move").to_string(),
+            );
         }
         self.move_piece(from, to);
         Ok(())
@@ -710,8 +713,16 @@ mod tests {
     #[test]
     fn test_move_piece() {
         let mut gs = GameState::new();
-
         gs.move_piece(12, 28);
+
+        assert_eq!(gs.board.piece_at_position(12), None);
+        assert_eq!(gs.board.piece_at_position(28), Some('P'));
+    }
+    #[test]
+    fn test_move_piece_legally() {
+        let mut gs = GameState::new();
+        let _ = gs.move_piece_legally(12, 28);
+
         assert_eq!(gs.board.piece_at_position(12), None);
         assert_eq!(gs.board.piece_at_position(28), Some('P'));
     }

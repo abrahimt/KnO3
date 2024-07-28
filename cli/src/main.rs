@@ -58,9 +58,10 @@ fn main() -> Result<(), Error> {
                 .long("move")
                 .short('m')
                 .value_name("move")
-                .help("Make a move from starting square to final square (ex: 'E2:E4'"),
+                .help("Move a piece (ex: 'E2:E4'"),
         )
         .get_matches();
+
     // Happen every time //
     let fen = matches
         .get_one::<String>("fen")
@@ -89,7 +90,6 @@ fn main() -> Result<(), Error> {
     if matches.get_flag("evaluate") {
         println!("{}", gs.board.evaluate());
     }
-
     if let Some(position) = matches.get_one::<String>("get-moves") {
         let square = position::string_to_square(position)
             .map_err(|e| Error::ArgumentError(e.to_string()))?;

@@ -50,6 +50,7 @@ impl GameState {
         }
 
         self.move_piece(from, to);
+        self.white_turn = !self.white_turn;
         Ok(())
     }
 
@@ -787,7 +788,9 @@ mod tests {
             Some('P'),
             "Pawn does not exist in new position"
         );
+        assert!(!gs.white_turn, "Turn did not change to black after white moved");
 
+        gs.white_turn = true;
         let illegal_move = gs.move_piece_legally(28, 12);
         assert!(illegal_move.is_err(), "Pawn illegally moved backwards");
 
@@ -796,9 +799,11 @@ mod tests {
             None,
             "24 should be emtpy for next test to pass"
         );
+        gs.white_turn = true;
         let illegal_move = gs.move_piece_legally(24, 16);
         assert!(illegal_move.is_err(), "Empty square moved");
 
+        gs.white_turn = true;
         let illegal_move = gs.move_piece_legally(48, 40);
         assert!(illegal_move.is_err(), "Moved black on white turn");
         gs.white_turn = false;

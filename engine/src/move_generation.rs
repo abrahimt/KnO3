@@ -5,6 +5,8 @@ use std::cmp::{max, min};
 
 impl GameState {
     pub fn move_piece(&mut self, from: u8, to: u8) {
+        self.en_passant = 255;
+
         if let Some(piece) = self.board.piece_at_position(to) {
             let to_piece_bitboard = self
                 .board
@@ -12,6 +14,7 @@ impl GameState {
                 .expect("we already validate this");
             *to_piece_bitboard &= !(1 << to);
         }
+
         if let Some(piece) = self.board.piece_at_position(from) {
             let from_piece_bitboard = self
                 .board
@@ -19,6 +22,14 @@ impl GameState {
                 .expect("we already validate this");
             *from_piece_bitboard &= !(1 << from);
             *from_piece_bitboard |= 1 << to;
+
+            // check en passant
+            if piece.to_ascii_lowercase() == 'p' {
+                let en_passant_square = (from + to) / 2;
+                if from + 8 == en_passant_square || from.saturating_sub(8) == en_passant_square {
+                    self.en_passant = en_passant_square;
+                }
+            }
         }
     }
 
@@ -746,6 +757,18 @@ mod tests {
         );
         gs.move_piece(24, 32);
         assert_eq!(gs.board.piece_at_position(32), None, "Empty square moved");
+    }
+
+    #[test]
+    fn test_en_passant() {
+        let mut gs = GameState::new();
+        assert!(gs.en_passant > 63, "New game stated with en passant");
+        gs.move_piece(8, 24);
+        assert_eq!(gs.en_passant, 16, "White pawn did not set en passant");
+        gs.move_piece(48, 32);
+        assert_eq!(gs.en_passant, 40, "Black pawn did not set en passant");
+        gs.move_piece(32, 24);
+        assert!(gs.en_passant > 63, "En passant did not reset");
     }
 
     #[test]

@@ -63,6 +63,7 @@ fn main() -> Result<(), Error> {
         .get_matches();
 
     // Happen every time //
+
     let fen = matches
         .get_one::<String>("fen")
         .ok_or(Error::ArgumentError("FEN string required".to_string()))?;
@@ -70,20 +71,27 @@ fn main() -> Result<(), Error> {
     let mut gs = GameState::from_string(fen).map_err(|e| Error::FENParsingError(e.to_string()))?;
 
     // Setters //
+
     if let Some(move_coords) = matches.get_one::<String>("move") {
         let mut move_coords = move_coords.split(':');
-        if let Some(start_square) = move_coords.next() {
-            let from = position::string_to_square(start_square)
-                .map_err(|e| Error::ArgumentError(e.to_string()))?;
-            if let Some(end_square) = move_coords.next() {
-                let to = position::string_to_square(end_square)
-                    .map_err(|e| Error::ArgumentError(e.to_string()))?;
-                gs.move_piece_legally(from, to)
-                    .map_err(|e| Error::ArgumentError(e.to_string()))?;
-            }
-        }
+        let start_square = match move_coords.next() {
+            Some(square) => square,
+            None => return Err(Error::ArgumentError("Invalid move format".to_string())),
+        };
+        let from = position::string_to_square(start_square)
+            .map_err(|e| Error::ArgumentError(e.to_string()))?;
+        let end_square = match move_coords.next() {
+            Some(square) => square,
+            None => return Err(Error::ArgumentError("Invalid move format".to_string())),
+        };
+        let to = position::string_to_square(end_square)
+            .map_err(|e| Error::ArgumentError(e.to_string()))?;
+        gs.move_piece_legally(from, to)
+            .map_err(|e| Error::ArgumentError(e.to_string()))?;
     }
+
     // Getters //
+
     if matches.get_flag("show") {
         gs.board.display();
     }

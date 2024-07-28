@@ -29,7 +29,7 @@ impl GameState {
             return Err(("Not a legal move").to_string());
         }
         self.move_piece(from, to);
-        return Ok(());
+        Ok(())
     }
 
     /// Move squares in iterator until a piece is hit
